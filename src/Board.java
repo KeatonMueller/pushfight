@@ -60,7 +60,7 @@ public class Board {
         board[oldRow][oldCol] = 0;
     }
 
-    public void push(int row, int col, char dir) {
+    public boolean push(int row, int col, char dir) {
         // initialize deltaRow & deltaCol based on pushing direction
         int deltaRow, deltaCol;
         switch (dir) {
@@ -81,7 +81,7 @@ public class Board {
                 deltaCol = 0;
                 break;
             default:
-                return;
+                return false;
         }
         // push the pieces
         anchorRow = row + deltaRow;
@@ -94,10 +94,10 @@ public class Board {
             row += deltaRow;
             col += deltaCol;
             if (prevPiece == 0) {
-                return;
+                return false;
             }
         }
-        System.out.println("Winner winner!");
+        return true;
     }
 
     public String getChar(int row, int col) {
