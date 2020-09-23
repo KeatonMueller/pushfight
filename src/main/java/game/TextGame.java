@@ -100,7 +100,7 @@ public class TextGame {
             col = pos % 10;
             // prompt for push direction
             System.out.println("Player " + (turn + 1) + ", choose pushing direction (r|l|u|d)");
-            dir = scan.nextLine().charAt(0);
+            dir = getDir();
 
             // validate push, and loop if invalid
             if (!GameUtils.isValidPush(board, row, col, dir)) {
@@ -162,6 +162,23 @@ public class TextGame {
             }
         }
         return row * 10 + col;
+    }
+
+    /**
+     * Prompt user for a push direction
+     * 
+     * @return The push direction (r|l|u|d)
+     */
+    public char getDir() {
+        String line;
+        char dir = ' ';
+        while (!(dir == 'r' || dir == 'l' || dir == 'u' || dir == 'd')) {
+            line = scan.nextLine();
+            if (line.length() > 0) {
+                dir = line.charAt(0);
+            }
+        }
+        return dir;
     }
 
     /**

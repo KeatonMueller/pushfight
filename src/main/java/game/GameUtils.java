@@ -69,8 +69,6 @@ public class GameUtils {
      * @return true if push is valid, else false
      */
     public static boolean isValidPush(Board board, int row, int col, char dir) {
-        if (!isValidDir(dir))
-            return false;
         int[] delta = getDeltas(dir);
         int nextRow = row + delta[0];
         int nextCol = col + delta[1];
@@ -91,16 +89,6 @@ public class GameUtils {
         if (nextRow < 0 || nextRow >= HEIGHT)
             return false;
         return true;
-    }
-
-    /**
-     * Check if given direction is valid
-     * 
-     * @param dir The direction to check
-     * @return true if direction is r, l, u, or d, else false
-     */
-    public static boolean isValidDir(char dir) {
-        return dir == 'r' || dir == 'l' || dir == 'u' || dir == 'd';
     }
 
     /**
