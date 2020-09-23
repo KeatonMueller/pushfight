@@ -1,7 +1,11 @@
 # pushfight
 
-This is a project to create an intelligent agent for the game of Push Fight,
+This is my Senior Project for my Computer Science degree at Yale University.
+
+It involves creating an intelligent agent for the game of Push Fight,
 a multi-action adversarial board game.
+
+It is coded using Java version 11.
 
 ## How to use it
 
