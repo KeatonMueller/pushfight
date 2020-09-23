@@ -1,12 +1,10 @@
 package main.java;
 
-import java.util.HashSet;
-
 import main.java.game.GameUtils;
 
 public class Board {
-    private final int LENGTH = 8;
-    private final int HEIGHT = 4;
+    private final int LENGTH = GameUtils.LENGTH;
+    private final int HEIGHT = GameUtils.HEIGHT;
     private int[][] board;
     private int anchorRow, anchorCol;
 
@@ -94,7 +92,18 @@ public class Board {
     }
 
     /**
-     * Perform a sliding move from old position to new position
+     * Check if given position is anchored
+     * 
+     * @param row Row to check
+     * @param col Col to check
+     * @return true if position is anchored, else false
+     */
+    public boolean isAnchored(int row, int col) {
+        return row == anchorRow && col == anchorCol;
+    }
+
+    /**
+     * Perform a sliding move from old position to new position. Slide must be validated by caller
      * 
      * @param oldRow Old row of piece
      * @param oldCol Old column of piece
@@ -102,15 +111,12 @@ public class Board {
      * @param newCol New column of piece
      */
     public void slide(int oldRow, int oldCol, int newRow, int newCol) {
-        HashSet<Integer> moves = GameUtils.findSlidingActions(this, oldRow, oldCol);
-        if (!moves.contains(newRow * 10 + newCol))
-            return;
         board[newRow][newCol] = board[oldRow][oldCol];
         board[oldRow][oldCol] = 0;
     }
 
     /**
-     * Perform a push and update the board state
+     * Perform a push and update the board state. Push must be validated by caller
      * 
      * @param row Row of piece to push from
      * @param col Column of piece to push from
@@ -118,38 +124,19 @@ public class Board {
      * @return true if push results in a win, else false
      */
     public boolean push(int row, int col, char dir) {
-        // initialize deltaRow & deltaCol based on pushing direction
-        int deltaRow, deltaCol;
-        switch (dir) {
-            case 'r':
-                deltaRow = 0;
-                deltaCol = 1;
-                break;
-            case 'l':
-                deltaRow = 0;
-                deltaCol = -1;
-                break;
-            case 'u':
-                deltaRow = -1;
-                deltaCol = 0;
-                break;
-            case 'd':
-                deltaRow = 1;
-                deltaCol = 0;
-                break;
-            default:
-                return false;
-        }
+        // get deltas based on pushing direction
+        int[] delta = GameUtils.getDeltas(dir);
+        // update anchor position
+        anchorRow = row + delta[0];
+        anchorCol = col + delta[1];
         // push the pieces
-        anchorRow = row + deltaRow;
-        anchorCol = col + deltaCol;
         int temp, prevPiece = 0;
         while (isValid(row, col)) {
             temp = board[row][col];
             board[row][col] = prevPiece;
             prevPiece = temp;
-            row += deltaRow;
-            col += deltaCol;
+            row += delta[0];
+            col += delta[1];
             if (prevPiece == 0) {
                 return false;
             }

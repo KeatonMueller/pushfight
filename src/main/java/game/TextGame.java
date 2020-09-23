@@ -1,5 +1,6 @@
 package main.java.game;
 
+import java.util.HashSet;
 import java.util.Scanner;
 
 import main.java.Board;
@@ -23,46 +24,93 @@ public class TextGame {
      * Run the game loop, prompting for input and performing updates
      */
     public void gameLoop() {
-        int oldPos = -1;
-        int newPos = -1;
-        char dir;
+        int i;
         while (true) {
             board.show();
-            // prompt for two sliding moves
-            for (int i = 0; i < 2; i++) {
-                // get sliding move start
-                System.out.println("Player " + (turn + 1) + ", choose piece to slide (optional "
-                        + (i + 1) + "/2)");
-                oldPos = getInput(turn);
-                // allow sliding move to be skipped
-                if (oldPos == -1) {
-                    board.show();
-                    continue;
-                }
-                // get sliding move destination
-                newPos = -1;
-                System.out.println("Player " + (turn + 1) + ", choose destination");
-                while (newPos == -1)
-                    newPos = getInput();
-                board.slide(oldPos / 10, oldPos % 10, newPos / 10, newPos % 10);
-                board.show();
+            // perform two sliding actions
+            for (i = 0; i < 2; i++) {
+                slideAction(turn, i + 1);
             }
-            // prompt for pushing move
-            oldPos = -1;
-            System.out.println("Player " + (turn + 1) + ", choose piece to push (required)");
-            while (oldPos == -1)
-                oldPos = getInput(turn);
-            System.out.println("Player " + (turn + 1) + ", choose pushing direction (r|l|u|d)");
-            dir = scan.nextLine().charAt(0);
-            if (board.push(oldPos / 10, oldPos % 10, dir)) {
+            // perform one pushing action
+            if (pushAction(turn)) {
                 board.show();
                 System.out.println("Player " + (turn + 1) + " wins!");
                 scan.close();
                 return;
             }
-
             // change turns
             turn = 1 - turn;
+        }
+    }
+
+    /**
+     * Get input and validate a sliding action
+     * 
+     * @param turn Turn indicator
+     * @param num  Which sliding action (1|2) is occuring
+     */
+    public void slideAction(int turn, int num) {
+        // get sliding action start
+        System.out.println(
+                "Player " + (turn + 1) + ", choose piece to slide (optional " + (num) + "/2)");
+        int startPos = getInput(turn);
+
+        // allow sliding action to be skipped
+        if (startPos == -1) {
+            board.show();
+            return;
+        }
+
+        // compute valid destinations given this starting position
+        HashSet<Integer> dests = GameUtils.findSlidingDests(board, startPos / 10, startPos % 10);
+
+        // get sliding action destination
+        int endPos = -1;
+        System.out.println("Player " + (turn + 1) + ", choose destination");
+        while (endPos == -1 || !dests.contains(endPos)) {
+            endPos = getInput();
+
+            // allow for an empty action
+            if (startPos == endPos) {
+                board.show();
+                return;
+            }
+        }
+
+        board.slide(startPos / 10, startPos % 10, endPos / 10, endPos % 10);
+        board.show();
+    }
+
+    /**
+     * Get input and validate a push action
+     * 
+     * @param turn Turn indicator
+     * @return true if push resulted in a win, else false
+     */
+    public boolean pushAction(int turn) {
+        int pos = -1;
+        int row = -1, col = -1;
+        char dir = ' ';
+        while (true) {
+            // prompt for piece to push
+            System.out.println("Player " + (turn + 1) + ", choose a piece to push (required)");
+            while (pos == -1)
+                pos = getInput(turn);
+            row = pos / 10;
+            col = pos % 10;
+            // prompt for push direction
+            System.out.println("Player " + (turn + 1) + ", choose pushing direction (r|l|u|d)");
+            dir = scan.nextLine().charAt(0);
+
+            // validate push, and loop if invalid
+            if (!GameUtils.isValidPush(board, row, col, dir)) {
+                board.show();
+                pos = -1;
+                continue;
+            }
+
+            // perform push
+            return board.push(row, col, dir);
         }
     }
 
@@ -122,7 +170,7 @@ public class TextGame {
      * @return true if setup was skipped, else false
      */
     public boolean skipSetup() {
-        System.out.println("Use default? (y|n)");
+        System.out.println("Use default setup? (y|n)");
         String line = scan.nextLine();
         if (line.equalsIgnoreCase("y")) {
             // set player 1's pieces
