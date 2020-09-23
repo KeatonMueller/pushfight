@@ -1,12 +1,15 @@
+package main.java.game;
 
 import java.util.Scanner;
 
-public class Game {
+import main.java.Board;
+
+public class TextGame {
     private Scanner scan;
     private Board board;
     private int turn;
 
-    public Game() {
+    public TextGame() {
         scan = new Scanner(System.in);
         board = new Board();
         board.show();
@@ -16,9 +19,12 @@ public class Game {
         gameLoop();
     }
 
+    /**
+     * Run the game loop, prompting for input and performing updates
+     */
     public void gameLoop() {
-        int[] oldPos = new int[] {-1, -1};
-        int[] newPos = new int[] {-1, -1};
+        int oldPos = -1;
+        int newPos = -1;
         char dir;
         while (true) {
             board.show();
@@ -27,29 +33,28 @@ public class Game {
                 // get sliding move start
                 System.out.println("Player " + (turn + 1) + ", choose piece to slide (optional "
                         + (i + 1) + "/2)");
-                oldPos = getInput();
+                oldPos = getInput(turn);
                 // allow sliding move to be skipped
-                if (oldPos[0] == -1) {
+                if (oldPos == -1) {
                     board.show();
                     continue;
                 }
                 // get sliding move destination
-                newPos[0] = -1;
+                newPos = -1;
                 System.out.println("Player " + (turn + 1) + ", choose destination");
-                while (newPos[0] == -1)
+                while (newPos == -1)
                     newPos = getInput();
-                board.slide(oldPos[0], oldPos[1], newPos[0], newPos[1]);
+                board.slide(oldPos / 10, oldPos % 10, newPos / 10, newPos % 10);
                 board.show();
             }
             // prompt for pushing move
-            oldPos[0] = -1;
+            oldPos = -1;
             System.out.println("Player " + (turn + 1) + ", choose piece to push (required)");
-            while (oldPos[0] == -1)
-                oldPos = getInput();
-            System.out
-                    .println("Player " + (turn + 1) + ", choose pushing direction (r | l | u | d)");
+            while (oldPos == -1)
+                oldPos = getInput(turn);
+            System.out.println("Player " + (turn + 1) + ", choose pushing direction (r|l|u|d)");
             dir = scan.nextLine().charAt(0);
-            if (board.push(oldPos[0], oldPos[1], dir)) {
+            if (board.push(oldPos / 10, oldPos % 10, dir)) {
                 board.show();
                 System.out.println("Player " + (turn + 1) + " wins!");
                 scan.close();
@@ -61,13 +66,18 @@ public class Game {
         }
     }
 
-    public int[] getInput() {
+    /**
+     * Prompt user for a location on the board
+     * 
+     * @return Board position encoded as row * 10 + col
+     */
+    public int getInput() {
         String line;
         int row = -1, col = -1;
         while (!board.isValid(row, col)) {
             line = scan.nextLine();
             if (line.equals("")) {
-                return new int[] {-1, -1};
+                return -1;
             }
             try {
                 row = line.charAt(0) - 'a';
@@ -77,7 +87,33 @@ public class Game {
                 col = -1;
             }
         }
-        return new int[] {row, col};
+        return row * 10 + col;
+
+    }
+
+    /**
+     * Prompt user for a location that they own
+     * 
+     * @param turn Turn indicator
+     * @return Board position encoded as row * 10 + col
+     */
+    public int getInput(int turn) {
+        String line;
+        int row = -1, col = -1;
+        while (!board.isValid(row, col) || !board.owns(row, col, turn)) {
+            line = scan.nextLine();
+            if (line.equals("")) {
+                return -1;
+            }
+            try {
+                row = line.charAt(0) - 'a';
+                col = Integer.parseInt(line.substring(1)) - 1;
+            } catch (Exception e) {
+                row = -1;
+                col = -1;
+            }
+        }
+        return row * 10 + col;
     }
 
     /**
@@ -114,7 +150,7 @@ public class Game {
             return;
         String piece;
         int i, idx, num;
-        int[] pos = new int[] {-1, -1};
+        int pos = -1;
         int[] iter = new int[] {1, 1, 2, 2};
         for (idx = 0; idx < 4; idx++) {
             num = idx % 2 == 0 ? 2 : 3;
@@ -122,9 +158,9 @@ public class Game {
             for (i = 0; i < num; i++) {
                 System.out.println("Player " + iter[idx] + ", place " + piece + " pieces (" + i
                         + "/" + num + " placed)");
-                while (pos[0] == -1)
+                while (pos == -1)
                     pos = getInput();
-                board.setPiece(pos[0], pos[1], idx + 1);
+                board.setPiece(pos / 10, pos % 10, idx + 1);
                 board.show();
             }
         }

@@ -1,3 +1,8 @@
+package main.java;
+
+import java.util.HashSet;
+
+import main.java.game.GameUtils;
 
 public class Board {
     private final int LENGTH = 8;
@@ -28,10 +33,32 @@ public class Board {
         anchorCol = -1;
     }
 
+    /**
+     * Sets the board at the given position with the given value
+     * 
+     * @param row Row to set
+     * @param col Column to set
+     * @param val Value to be placed at the position
+     */
     public void setPiece(int row, int col, int val) {
         if (!isValid(row, col) || board[row][col] != 0)
             return;
         board[row][col] = val;
+    }
+
+    /**
+     * Check if a given player owns the piece at a board location
+     * 
+     * @param row  Row to check
+     * @param col  Column to check
+     * @param turn Turn indicator
+     * @return true if the player owns the piece, else false
+     */
+    public boolean owns(int row, int col, int turn) {
+        // compute (exclusive) bounds
+        int lowerBound = turn * 2;
+        int upperBound = lowerBound + 3;
+        return board[row][col] > lowerBound && board[row][col] < upperBound;
     }
 
     /**
@@ -55,11 +82,41 @@ public class Board {
         return true;
     }
 
+    /**
+     * Check if the given position is empty. Validation of position must be done by caller
+     * 
+     * @param row Row to check
+     * @param col Column to check
+     * @return true if board position is empty, else false
+     */
+    public boolean isEmpty(int row, int col) {
+        return board[row][col] == 0;
+    }
+
+    /**
+     * Perform a sliding move from old position to new position
+     * 
+     * @param oldRow Old row of piece
+     * @param oldCol Old column of piece
+     * @param newRow New row of piece
+     * @param newCol New column of piece
+     */
     public void slide(int oldRow, int oldCol, int newRow, int newCol) {
+        HashSet<Integer> moves = GameUtils.findSlidingActions(this, oldRow, oldCol);
+        if (!moves.contains(newRow * 10 + newCol))
+            return;
         board[newRow][newCol] = board[oldRow][oldCol];
         board[oldRow][oldCol] = 0;
     }
 
+    /**
+     * Perform a push and update the board state
+     * 
+     * @param row Row of piece to push from
+     * @param col Column of piece to push from
+     * @param dir Direction to push (r|l|u|d)
+     * @return true if push results in a win, else false
+     */
     public boolean push(int row, int col, char dir) {
         // initialize deltaRow & deltaCol based on pushing direction
         int deltaRow, deltaCol;
@@ -100,6 +157,13 @@ public class Board {
         return true;
     }
 
+    /**
+     * Get character representation of board piece
+     * 
+     * @param row Row of piece
+     * @param col Column of piece
+     * @return Character representing the piece at the given row and column
+     */
     public String getChar(int row, int col) {
         switch (board[row][col]) {
             case -1:
@@ -119,20 +183,32 @@ public class Board {
         }
     }
 
+    /**
+     * Print column labels, shifted by 2 spaces
+     */
+    public void printColumnLabels() {
+        System.out.print("  ");
+        for (int col = 0; col < LENGTH; col++) {
+            System.out.print(col + 1 + " ");
+        }
+        System.out.println();
+    }
+
+    /**
+     * Print the board state
+     */
     public void show() {
+        printColumnLabels();
         System.out.println("      ---------");
         for (int row = 0; row < HEIGHT; row++) {
             System.out.print((char) ('a' + row) + " ");
             for (int col = 0; col < LENGTH; col++) {
                 System.out.print(getChar(row, col));
             }
-            System.out.println();
+            System.out.println((char) ('a' + row));
         }
         System.out.println("    ---------");
-        System.out.print("  ");
-        for (int col = 0; col < LENGTH; col++) {
-            System.out.print(col + 1 + " ");
-        }
-        System.out.println();
+        printColumnLabels();
+
     }
 }
