@@ -152,6 +152,13 @@ public class Board {
      * @return Character representing the piece at the given row and column
      */
     public String getChar(int row, int col) {
+        // anchored piece denoted by an x (p1) or X (p2)
+        if (isAnchored(row, col)) {
+            if (board[row][col] > 0 && board[row][col] < 3) {
+                return "x ";
+            }
+            return "X ";
+        }
         switch (board[row][col]) {
             case -1:
                 return "  ";
