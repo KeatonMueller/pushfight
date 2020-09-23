@@ -3,12 +3,15 @@ package main.java.game;
 import java.util.HashSet;
 import java.util.Scanner;
 
-import main.java.Board;
+import main.java.agents.Agent;
+import main.java.agents.random.RandomAgent;
+import main.java.board.Board;
 
 public class TextGame {
     private Scanner scan;
     private Board board;
     private int turn;
+    private Agent p1, p2;
 
     public TextGame() {
         scan = new Scanner(System.in);
@@ -16,31 +19,130 @@ public class TextGame {
         board.show();
 
         turn = 0;
-        setup();
+        // setup players
+        choosePlayer(0);
+        choosePlayer(1);
+        // we're skipping the setup phase of the game for now
+        skipSetup();
         gameLoop();
+    }
+
+    /**
+     * Prompt user to pick the player
+     * 
+     * @param turn Turn indicator
+     */
+    public void choosePlayer(int turn) {
+        System.out.print("Choose Player " + (turn + 1) + " (human|random): ");
+        String player = scan.nextLine();
+        switch (player.trim().toLowerCase()) {
+            case "random":
+                setAgent(turn, new RandomAgent());
+                break;
+            case "human":
+            default:
+                setAgent(turn, null);
+                break;
+        }
+    }
+
+    /**
+     * Set the appropriate agent to the given Agent object
+     * 
+     * @param turn  Turn indicator
+     * @param agent Agent to be set
+     */
+    public void setAgent(int turn, Agent agent) {
+        if (turn == 0)
+            p1 = agent;
+        else
+            p2 = agent;
     }
 
     /**
      * Run the game loop, prompting for input and performing updates
      */
     public void gameLoop() {
-        int i;
+        int loser;
         while (true) {
             board.show();
-            // perform two sliding actions
-            for (i = 0; i < 2; i++) {
-                slideAction(turn, i + 1);
-            }
-            // perform one pushing action
-            if (pushAction(turn)) {
+
+            loser = makeMove(turn);
+            if (loser != -1) {
                 board.show();
-                System.out.println("Player " + (turn + 1) + " wins!");
+                System.out.println("Player " + (1 - loser + 1) + " wins!");
                 scan.close();
                 return;
             }
+
             // change turns
             turn = 1 - turn;
         }
+    }
+
+    /**
+     * Have the player whose turn it is make their move
+     * 
+     * @param turn Turn indicator
+     * @return The player who just lost (0|1) or -1 if no loser
+     */
+    public int makeMove(int turn) {
+        if (turn == 0) {
+            if (p1 == null)
+                return userMove(turn);
+            return agentMove(p1, turn);
+        } else {
+            if (p2 == null)
+                return userMove(turn);
+            return agentMove(p2, turn);
+        }
+    }
+
+    /**
+     * Get, decode, and perform move from Agent
+     * 
+     * @param agent The agent to make the move
+     * @param turn  Turn indicator
+     * @return The player who just lost (0|1) or -1 if no loser
+     */
+    public int agentMove(Agent agent, int turn) {
+        // get the move from the agent
+        int[] move = agent.getMove(board, turn);
+
+        // decode and perform two sliding actions
+        int startPos, endPos;
+        for (int i = 0; i < 2; i++) {
+            // can skip sliding action
+            if (move[i] == 0)
+                continue;
+            startPos = move[i] / 100;
+            endPos = move[i] % 100;
+            System.out.println("Move: " + move[i] + " decoded as (" + startPos / 10 + ", "
+                    + startPos % 10 + ") => (" + endPos / 10 + ", " + endPos % 10 + ")");
+            board.slide(startPos / 10, startPos % 10, endPos / 10, endPos % 10);
+        }
+        // decode and perform push action
+        startPos = move[2] / 10;
+        char dir = GameUtils.dirIntToChar(move[2] % 10);
+        System.out.println("Push: " + move[2] + " decoded as (" + startPos / 10 + ", "
+                + startPos % 10 + ") going " + dir);
+        return board.push(startPos / 10, startPos % 10, dir);
+    }
+
+    /**
+     * Prompt user for input to make their turn
+     * 
+     * @param turn Turn indicator
+     * @return The player who just lost (0|1) or -1 if no loser
+     */
+    public int userMove(int turn) {
+        int i;
+        // perform two sliding actions
+        for (i = 0; i < 2; i++) {
+            slideAction(turn, i + 1);
+        }
+        // perform one pushing action
+        return pushAction(turn);
     }
 
     /**
@@ -62,7 +164,7 @@ public class TextGame {
         }
 
         // compute valid destinations given this starting position
-        HashSet<Integer> dests = GameUtils.findSlidingDests(board, startPos / 10, startPos % 10);
+        HashSet<Integer> dests = GameUtils.findSlideDests(board, startPos / 10, startPos % 10);
 
         // get sliding action destination
         int endPos = -1;
@@ -85,9 +187,9 @@ public class TextGame {
      * Get input and validate a push action
      * 
      * @param turn Turn indicator
-     * @return true if push resulted in a win, else false
+     * @return owner of piece that was pushed off, or -1 if none
      */
-    public boolean pushAction(int turn) {
+    public int pushAction(int turn) {
         int pos = -1;
         int row = -1, col = -1;
         char dir = ' ';
@@ -187,24 +289,26 @@ public class TextGame {
      * @return true if setup was skipped, else false
      */
     public boolean skipSetup() {
-        System.out.println("Use default setup? (y|n)");
-        String line = scan.nextLine();
-        if (line.equalsIgnoreCase("y")) {
-            // set player 1's pieces
-            board.setPiece(0, 3, 2);
-            board.setPiece(1, 3, 1);
-            board.setPiece(2, 3, 1);
-            board.setPiece(3, 3, 2);
-            board.setPiece(2, 2, 2);
-            // set player 2's pieces
-            board.setPiece(0, 4, 4);
-            board.setPiece(1, 4, 3);
-            board.setPiece(2, 4, 3);
-            board.setPiece(3, 4, 4);
-            board.setPiece(1, 5, 4);
-            return true;
-        }
-        return false;
+        // System.out.println("Use default setup? (y|n)");
+        // String line = scan.nextLine();
+        // if (line.equalsIgnoreCase("y")) {
+
+        // set player 1's pieces
+        board.setPiece(0, 3, 2);
+        board.setPiece(1, 3, 1);
+        board.setPiece(2, 3, 1);
+        board.setPiece(3, 3, 2);
+        board.setPiece(2, 2, 2);
+        // set player 2's pieces
+        board.setPiece(0, 4, 4);
+        board.setPiece(1, 4, 3);
+        board.setPiece(2, 4, 3);
+        board.setPiece(3, 4, 4);
+        board.setPiece(1, 5, 4);
+        return true;
+
+        // }
+        // return false;
     }
 
     /**

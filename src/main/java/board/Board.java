@@ -1,4 +1,8 @@
-package main.java;
+package main.java.board;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 import main.java.game.GameUtils;
 
@@ -7,6 +11,7 @@ public class Board {
     private final int HEIGHT = GameUtils.HEIGHT;
     private int[][] board;
     private int anchorRow, anchorCol;
+    private List<HashSet<Integer>> locations;
 
     // Board values:
     // -1 : invalid
@@ -29,6 +34,10 @@ public class Board {
         // anchor is initially not present
         anchorRow = -1;
         anchorCol = -1;
+        // initialize the sets of piece locations for each player
+        locations = new ArrayList<>();
+        locations.add(new HashSet<>());
+        locations.add(new HashSet<>());
     }
 
     /**
@@ -42,6 +51,8 @@ public class Board {
         if (!isValid(row, col) || board[row][col] != 0)
             return;
         board[row][col] = val;
+        // add this position to this player's list of piece locations
+        locations.get(getOwner(val)).add(row * 10 + col);
     }
 
     /**
@@ -53,10 +64,44 @@ public class Board {
      * @return true if the player owns the piece, else false
      */
     public boolean owns(int row, int col, int turn) {
-        // compute (exclusive) bounds
-        int lowerBound = turn * 2;
-        int upperBound = lowerBound + 3;
-        return board[row][col] > lowerBound && board[row][col] < upperBound;
+        return getOwner(board[row][col]) == turn;
+    }
+
+    /**
+     * Get the owner of the given piece value
+     * 
+     * @param value The board value to find the owner of
+     * @return 0 if owned by p1, 1 if owned by p2, -1 if no owner
+     */
+    private int getOwner(int value) {
+        if (value == 1 || value == 2)
+            return 0;
+        if (value == 3 || value == 4)
+            return 1;
+        return -1;
+    }
+
+    /**
+     * Return the locations of all the pieces for the given player
+     * 
+     * @param turn Turn indicator
+     * @return HashSet of locations of the pieces
+     */
+    public HashSet<Integer> getPieceLocs(int turn) {
+        if (turn == 0 || turn == 1)
+            return locations.get(turn);
+        return null;
+    }
+
+    /**
+     * Check if given board position contains a square
+     * 
+     * @param row The row to check
+     * @param col The column to check
+     * @return true if the position has a square, else false
+     */
+    public boolean isSquare(int row, int col) {
+        return board[row][col] == 2 || board[row][col] == 4;
     }
 
     /**
@@ -113,6 +158,14 @@ public class Board {
     public void slide(int oldRow, int oldCol, int newRow, int newCol) {
         board[newRow][newCol] = board[oldRow][oldCol];
         board[oldRow][oldCol] = 0;
+        // update sets of piece locations
+        int owner = getOwner(board[newRow][newCol]);
+        if (owner == -1) {
+            System.out.println("ERROR! No one ones row " + newRow + " col " + newCol);
+            return;
+        }
+        locations.get(owner).remove(oldRow * 10 + oldCol);
+        locations.get(owner).add(newRow * 10 + newCol);
     }
 
     /**
@@ -121,9 +174,9 @@ public class Board {
      * @param row Row of piece to push from
      * @param col Column of piece to push from
      * @param dir Direction to push (r|l|u|d)
-     * @return true if push results in a win, else false
+     * @return owner of piece that was pushed off, or -1 if none
      */
-    public boolean push(int row, int col, char dir) {
+    public int push(int row, int col, char dir) {
         // get deltas based on pushing direction
         int[] delta = GameUtils.getDeltas(dir);
         // update anchor position
@@ -131,17 +184,31 @@ public class Board {
         anchorCol = col + delta[1];
         // push the pieces
         int temp, prevPiece = 0;
+        int oldOwner, newOwner;
         while (isValid(row, col)) {
+            // swap pieces
             temp = board[row][col];
             board[row][col] = prevPiece;
             prevPiece = temp;
+
+            // update ownership lists
+            oldOwner = getOwner(prevPiece);
+            newOwner = getOwner(board[row][col]);
+            if (oldOwner != -1) {
+                locations.get(oldOwner).remove(row * 10 + col);
+            }
+            if (newOwner != -1) {
+                locations.get(newOwner).add(row * 10 + col);
+            }
+
+            // update row and col
             row += delta[0];
             col += delta[1];
             if (prevPiece == 0) {
-                return false;
+                return -1;
             }
         }
-        return true;
+        return getOwner(prevPiece);
     }
 
     /**

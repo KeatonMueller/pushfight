@@ -1,10 +1,12 @@
 package main.java.game;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Queue;
 
-import main.java.Board;
+import main.java.board.Board;
 
 public class GameUtils {
     public static final int LENGTH = 8;
@@ -22,7 +24,7 @@ public class GameUtils {
      * @param col   Column to search from
      * @return HashSet of valid destinations encoded as integers of the form: row * 10 + col
      */
-    public static HashSet<Integer> findSlidingDests(Board board, int row, int col) {
+    public static HashSet<Integer> findSlideDests(Board board, int row, int col) {
         // perform basic BFS to find valid destinations
         dests.clear();
         visited.clear();
@@ -60,6 +62,93 @@ public class GameUtils {
     }
 
     /**
+     * Generate all legal sliding actions from current position for given player
+     * 
+     * @param board The board position to be examined
+     * @param turn  Turn indicator
+     * @return List<Integer> of sliding actions encoded as startPos * 100 + endPos where positions
+     *         are encoded as row * 10 + col
+     */
+    public static List<Integer> getSlideActions(Board board, int turn) {
+        List<Integer> slides = new ArrayList<>();
+        for (int startPos : board.getPieceLocs(turn)) {
+            for (int endPos : findSlideDests(board, startPos / 10, startPos % 10)) {
+                slides.add(startPos * 100 + endPos);
+            }
+        }
+        return slides;
+    }
+
+    /**
+     * Generate all legal pushing actions from current position for given player
+     * 
+     * @param board The board position to be examined
+     * @param turn  Turn indicator
+     * @return List<Integer> of pushing actions encoded as pos * 10 + dir where pos is encoded as
+     *         row * 10 + col and dir is encoded as 0, 1, 2, 3 for r, l, u, d, respectively
+     */
+    public static List<Integer> getPushActions(Board board, int turn) {
+        List<Integer> pushes = new ArrayList<>();
+        for (int pos : board.getPieceLocs(turn)) {
+            if (!board.isSquare(pos / 10, pos % 10))
+                continue;
+            for (int dir = 0; dir < 4; dir++) {
+                if (isValidPush(board, pos / 10, pos % 10, dirIntToChar(dir))) {
+                    pushes.add(pos * 10 + dir);
+                }
+            }
+        }
+        return pushes;
+    }
+
+    public static char dirIntToChar(int dir) {
+        switch (dir) {
+            case 0:
+                return 'r';
+            case 1:
+                return 'l';
+            case 2:
+                return 'u';
+            case 3:
+                return 'd';
+            default:
+                return ' ';
+        }
+    }
+
+    public static int dirCharToInt(char dir) {
+        switch (dir) {
+            case 'r':
+                return 0;
+            case 'l':
+                return 1;
+            case 'u':
+                return 2;
+            case 'd':
+                return 3;
+            default:
+                return -1;
+        }
+    }
+
+    /**
+     * Decodes an encoded sliding action
+     * 
+     * @param slide A slide action encoded as startPos * 100 + endPos
+     * @return int array of form [oldRow, oldCol, newRow, newCol]
+     */
+    public static int[] decodeSlideAction(int slide) {
+        int[] decoded = new int[] {0, 0, 0, 0};
+        int startPos = slide / 100;
+        int endPos = slide % 100;
+        decoded[0] = startPos / 10;
+        decoded[1] = startPos % 10;
+        decoded[2] = endPos / 10;
+        decoded[3] = endPos % 10;
+        return decoded;
+    }
+
+    /**
      * Check if given push on the given board is valid
      * 
      * @param board Board to check the push on
@@ -69,6 +158,9 @@ public class GameUtils {
      * @return true if push is valid, else false
      */
     public static boolean isValidPush(Board board, int row, int col, char dir) {
+        // only squares can push
+        if (!board.isSquare(row, col))
+            return false;
         int[] delta = getDeltas(dir);
         int nextRow = row + delta[0];
         int nextCol = col + delta[1];
@@ -98,26 +190,21 @@ public class GameUtils {
      * @return int array of form {deltaRow, deltaCol}
      */
     public static int[] getDeltas(char dir) {
-        int[] delta = new int[2];
+        int[] delta = new int[] {0, 0};
         switch (dir) {
             case 'r':
-                delta[0] = 0;
                 delta[1] = 1;
-                return delta;
+                break;
             case 'l':
-                delta[0] = 0;
                 delta[1] = -1;
-                return delta;
+                break;
             case 'u':
                 delta[0] = -1;
-                delta[1] = 0;
-                return delta;
+                break;
             case 'd':
                 delta[0] = 1;
-                delta[1] = 0;
-                return delta;
-            default:
-                return delta;
+                break;
         }
+        return delta;
     }
 }
