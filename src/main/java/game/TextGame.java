@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 import main.java.agents.Agent;
+import main.java.agents.alphaBeta.AlphaBetaAgent;
 import main.java.agents.random.RandomAgent;
 import main.java.board.Board;
 
@@ -16,13 +17,12 @@ public class TextGame {
     public TextGame() {
         scan = new Scanner(System.in);
         board = new Board();
-        board.show();
-
         turn = 0;
         // setup players
         choosePlayer(0);
         choosePlayer(1);
         // we're skipping the setup phase of the game for now
+        // setup();
         skipSetup();
         gameLoop();
     }
@@ -33,11 +33,14 @@ public class TextGame {
      * @param turn Turn indicator
      */
     public void choosePlayer(int turn) {
-        System.out.print("Choose Player " + (turn + 1) + " (human|random): ");
+        System.out.print("Choose Player " + (turn + 1) + " (human|random|alpha): ");
         String player = scan.nextLine();
         switch (player.trim().toLowerCase()) {
             case "random":
                 setAgent(turn, new RandomAgent());
+                break;
+            case "alpha":
+                setAgent(turn, new AlphaBetaAgent());
                 break;
             case "human":
             default:
@@ -117,15 +120,14 @@ public class TextGame {
                 continue;
             startPos = move[i] / 100;
             endPos = move[i] % 100;
-            System.out.println("Move: " + move[i] + " decoded as (" + startPos / 10 + ", "
-                    + startPos % 10 + ") => (" + endPos / 10 + ", " + endPos % 10 + ")");
+            System.out.println("Player " + (turn + 1) + ": " + posToLabel(startPos) + " => "
+                    + posToLabel(endPos));
             board.slide(startPos / 10, startPos % 10, endPos / 10, endPos % 10);
         }
         // decode and perform push action
         startPos = move[2] / 10;
         char dir = GameUtils.dirIntToChar(move[2] % 10);
-        System.out.println("Push: " + move[2] + " decoded as (" + startPos / 10 + ", "
-                + startPos % 10 + ") going " + dir);
+        System.out.println("Player " + (turn + 1) + ": " + posToLabel(startPos) + " going " + dir);
         return board.push(startPos / 10, startPos % 10, dir);
     }
 
@@ -281,6 +283,16 @@ public class TextGame {
             }
         }
         return dir;
+    }
+
+    /**
+     * Return label representation of board position
+     * 
+     * @param pos Board position to label in form row * 10 + col
+     * @return The board label (e.g. a3) corresponding to the position
+     */
+    public String posToLabel(int pos) {
+        return (char) ('a' + (pos / 10)) + "" + (pos % 10);
     }
 
     /**

@@ -76,6 +76,8 @@ public class GameUtils {
                 slides.add(startPos * 100 + endPos);
             }
         }
+        // add in optional empty slide
+        slides.add(0);
         return slides;
     }
 
@@ -99,6 +101,52 @@ public class GameUtils {
             }
         }
         return pushes;
+    }
+
+    /**
+     * Generate all legal moves from current position for given player
+     * 
+     * @param board The board position to be examined
+     * @param turn  Turn indicator
+     * @return List<Long> of complete moves. Moves are encoded as 11112222333 where the 1's
+     *         correspond to the first sliding action, the 2's are the second sliding action, and
+     *         the 3's are the pushing action
+     */
+    public static List<Long> getMoves(Board board, int turn) {
+        List<Long> moves = new ArrayList<>();
+        int oldPos1 = 0, newPos1 = 0, oldPos2 = 0, newPos2 = 0;
+        // for all first slides
+        for (int slide1 : getSlideActions(board, turn)) {
+            if (slide1 != 0) {
+                oldPos1 = slide1 / 100;
+                newPos1 = slide1 % 100;
+                // perform slide
+                board.slide(oldPos1 / 10, oldPos1 % 10, newPos1 / 10, newPos1 % 10);
+            }
+            // for all second slides
+            for (int slide2 : getSlideActions(board, turn)) {
+                if (slide2 != 0) {
+                    oldPos2 = slide2 / 100;
+                    newPos2 = slide2 % 100;
+                    // perform slide
+                    board.slide(oldPos2 / 10, oldPos2 % 10, newPos2 / 10, newPos2 % 10);
+                }
+                // for all pushes
+                for (int push : getPushActions(board, turn)) {
+                    // record the move
+                    moves.add((long) slide1 * 10000000 + slide2 * 1000 + push);
+                }
+                // undo slide
+                if (slide2 != 0) {
+                    board.slide(newPos2 / 10, newPos2 % 10, oldPos2 / 10, oldPos2 % 10);
+                }
+            }
+            // undo slide
+            if (slide1 != 0) {
+                board.slide(newPos1 / 10, newPos1 % 10, oldPos1 / 10, oldPos1 % 10);
+            }
+        }
+        return moves;
     }
 
     public static char dirIntToChar(int dir) {

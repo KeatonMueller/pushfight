@@ -26,8 +26,7 @@ public class RandomAgent implements Agent {
             // randomly choose two slide actions
             for (i = 0; i < 2; i++) {
                 actions = GameUtils.getSlideActions(board, turn);
-                // add option for skipped action
-                actions.add(0);
+
                 // select random slide action
                 move[i] = actions.get(rand.nextInt(actions.size()));
                 slide = GameUtils.decodeSlideAction(move[i]);

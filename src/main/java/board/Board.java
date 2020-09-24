@@ -1,6 +1,8 @@
 package main.java.board;
 
 import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 
@@ -12,6 +14,7 @@ public class Board {
     private int[][] board;
     private int anchorRow, anchorCol;
     private List<HashSet<Integer>> locations;
+    private Deque<BoardState> savedStates;
 
     // Board values:
     // -1 : invalid
@@ -38,6 +41,9 @@ public class Board {
         locations = new ArrayList<>();
         locations.add(new HashSet<>());
         locations.add(new HashSet<>());
+
+        // initialize saved info
+        savedStates = new ArrayDeque<>();
     }
 
     /**
@@ -209,6 +215,46 @@ public class Board {
             }
         }
         return getOwner(prevPiece);
+    }
+
+    public int move(int slide1, int slide2, int push) {
+        saveBoard();
+        int oldPos, newPos;
+        if (slide1 != 0) {
+            oldPos = slide1 / 100;
+            newPos = slide1 % 100;
+            slide(oldPos / 10, oldPos % 10, newPos / 10, newPos % 10);
+        }
+        if (slide2 != 0) {
+            oldPos = slide2 / 100;
+            newPos = slide2 % 100;
+            slide(oldPos / 10, oldPos % 10, newPos / 10, newPos % 10);
+        }
+        oldPos = push / 10;
+        return push(oldPos / 10, oldPos % 10, GameUtils.dirIntToChar(push % 10));
+    }
+
+    public void saveBoard() {
+        savedStates.add(new BoardState(board, anchorRow, anchorCol));
+    }
+
+    public void restoreBoard() {
+        BoardState state = savedStates.pop();
+
+        locations.get(0).clear();
+        locations.get(1).clear();
+        // restore board state
+        for (int row = 0; row < HEIGHT; row++) {
+            for (int col = 0; col < LENGTH; col++) {
+                board[row][col] = state.getState()[row * LENGTH + col];
+                if (board[row][col] > 0) {
+                    locations.get(getOwner(board[row][col])).add(row * 10 + col);
+                }
+            }
+        }
+        // restore anchor position
+        anchorRow = state.getState()[LENGTH * HEIGHT];
+        anchorCol = state.getState()[LENGTH * HEIGHT + 1];
     }
 
     /**
