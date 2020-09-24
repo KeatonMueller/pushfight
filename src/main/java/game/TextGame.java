@@ -292,7 +292,7 @@ public class TextGame {
      * @return The board label (e.g. a3) corresponding to the position
      */
     public String posToLabel(int pos) {
-        return (char) ('a' + (pos / 10)) + "" + (pos % 10);
+        return (char) ('a' + (pos / 10)) + "" + (pos % 10 + 1);
     }
 
     /**
