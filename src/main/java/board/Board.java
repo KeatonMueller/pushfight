@@ -268,7 +268,6 @@ public class Board {
                 return;
             }
         }
-        return;
     }
 
     /**

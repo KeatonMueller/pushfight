@@ -29,8 +29,11 @@ public class RandomAgent implements Agent {
 
                 // select random slide action
                 move[i] = actions.get(rand.nextInt(actions.size()));
-                slide = GameUtils.decodeSlideAction(move[i]);
-                board.slide(slide[0], slide[1], slide[2], slide[3]);
+                // perform slide if it's not a skipped action
+                if (move[i] != 0) {
+                    slide = GameUtils.decodeSlideAction(move[i]);
+                    board.slide(slide[0], slide[1], slide[2], slide[3]);
+                }
             }
 
             // generate all possible push actions
@@ -38,8 +41,10 @@ public class RandomAgent implements Agent {
 
             // undo the slide actions
             for (i = 1; i >= 0; i--) {
-                slide = GameUtils.decodeSlideAction(move[i]);
-                board.slide(slide[2], slide[3], slide[0], slide[1]);
+                if (move[i] != 0) {
+                    slide = GameUtils.decodeSlideAction(move[i]);
+                    board.slide(slide[2], slide[3], slide[0], slide[1]);
+                }
             }
 
             // if there aren't any valid pushes, re-try

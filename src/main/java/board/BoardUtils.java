@@ -1,6 +1,6 @@
 package main.java.board;
 
-import static java.util.Map.entry;
+import java.util.HashMap;
 import java.util.Map;
 
 import main.java.game.GameUtils;
@@ -10,12 +10,36 @@ public class BoardUtils {
      * Hard-coded values of the strength of being in a certain position (very rough values at the
      * moment)
      */
-    private static Map<Integer, Integer> boardValues = Map.ofEntries(entry(2, -10), entry(3, 3),
-            entry(4, 5), entry(5, 3), entry(6, -10), entry(10, -10), entry(11, -10), entry(12, 1),
-            entry(13, 10), entry(14, 10), entry(15, 7), entry(16, 0), entry(17, -10),
-            entry(20, -10), entry(21, 0), entry(22, 7), entry(23, 10), entry(24, 10), entry(25, 1),
-            entry(26, -10), entry(27, -10), entry(31, -10), entry(32, 3), entry(33, 5),
-            entry(34, 3), entry(35, -10));
+    private static Map<Integer, Integer> boardValues;
+    static {
+        boardValues = new HashMap<>();
+        boardValues.put(2, -10); // a3
+        boardValues.put(3, 3); // a4
+        boardValues.put(4, 5); // a5
+        boardValues.put(5, 3); // a6
+        boardValues.put(6, -10); // a7
+        boardValues.put(10, -10); // b1
+        boardValues.put(11, -10); // b2
+        boardValues.put(12, 1); // b3
+        boardValues.put(13, 10); // b4
+        boardValues.put(14, 10); // b5
+        boardValues.put(15, 7); // b6
+        boardValues.put(16, 0); // b7
+        boardValues.put(17, -10); // b8
+        boardValues.put(20, -10); // c1
+        boardValues.put(21, 0); // c2
+        boardValues.put(22, 7); // c3
+        boardValues.put(23, 10); // c4
+        boardValues.put(24, 10); // c5
+        boardValues.put(25, 1); // c6
+        boardValues.put(26, -10); // c7
+        boardValues.put(27, -10); // c8
+        boardValues.put(31, -10); // d2
+        boardValues.put(32, 3); // d3
+        boardValues.put(33, 5); // d4
+        boardValues.put(34, 3); // d5
+        boardValues.put(35, -10); // d6
+    }
 
     private static double squareWeight = 1;
     private static double circleWeight = 2;
