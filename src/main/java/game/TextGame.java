@@ -18,6 +18,7 @@ public class TextGame {
         scan = new Scanner(System.in);
         board = new Board();
         turn = 0;
+
         // setup players
         choosePlayer(0);
         choosePlayer(1);
@@ -25,6 +26,35 @@ public class TextGame {
         // setup();
         skipSetup();
         gameLoop();
+
+        // This stuff below has been useful for debugging
+
+        // skipSetup();
+        // System.out.println("Valid moves: " + GameUtils.getMoves(board, 1).size());
+        // int slide1, slide2, push, aslide1, aslide2, apush, counter = 0, acounter = 0;
+        // int[] pushResult;
+        // int[] apushResult;
+        // for (long move : GameUtils.getMoves(board, 1)) {
+        // counter++;
+        // slide1 = (int) (move / 10000000);
+        // slide2 = (int) ((move % 10000000) / 1000);
+        // push = (int) (move % 1000);
+
+        // pushResult = board.move(slide1, slide2, push);
+        // System.out.println("next: " + GameUtils.getMoves(board, 0).size());
+        // for (long amove : GameUtils.getMoves(board, 0)) {
+        // acounter++;
+        // aslide1 = (int) (amove / 10000000);
+        // aslide2 = (int) ((amove % 10000000) / 1000);
+        // apush = (int) (amove % 1000);
+
+        // apushResult = board.move(aslide1, aslide2, apush);
+        // board.undoMove(aslide1, aslide2, apushResult, GameUtils.dirIntToChar(apush % 10));
+        // }
+        // board.undoMove(slide1, slide2, pushResult, GameUtils.dirIntToChar(push % 10));
+        // }
+        // board.show();
+        // System.out.println((double) acounter / counter);
     }
 
     /**
@@ -128,7 +158,7 @@ public class TextGame {
         startPos = move[2] / 10;
         char dir = GameUtils.dirIntToChar(move[2] % 10);
         System.out.println("Player " + (turn + 1) + ": " + posToLabel(startPos) + " going " + dir);
-        return board.push(startPos / 10, startPos % 10, dir);
+        return board.push(startPos / 10, startPos % 10, dir)[5];
     }
 
     /**
@@ -180,7 +210,6 @@ public class TextGame {
                 return;
             }
         }
-
         board.slide(startPos / 10, startPos % 10, endPos / 10, endPos % 10);
         board.show();
     }
@@ -214,7 +243,7 @@ public class TextGame {
             }
 
             // perform push
-            return board.push(row, col, dir);
+            return board.push(row, col, dir)[5];
         }
     }
 

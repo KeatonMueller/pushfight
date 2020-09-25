@@ -1,8 +1,6 @@
 package main.java.board;
 
 import java.util.ArrayList;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 
@@ -14,7 +12,6 @@ public class Board {
     private int[][] board;
     private int anchorRow, anchorCol;
     private List<HashSet<Integer>> locations;
-    private Deque<BoardState> savedStates;
 
     // Board values:
     // -1 : invalid
@@ -41,9 +38,6 @@ public class Board {
         locations = new ArrayList<>();
         locations.add(new HashSet<>());
         locations.add(new HashSet<>());
-
-        // initialize saved info
-        savedStates = new ArrayDeque<>();
     }
 
     /**
@@ -167,7 +161,8 @@ public class Board {
         // update sets of piece locations
         int owner = getOwner(board[newRow][newCol]);
         if (owner == -1) {
-            System.out.println("ERROR! No one ones row " + newRow + " col " + newCol);
+            System.out.println(
+                    "ERROR! Asked to move empty/invalid position " + oldRow + ", " + oldCol);
             return;
         }
         locations.get(owner).remove(oldRow * 10 + oldCol);
@@ -180,9 +175,14 @@ public class Board {
      * @param row Row of piece to push from
      * @param col Column of piece to push from
      * @param dir Direction to push (r|l|u|d)
-     * @return owner of piece that was pushed off, or -1 if none
+     * @return A push result of form [oldAnchorRow, oldAnchorCol, finalRow, finalCol, lastPiece,
+     *         lastPieceOwner]
      */
-    public int push(int row, int col, char dir) {
+    public int[] push(int row, int col, char dir) {
+        int[] pushResult = new int[6];
+        // save anchor position
+        pushResult[0] = anchorRow;
+        pushResult[1] = anchorCol;
         // get deltas based on pushing direction
         int[] delta = GameUtils.getDeltas(dir);
         // update anchor position
@@ -211,14 +211,77 @@ public class Board {
             row += delta[0];
             col += delta[1];
             if (prevPiece == 0) {
-                return -1;
+                break;
             }
         }
-        return getOwner(prevPiece);
+        // store location of the end of the push and last piece
+        pushResult[2] = row - delta[0];
+        pushResult[3] = col - delta[1];
+        pushResult[4] = prevPiece;
+        pushResult[5] = getOwner(prevPiece);
+        return pushResult;
     }
 
-    public int move(int slide1, int slide2, int push) {
-        saveBoard();
+    /**
+     * Undo the given push action
+     * 
+     * @param pushResult A push result of form [oldAnchorRow, oldAnchorCol, finalRow, finalCol,
+     *                   lastPiece, lastPieceOwner]
+     * @param dir        The direction the original push was made in
+     */
+    public void undoPush(int[] pushResult, char dir) {
+        // get deltas based on pushing direction
+        int[] delta = GameUtils.getDeltas(dir);
+        // reverse deltas
+        delta[0] *= -1;
+        delta[1] *= -1;
+
+        // restore anchor position
+        anchorRow = pushResult[0];
+        anchorCol = pushResult[1];
+
+        // push the pieces
+        int temp, prevPiece = pushResult[4];
+        int oldOwner, newOwner;
+        int row = pushResult[2];
+        int col = pushResult[3];
+        while (isValid(row, col)) {
+            // swap pieces
+            temp = board[row][col];
+            board[row][col] = prevPiece;
+            prevPiece = temp;
+
+            // update ownership lists
+            oldOwner = getOwner(prevPiece);
+            newOwner = getOwner(board[row][col]);
+            if (oldOwner != -1) {
+                locations.get(oldOwner).remove(row * 10 + col);
+            }
+            if (newOwner != -1) {
+                locations.get(newOwner).add(row * 10 + col);
+            }
+
+            // update row and col
+            row += delta[0];
+            col += delta[1];
+            if (prevPiece == 0) {
+                return;
+            }
+        }
+        return;
+    }
+
+    /**
+     * Perform a full, 3-action move sequence
+     * 
+     * @param slide1 The first slide action, encoded as oldPos * 100 + newPos
+     * @param slide2 The second slide action, encoded as oldPos * 100 + newPos
+     * @param push   The push action, encoded as pos * 10 + dir
+     * @return The push result of form [oldAnchorRow, oldAnchorCol, finalRow, finalCol, lastPiece,
+     *         lastPieceOwner]
+     */
+    public int[] move(int slide1, int slide2, int push) {
+        // saveBoard();
         int oldPos, newPos;
         if (slide1 != 0) {
             oldPos = slide1 / 100;
@@ -234,27 +297,37 @@ public class Board {
         return push(oldPos / 10, oldPos % 10, GameUtils.dirIntToChar(push % 10));
     }
 
-    public void saveBoard() {
-        savedStates.add(new BoardState(board, anchorRow, anchorCol));
+    /**
+     * Undo a full, 3-action move sequence
+     * 
+     * @param slide1     The first slide action, encoded as oldPos * 100 + newPos
+     * @param slide2     The second slide action, encoded as oldPos * 100 + newPos
+     * @param pushResult The push result of form [oldAnchorRow, oldAnchorCol, finalRow, finalCol,
+     *                   lastPiece, lastPieceOwner]
+     * @param dir        The direction of the original push
+     */
+    public void undoMove(int slide1, int slide2, int[] pushResult, char dir) {
+        int oldPos, newPos;
+        undoPush(pushResult, dir);
+        if (slide2 != 0) {
+            oldPos = slide2 / 100;
+            newPos = slide2 % 100;
+            slide(newPos / 10, newPos % 10, oldPos / 10, oldPos % 10);
+        }
+        if (slide1 != 0) {
+            oldPos = slide1 / 100;
+            newPos = slide1 % 100;
+            slide(newPos / 10, newPos % 10, oldPos / 10, oldPos % 10);
+        }
     }
 
-    public void restoreBoard() {
-        BoardState state = savedStates.pop();
-
-        locations.get(0).clear();
-        locations.get(1).clear();
-        // restore board state
-        for (int row = 0; row < HEIGHT; row++) {
-            for (int col = 0; col < LENGTH; col++) {
-                board[row][col] = state.getState()[row * LENGTH + col];
-                if (board[row][col] > 0) {
-                    locations.get(getOwner(board[row][col])).add(row * 10 + col);
-                }
-            }
-        }
-        // restore anchor position
-        anchorRow = state.getState()[LENGTH * HEIGHT];
-        anchorCol = state.getState()[LENGTH * HEIGHT + 1];
+    /**
+     * Generate a BoardState object given current board position
+     * 
+     * @return The BoardState corresponding to current state
+     */
+    public BoardState generateState() {
+        return new BoardState(board, anchorRow, anchorCol);
     }
 
     /**
@@ -316,6 +389,5 @@ public class Board {
         }
         System.out.println("    ---------");
         printColumnLabels();
-
     }
 }

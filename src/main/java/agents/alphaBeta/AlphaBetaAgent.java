@@ -6,11 +6,19 @@ import main.java.board.BoardUtils;
 import main.java.game.GameUtils;
 
 public class AlphaBetaAgent implements Agent {
-    private int[] bestMove = new int[] {0, 0, 0};
+    private int DEPTH = 2;
+    private int explored;
 
     public int[] getMove(Board board, int turn) {
-        alphaBeta(board, 1, Double.MIN_VALUE, Double.MAX_VALUE, turn);
-        return bestMove;
+        System.out.print("Alpha Beta searching for a move for player " + (turn + 1) + "... ");
+        explored = 0;
+        double result = alphaBeta(board, DEPTH, -Double.MAX_VALUE, Double.MAX_VALUE, turn)[1];
+        System.out.println(explored + " nodes explored");
+        int[] move = new int[3];
+        move[0] = (int) (result / 10000000);
+        move[1] = (int) ((result % 10000000) / 1000);
+        move[2] = (int) (result % 1000);
+        return move;
     }
 
     /**
@@ -23,62 +31,57 @@ public class AlphaBetaAgent implements Agent {
      * @param turn  Turn indicator
      * @return The value of the board
      */
-    private double alphaBeta(Board board, int depth, double alpha, double beta, int turn) {
+    private double[] alphaBeta(Board board, int depth, double alpha, double beta, int turn) {
+        explored++;
         if (depth == 0) {
-            return BoardUtils.heuristic(board);
+            return new double[] {BoardUtils.heuristic(board), 0.0};
         }
-        double value, bestValue;
+        double[] bestValue = new double[2];
+        double[] localBest;
         int slide1, slide2, push;
+        int[] result;
         if (turn == 0) {
-            value = Double.MIN_VALUE;
-            bestValue = Double.MIN_VALUE;
+            bestValue[0] = -Double.MAX_VALUE;
             for (long move : GameUtils.getMoves(board, turn)) {
                 slide1 = (int) (move / 10000000);
                 slide2 = (int) ((move % 10000000) / 1000);
                 push = (int) (move % 1000);
 
-                // System.out.println("calling move " + slide1 + ", " + slide2 + ", " + push
-                // + " decoded from " + move);
-                board.move(slide1, slide2, push);
-                value = Math.max(value, alphaBeta(board, depth - 1, alpha, beta, 1 - turn));
-                board.restoreBoard();
+                result = board.move(slide1, slide2, push);
+                localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn);
+                board.undoMove(slide1, slide2, result, GameUtils.dirIntToChar(push % 10));
 
-                if (value > bestValue) {
-                    bestValue = value;
-                    bestMove[0] = slide1;
-                    bestMove[1] = slide2;
-                    bestMove[2] = push;
+                if (localBest[0] > bestValue[0]) {
+                    bestValue[0] = localBest[0];
+                    bestValue[1] = move;
                 }
 
-                alpha = Math.max(alpha, value);
+                alpha = Math.max(alpha, bestValue[0]);
                 if (alpha >= beta)
                     break;
             }
-            return value;
+            return bestValue;
         } else {
-            value = Double.MAX_VALUE;
-            bestValue = Double.MAX_VALUE;
+            bestValue[0] = Double.MAX_VALUE;
             for (long move : GameUtils.getMoves(board, turn)) {
                 slide1 = (int) (move / 10000000);
                 slide2 = (int) ((move % 10000000) / 1000);
                 push = (int) (move % 1000);
 
-                board.move(slide1, slide2, push);
-                value = Math.min(value, alphaBeta(board, depth - 1, alpha, beta, 1 - turn));
-                board.restoreBoard();
+                result = board.move(slide1, slide2, push);
+                localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn);
+                board.undoMove(slide1, slide2, result, GameUtils.dirIntToChar(push % 10));
 
-                if (value < bestValue) {
-                    bestValue = value;
-                    bestMove[0] = slide1;
-                    bestMove[1] = slide2;
-                    bestMove[2] = push;
+                if (localBest[0] < bestValue[0]) {
+                    bestValue[0] = localBest[0];
+                    bestValue[1] = move;
                 }
 
-                beta = Math.min(beta, value);
+                beta = Math.min(beta, bestValue[0]);
                 if (beta <= alpha)
                     break;
             }
-            return value;
+            return bestValue;
         }
     }
 }

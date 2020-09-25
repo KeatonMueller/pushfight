@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Queue;
 
 import main.java.board.Board;
+import main.java.board.BoardState;
 
 public class GameUtils {
     public static final int LENGTH = 8;
@@ -115,6 +116,9 @@ public class GameUtils {
     public static List<Long> getMoves(Board board, int turn) {
         List<Long> moves = new ArrayList<>();
         int oldPos1 = 0, newPos1 = 0, oldPos2 = 0, newPos2 = 0;
+        int[] result;
+        BoardState state;
+        HashSet<BoardState> seenStates = new HashSet<>();
         // for all first slides
         for (int slide1 : getSlideActions(board, turn)) {
             if (slide1 != 0) {
@@ -133,8 +137,19 @@ public class GameUtils {
                 }
                 // for all pushes
                 for (int push : getPushActions(board, turn)) {
-                    // record the move
-                    moves.add((long) slide1 * 10000000 + slide2 * 1000 + push);
+                    int pushPos = push / 10;
+                    // perform push
+                    result = board.push(pushPos / 10, pushPos % 10,
+                            GameUtils.dirIntToChar(push % 10));
+                    state = board.generateState();
+                    // if you end up in a new board state
+                    if (!seenStates.contains(state)) {
+                        seenStates.add(state);
+                        // record the move
+                        moves.add((long) slide1 * 10000000 + slide2 * 1000 + push);
+                    }
+                    // undo push
+                    board.undoPush(result, GameUtils.dirIntToChar(push % 10));
                 }
                 // undo slide
                 if (slide2 != 0) {
