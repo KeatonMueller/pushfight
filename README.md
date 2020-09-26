@@ -11,6 +11,5 @@ It is coded using Java version 11.
 
 This project requires you have the Java SDK installed. It was coded using Java 11, but other versions may work as well.
 
-To run the program, navigate to the `src` directory and run:
-
-`make`
+To run the program, navigate to the `src` directory and run `make gui` if you want to run the program with graphics.
+Otherwise, run `make text`.

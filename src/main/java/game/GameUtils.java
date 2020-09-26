@@ -63,6 +63,30 @@ public class GameUtils {
     }
 
     /**
+     * Find all the pieces that the given position can push
+     * 
+     * @param board The board to examine
+     * @param row   The row position of the piece
+     * @param col   The column position of the piece
+     * @return A HashSet of integer positions of pieces that can be pushed by the given piece
+     */
+    public static HashSet<Integer> findPushablePieces(Board board, int row, int col) {
+        HashSet<Integer> pushable = new HashSet<>();
+        if (!board.isSquare(row, col))
+            return pushable;
+
+        int pushRow, pushCol;
+        for (int dir = 0; dir < 4; dir++) {
+            if (isValidPush(board, row, col, dirIntToChar(dir))) {
+                pushRow = row + GameUtils.getDeltas(dirIntToChar(dir))[0];
+                pushCol = col + GameUtils.getDeltas(dirIntToChar(dir))[1];
+                pushable.add(pushRow * 10 + pushCol);
+            }
+        }
+        return pushable;
+    }
+
+    /**
      * Generate all legal sliding actions from current position for given player
      * 
      * @param board The board position to be examined

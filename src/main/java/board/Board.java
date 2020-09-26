@@ -148,6 +148,18 @@ public class Board {
     }
 
     /**
+     * Return the position of the anchor encoded as anchorRow * 10 + anchorCol. If the anchor is not
+     * currently set, return 0
+     * 
+     * @return The anchor position, or 0 if not in place
+     */
+    public int getAnchorPos() {
+        if (anchorRow == -1 || anchorCol == -1)
+            return 0;
+        return anchorRow * 10 + anchorCol;
+    }
+
+    /**
      * Perform a sliding move from old position to new position. Slide must be validated by caller
      * 
      * @param oldRow Old row of piece
