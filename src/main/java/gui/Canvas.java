@@ -13,7 +13,6 @@ import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-
 import main.java.agents.Agent;
 import main.java.agents.AgentUtils;
 import main.java.board.Board;
@@ -82,17 +81,9 @@ class Canvas extends JPanel {
                 }
 
                 if (pushable.contains(row * 10 + col)) {
-                    char dir = ' ';
                     int initRow = selected / 10;
                     int initCol = selected % 10;
-                    if (initRow - row == 1)
-                        dir = 'u';
-                    else if (initRow - row == -1)
-                        dir = 'd';
-                    else if (initCol - col == 1)
-                        dir = 'l';
-                    else if (initCol - col == -1)
-                        dir = 'r';
+                    char dir = GameUtils.posChangeToDir(initRow, initCol, row, col);
                     int[] pushResult = board.push(selected / 10, selected % 10, dir);
                     slidesRemaining = 2;
                     quitClick();
@@ -117,7 +108,6 @@ class Canvas extends JPanel {
                     quitClick();
                     return;
                 }
-
                 repaint();
             }
         });

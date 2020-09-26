@@ -48,10 +48,18 @@ public class AlphaBetaAgent implements Agent {
                 push = (int) (move % 1000);
 
                 result = board.move(slide1, slide2, push);
-                localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn);
+
+                // check for terminal state
+                if (result[5] != -1)
+                    localBest = new double[] {BoardUtils.heuristic(board), move};
+                else
+                    localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn);
+
                 board.undoMove(slide1, slide2, result, GameUtils.dirIntToChar(push % 10));
 
                 if (localBest[0] > bestValue[0]) {
+                    System.out.println(
+                            localBest[0] + " beat out " + bestValue[0] + " with move " + move);
                     bestValue[0] = localBest[0];
                     bestValue[1] = move;
                 }
@@ -69,7 +77,13 @@ public class AlphaBetaAgent implements Agent {
                 push = (int) (move % 1000);
 
                 result = board.move(slide1, slide2, push);
-                localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn);
+
+                // check for terminal state
+                if (result[5] != -1)
+                    localBest = new double[] {BoardUtils.heuristic(board), move};
+                else
+                    localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn);
+
                 board.undoMove(slide1, slide2, result, GameUtils.dirIntToChar(push % 10));
 
                 if (localBest[0] < bestValue[0]) {

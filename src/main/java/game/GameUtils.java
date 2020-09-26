@@ -271,6 +271,28 @@ public class GameUtils {
     }
 
     /**
+     * Converts a change in position into a direction of that change. The two given positions must
+     * be orthogonally connected
+     * 
+     * @param oldRow Initial row
+     * @param oldCol Initial column
+     * @param newRow Final row
+     * @param newCol Final column
+     * @return A char (r|l|u|d) corresponding to the change in direction
+     */
+    public static char posChangeToDir(int oldRow, int oldCol, int newRow, int newCol) {
+        if (oldRow - newRow == 1)
+            return 'u';
+        else if (oldRow - newRow == -1)
+            return 'd';
+        else if (oldCol - newCol == 1)
+            return 'l';
+        else if (oldCol - newCol == -1)
+            return 'r';
+        return ' ';
+    }
+
+    /**
      * Calculate the change in row and column index based on a pushing direction
      * 
      * @param dir The direction (r|l|u|d)
