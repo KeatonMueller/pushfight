@@ -138,14 +138,19 @@ class Canvas extends JPanel {
      */
     private void winner() {
         if (winner != -1) {
-            JOptionPane.showMessageDialog(null, "Player " + (winner + 1) + " won!", null,
-                    JOptionPane.PLAIN_MESSAGE);
-            // int again = JOptionPane.showConfirmDialog(null, "Play Again?");
-            // if (again == JOptionPane.YES_OPTION) {
-            // winner = -1;
-            // repaint();
-            // }
-            return;
+
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    JOptionPane.showMessageDialog(null, "Player " + (winner + 1) + " won!", null,
+                            JOptionPane.PLAIN_MESSAGE);
+                    // int again = JOptionPane.showConfirmDialog(null, "Play Again?");
+                    // if (again == JOptionPane.YES_OPTION) {
+                    // winner = -1;
+                    // repaint();
+                    // }
+                }
+            });
         }
     }
 
@@ -165,17 +170,24 @@ class Canvas extends JPanel {
      * Get next move from agent, or do nothing if human to move
      */
     private void nextMove() {
+        if (winner != -1)
+            return;
         // if next player is a human, do nothing
         if ((turn == 0 && p1 == null) || (turn == 1 && p2 == null))
             return;
         // otherwise get the move from the appropriate agent
+        int loser;
         if (turn == 0) {
-            AgentUtils.agentMove(p1, board, turn);
+            loser = AgentUtils.agentMove(p1, board, turn);
         } else {
-            AgentUtils.agentMove(p2, board, turn);
+            loser = AgentUtils.agentMove(p2, board, turn);
         }
         // change turn, repaint, and get next turn
         turn = 1 - turn;
+        if (loser != -1) {
+            winner = 1 - loser;
+            winner();
+        }
         repaint();
         awaitNextMove();
     }
