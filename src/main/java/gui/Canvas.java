@@ -30,6 +30,7 @@ class Canvas extends JPanel {
     private Set<Integer> slideDests;
     private Set<Integer> pushable;
     private Path2D.Float topLeft, topRight, botRight, botLeft;
+    private Path2D.Float arrowRight, arrowLeft, arrowUp, arrowDown;
     private int sideLength, dividerLength, drawLength, wallLength, pieceSize;
     private int topXPadding, topYPadding, botXPadding, botYPadding;
     private int midXPadding, secondYPadding, thirdYPadding;
@@ -225,6 +226,11 @@ class Canvas extends JPanel {
 
         pieceSize = sideLength - 2 * dividerLength;
 
+        arrowRight = Arrow.getArrow(pieceSize * 0.5f, dividerLength, 'r');
+        arrowLeft = Arrow.getArrow(pieceSize * 0.5f, dividerLength, 'l');
+        arrowUp = Arrow.getArrow(pieceSize * 0.5f, dividerLength, 'u');
+        arrowDown = Arrow.getArrow(pieceSize * 0.5f, dividerLength, 'd');
+
         repaint();
     }
 
@@ -327,15 +333,15 @@ class Canvas extends JPanel {
         }
 
         // highlight movable squares
-        g2d.setColor(new Color(0, 0, 0, 150));
+        g2d.setColor(new Color(0, 0, 0, 75));
         for (int pos : slideDests) {
             drawExtra(g2d, pos);
         }
 
         // highlight pushable squares
-        g2d.setColor(new Color(255, 0, 0, 150));
+        g2d.setColor(new Color(255, 0, 0, 125));
         for (int pos : pushable) {
-            drawExtra(g2d, pos);
+            drawArrow(g2d, pos);
         }
     }
 
@@ -377,6 +383,39 @@ class Canvas extends JPanel {
         int y = (int) (topYPadding + drawLength * row + dividerLength + (pieceSize * .25));
         int extraSize = (int) (pieceSize * 0.5);
         g2d.fillOval(x, y, extraSize, extraSize);
+    }
+
+    /**
+     * Draw an arrow indicating a potential push action. Assume the proper color has already been
+     * set
+     * 
+     * @param g2d Graphics2D object
+     * @param pos Position at which to draw
+     */
+    private void drawArrow(Graphics2D g2d, int pos) {
+        int row = pos / 10;
+        int col = pos % 10;
+        int x = (int) (midXPadding + drawLength * col + dividerLength + (pieceSize * .25));
+        int y = (int) (topYPadding + drawLength * row + dividerLength + (pieceSize * .25));
+
+        AffineTransform origin = g2d.getTransform();
+        g2d.translate(x, y);
+        char dir = GameUtils.posChangeToDir(selected / 10, selected % 10, pos / 10, pos % 10);
+        switch (dir) {
+            case 'r':
+                g2d.fill(arrowRight);
+                break;
+            case 'l':
+                g2d.fill(arrowLeft);
+                break;
+            case 'u':
+                g2d.fill(arrowUp);
+                break;
+            case 'd':
+                g2d.fill(arrowDown);
+                break;
+        }
+        g2d.setTransform(origin);
     }
 
     @Override
