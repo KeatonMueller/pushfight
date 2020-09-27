@@ -58,8 +58,6 @@ public class AlphaBetaAgent implements Agent {
                 board.undoMove(slide1, slide2, result, GameUtils.dirIntToChar(push % 10));
 
                 if (localBest[0] > bestValue[0]) {
-                    System.out.println(
-                            localBest[0] + " beat out " + bestValue[0] + " with move " + move);
                     bestValue[0] = localBest[0];
                     bestValue[1] = move;
                 }
