@@ -12,12 +12,12 @@ public class AlphaBetaAgent implements Agent {
     public int[] getMove(Board board, int turn) {
         System.out.print("Alpha Beta searching for a move for player " + (turn + 1) + "... ");
         explored = 0;
-        double result = alphaBeta(board, DEPTH, -Double.MAX_VALUE, Double.MAX_VALUE, turn)[1];
+        double bestMove = alphaBeta(board, DEPTH, -Double.MAX_VALUE, Double.MAX_VALUE, turn, -1)[1];
         System.out.println(explored + " nodes explored");
         int[] move = new int[3];
-        move[0] = (int) (result / 10000000);
-        move[1] = (int) ((result % 10000000) / 1000);
-        move[2] = (int) (result % 1000);
+        move[0] = (int) (bestMove / 10000000);
+        move[1] = (int) ((bestMove % 10000000) / 1000);
+        move[2] = (int) (bestMove % 1000);
         return move;
     }
 
@@ -29,11 +29,13 @@ public class AlphaBetaAgent implements Agent {
      * @param alpha The alpha value
      * @param beta  The beta value
      * @param turn  Turn indicator
-     * @return The value of the board
+     * @param loser The losing player given the board state (0|1) or -1 if no loser
+     * @return Length 2 array of doubles of the form [board value, best move]
      */
-    private double[] alphaBeta(Board board, int depth, double alpha, double beta, int turn) {
+    private double[] alphaBeta(Board board, int depth, double alpha, double beta, int turn,
+            int loser) {
         explored++;
-        if (depth == 0) {
+        if (depth == 0 || loser != -1) {
             return new double[] {BoardUtils.heuristic(board), 0.0};
         }
         double[] bestValue = new double[2];
@@ -49,11 +51,7 @@ public class AlphaBetaAgent implements Agent {
 
                 result = board.move(slide1, slide2, push);
 
-                // check for terminal state
-                if (result[5] != -1)
-                    localBest = new double[] {BoardUtils.heuristic(board), move};
-                else
-                    localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn);
+                localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn, result[5]);
 
                 board.undoMove(slide1, slide2, result, GameUtils.dirIntToChar(push % 10));
 
@@ -76,11 +74,7 @@ public class AlphaBetaAgent implements Agent {
 
                 result = board.move(slide1, slide2, push);
 
-                // check for terminal state
-                if (result[5] != -1)
-                    localBest = new double[] {BoardUtils.heuristic(board), move};
-                else
-                    localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn);
+                localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn, result[5]);
 
                 board.undoMove(slide1, slide2, result, GameUtils.dirIntToChar(push % 10));
 

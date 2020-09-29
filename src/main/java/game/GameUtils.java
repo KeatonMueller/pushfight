@@ -165,13 +165,18 @@ public class GameUtils {
                     // perform push
                     result = board.push(pushPos / 10, pushPos % 10,
                             GameUtils.dirIntToChar(push % 10));
-                    state = board.generateState();
-                    // if you end up in a new board state
-                    if (!seenStates.contains(state)) {
-                        seenStates.add(state);
-                        // record the move
-                        moves.add((long) slide1 * 10000000 + slide2 * 1000 + push);
+
+                    // only consider this move if it's not suicidal
+                    if (result[5] != turn) {
+                        state = board.generateState();
+                        // if you end up in a new board state
+                        if (!seenStates.contains(state)) {
+                            seenStates.add(state);
+                            // record the move
+                            moves.add((long) slide1 * 10000000 + slide2 * 1000 + push);
+                        }
                     }
+
                     // undo push
                     board.undoPush(result, GameUtils.dirIntToChar(push % 10));
                 }
