@@ -8,6 +8,7 @@ import main.java.agents.AgentUtils;
 import main.java.agents.alphaBeta.AlphaBetaAgent;
 import main.java.agents.random.RandomAgent;
 import main.java.board.Board;
+import main.java.board.BoardUtils;
 
 public class TextGame {
     private Scanner scan;
@@ -25,7 +26,7 @@ public class TextGame {
         choosePlayer(1);
         // we're skipping the setup phase of the game for now
         // setup();
-        skipSetup();
+        BoardUtils.skipSetup(board);
         gameLoop();
 
         // This stuff below has been useful for debugging
@@ -286,39 +287,9 @@ public class TextGame {
     }
 
     /**
-     * For convenience, skip setup step and use a default setup
-     * 
-     * @return true if setup was skipped, else false
-     */
-    public boolean skipSetup() {
-        // System.out.println("Use default setup? (y|n)");
-        // String line = scan.nextLine();
-        // if (line.equalsIgnoreCase("y")) {
-
-        // set player 1's pieces
-        board.setPiece(0, 3, 2);
-        board.setPiece(1, 3, 1);
-        board.setPiece(2, 3, 1);
-        board.setPiece(3, 3, 2);
-        board.setPiece(2, 2, 2);
-        // set player 2's pieces
-        board.setPiece(0, 4, 4);
-        board.setPiece(1, 4, 3);
-        board.setPiece(2, 4, 3);
-        board.setPiece(3, 4, 4);
-        board.setPiece(1, 5, 4);
-        return true;
-
-        // }
-        // return false;
-    }
-
-    /**
      * Prompt user to layout their pieces
      */
     public void setup() {
-        if (skipSetup())
-            return;
         String piece;
         int i, idx, num;
         int pos = -1;

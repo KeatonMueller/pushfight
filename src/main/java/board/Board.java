@@ -40,6 +40,28 @@ public class Board {
         locations.add(new HashSet<>());
     }
 
+    public void reset() {
+        // clear board values
+        for (int row = 0; row < HEIGHT; row++) {
+            for (int col = 0; col < LENGTH; col++) {
+                board[row][col] = 0;
+            }
+        }
+        // configure irregular board shape by setting invalid spots
+        board[0][0] = -1;
+        board[0][1] = -1;
+        board[0][LENGTH - 1] = -1;
+        board[HEIGHT - 1][0] = -1;
+        board[HEIGHT - 1][LENGTH - 1] = -1;
+        board[HEIGHT - 1][LENGTH - 2] = -1;
+        // anchor is initially not present
+        anchorRow = -1;
+        anchorCol = -1;
+        // empty board positions
+        locations.get(0).clear();
+        locations.get(1).clear();
+    }
+
     /**
      * Sets the board at the given position with the given value
      * 

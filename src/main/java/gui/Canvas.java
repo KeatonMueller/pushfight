@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import main.java.agents.Agent;
 import main.java.agents.AgentUtils;
 import main.java.board.Board;
+import main.java.board.BoardUtils;
 import main.java.game.GameUtils;
 
 class Canvas extends JPanel {
@@ -135,11 +136,15 @@ class Canvas extends JPanel {
                 public void run() {
                     JOptionPane.showMessageDialog(null, "Player " + (winner + 1) + " won!", null,
                             JOptionPane.PLAIN_MESSAGE);
-                    // int again = JOptionPane.showConfirmDialog(null, "Play Again?");
-                    // if (again == JOptionPane.YES_OPTION) {
-                    // winner = -1;
-                    // repaint();
-                    // }
+                    int again = JOptionPane.showConfirmDialog(null, "Play Again?");
+                    if (again == JOptionPane.YES_OPTION) {
+                        winner = -1;
+                        board.reset();
+                        BoardUtils.skipSetup(board);
+                        turn = 0;
+                        repaint();
+                        awaitNextMove();
+                    }
                 }
             });
         }
