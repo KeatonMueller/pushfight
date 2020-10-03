@@ -10,8 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import main.java.agents.Agent;
-import main.java.agents.random.RandomAgent;
-import main.java.agents.alphaBeta.AlphaBetaAgent;
+import main.java.agents.RandomAgent;
+import main.java.agents.AlphaBetaAgent;
 
 public class PlayerSelect extends JPanel {
     private static final long serialVersionUID = 1L;

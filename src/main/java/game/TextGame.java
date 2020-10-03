@@ -1,24 +1,22 @@
 package main.java.game;
 
-import java.util.HashSet;
 import java.util.Scanner;
 
 import main.java.agents.Agent;
-import main.java.agents.AgentUtils;
-import main.java.agents.alphaBeta.AlphaBetaAgent;
-import main.java.agents.random.RandomAgent;
-import main.java.board.Board;
-import main.java.board.BoardUtils;
+import main.java.agents.AlphaBetaAgent;
+import main.java.agents.RandomAgent;
+import main.java.board.Bitboard;
+import main.java.board.BitboardUtils;
 
 public class TextGame {
     private Scanner scan;
-    private Board board;
+    private Bitboard board;
     private int turn;
     private Agent p1, p2;
 
     public TextGame() {
         scan = new Scanner(System.in);
-        board = new Board();
+        board = new Bitboard();
         turn = 0;
 
         // setup players
@@ -26,37 +24,8 @@ public class TextGame {
         choosePlayer(1);
         // we're skipping the setup phase of the game for now
         // setup();
-        BoardUtils.skipSetup(board);
+        BitboardUtils.skipSetup(board);
         gameLoop();
-
-        // This stuff below has been useful for debugging
-
-        // skipSetup();
-        // System.out.println("Valid moves: " + GameUtils.getMoves(board, 1).size());
-        // int slide1, slide2, push, aslide1, aslide2, apush, counter = 0, acounter = 0;
-        // int[] pushResult;
-        // int[] apushResult;
-        // for (long move : GameUtils.getMoves(board, 1)) {
-        // counter++;
-        // slide1 = (int) (move / 10000000);
-        // slide2 = (int) ((move % 10000000) / 1000);
-        // push = (int) (move % 1000);
-
-        // pushResult = board.move(slide1, slide2, push);
-        // System.out.println("next: " + GameUtils.getMoves(board, 0).size());
-        // for (long amove : GameUtils.getMoves(board, 0)) {
-        // acounter++;
-        // aslide1 = (int) (amove / 10000000);
-        // aslide2 = (int) ((amove % 10000000) / 1000);
-        // apush = (int) (amove % 1000);
-
-        // apushResult = board.move(aslide1, aslide2, apush);
-        // board.undoMove(aslide1, aslide2, apushResult, GameUtils.dirIntToChar(apush % 10));
-        // }
-        // board.undoMove(slide1, slide2, pushResult, GameUtils.dirIntToChar(push % 10));
-        // }
-        // board.show();
-        // System.out.println((double) acounter / counter);
     }
 
     /**
@@ -98,14 +67,15 @@ public class TextGame {
      * Run the game loop, prompting for input and performing updates
      */
     public void gameLoop() {
-        int loser;
+        int winner;
         while (true) {
             board.show();
 
-            loser = makeMove(turn);
-            if (loser != -1) {
+            makeMove(turn);
+            winner = BitboardUtils.checkWinner(board);
+            if (winner != -1) {
                 board.show();
-                System.out.println("Player " + (1 - loser + 1) + " wins!");
+                System.out.println("Player " + (winner + 1) + " wins!");
                 scan.close();
                 return;
             }
@@ -119,17 +89,18 @@ public class TextGame {
      * Have the player whose turn it is make their move
      * 
      * @param turn Turn indicator
-     * @return The player who just lost (0|1) or -1 if no loser
      */
-    public int makeMove(int turn) {
+    public void makeMove(int turn) {
         if (turn == 0) {
             if (p1 == null)
-                return userMove(turn);
-            return AgentUtils.agentMove(p1, board, turn);
+                userMove(turn);
+            else
+                p1.agentMove(board, turn);
         } else {
             if (p2 == null)
-                return userMove(turn);
-            return AgentUtils.agentMove(p2, board, turn);
+                userMove(turn);
+            else
+                p2.agentMove(board, turn);
         }
     }
 
@@ -137,16 +108,15 @@ public class TextGame {
      * Prompt user for input to make their turn
      * 
      * @param turn Turn indicator
-     * @return The player who just lost (0|1) or -1 if no loser
      */
-    public int userMove(int turn) {
+    public void userMove(int turn) {
         int i;
         // perform two sliding actions
         for (i = 0; i < 2; i++) {
             slideAction(turn, i + 1);
         }
         // perform one pushing action
-        return pushAction(turn);
+        pushAction(turn);
     }
 
     /**
@@ -168,12 +138,11 @@ public class TextGame {
         }
 
         // compute valid destinations given this starting position
-        HashSet<Integer> dests = GameUtils.findSlideDests(board, startPos / 10, startPos % 10);
-
+        int dests = BitboardUtils.findSlideDests(board, startPos);
         // get sliding action destination
         int endPos = -1;
         System.out.println("Player " + (turn + 1) + ", choose destination");
-        while (endPos == -1 || !dests.contains(endPos)) {
+        while (endPos == -1 || (dests & endPos) == 0) {
             endPos = getInput();
 
             // allow for an empty action
@@ -182,7 +151,7 @@ public class TextGame {
                 return;
             }
         }
-        board.slide(startPos / 10, startPos % 10, endPos / 10, endPos % 10);
+        board.slide(startPos, endPos);
         board.show();
     }
 
@@ -190,44 +159,41 @@ public class TextGame {
      * Get input and validate a push action
      * 
      * @param turn Turn indicator
-     * @return owner of piece that was pushed off, or -1 if none
      */
-    public int pushAction(int turn) {
+    public void pushAction(int turn) {
         int pos = -1;
-        int row = -1, col = -1;
         char dir = ' ';
         while (true) {
             // prompt for piece to push
             System.out.println("Player " + (turn + 1) + ", choose a piece to push (required)");
             while (pos == -1)
                 pos = getInput(turn);
-            row = pos / 10;
-            col = pos % 10;
             // prompt for push direction
             System.out.println("Player " + (turn + 1) + ", choose pushing direction (r|l|u|d)");
             dir = getDir();
 
             // validate push, and loop if invalid
-            if (!GameUtils.isValidPush(board, row, col, dir)) {
+            if (!BitboardUtils.isValidPush(board, pos, dir)) {
                 board.show();
                 pos = -1;
                 continue;
             }
 
             // perform push
-            return board.push(row, col, dir)[5];
+            board.push(pos, dir);
+            return;
         }
     }
 
     /**
      * Prompt user for a location on the board
      * 
-     * @return Board position encoded as row * 10 + col
+     * @return Board position encoded as a bit mask
      */
     public int getInput() {
         String line;
-        int row = -1, col = -1;
-        while (!board.isValid(row, col)) {
+        int row = 0, col = 0;
+        while (!board.isValid((1 << (row * 8 + col)))) {
             line = scan.nextLine();
             if (line.equals("")) {
                 return -1;
@@ -236,11 +202,11 @@ public class TextGame {
                 row = line.charAt(0) - 'a';
                 col = Integer.parseInt(line.substring(1)) - 1;
             } catch (Exception e) {
-                row = -1;
-                col = -1;
+                row = 0;
+                col = 0;
             }
         }
-        return row * 10 + col;
+        return (1 << (row * 8 + col));
 
     }
 
@@ -248,12 +214,13 @@ public class TextGame {
      * Prompt user for a location that they own
      * 
      * @param turn Turn indicator
-     * @return Board position encoded as row * 10 + col
+     * @return Board position encoded as a bit mask
      */
     public int getInput(int turn) {
         String line;
         int row = -1, col = -1;
-        while (!board.isValid(row, col) || !board.owns(row, col, turn)) {
+        while (!board.isValid((1 << (row * 8 + col)))
+                || !board.owns((1 << (row * 8 + col)), turn)) {
             line = scan.nextLine();
             if (line.equals("")) {
                 return -1;
@@ -266,7 +233,7 @@ public class TextGame {
                 col = -1;
             }
         }
-        return row * 10 + col;
+        return (1 << (row * 8 + col));
     }
 
     /**
@@ -302,7 +269,7 @@ public class TextGame {
                         + "/" + num + " placed)");
                 while (pos == -1)
                     pos = getInput();
-                board.setPiece(pos / 10, pos % 10, idx + 1);
+                board.setPiece(pos, idx + 1);
                 board.show();
             }
         }

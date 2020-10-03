@@ -13,3 +13,6 @@ text: pushfight
 
 gui: pushfight
 	java main/java/PushFight gui
+
+test: pushfight
+	java main/java/PushFight

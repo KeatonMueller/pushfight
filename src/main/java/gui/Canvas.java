@@ -14,9 +14,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import main.java.agents.Agent;
-import main.java.agents.AgentUtils;
-import main.java.board.Board;
-import main.java.board.BoardUtils;
+import main.java.board.Bitboard;
+import main.java.board.BitboardUtils;
 import main.java.game.GameUtils;
 
 class Canvas extends JPanel {
@@ -37,14 +36,14 @@ class Canvas extends JPanel {
     private int midXPadding, secondYPadding, thirdYPadding;
     private int arc;
 
-    private Board board;
+    private Bitboard board;
     private Agent p1, p2;
     private int frameWidth, frameHeight;
     private int turn;
-    private int selected, slidesRemaining;
+    private int selectedIdx, slidesRemaining;
     private int winner;
 
-    public Canvas(int fw, int fh, Board b, Agent a1, Agent a2) {
+    public Canvas(int fw, int fh, Bitboard b, Agent a1, Agent a2) {
         super();
         frameWidth = fw;
         frameHeight = fh;
@@ -53,7 +52,7 @@ class Canvas extends JPanel {
         p2 = a2;
         winner = -1;
         turn = 0;
-        selected = -1;
+        selectedIdx = -1;
         slidesRemaining = 2;
         slideDests = new HashSet<>();
         pushable = new HashSet<>();
@@ -76,34 +75,48 @@ class Canvas extends JPanel {
 
                 int row = (y - topYPadding) / drawLength;
                 int col = (x - midXPadding) / drawLength;
+                int posMask = (1 << (row * 8 + col));
 
-                if (!board.isValid(row, col)) {
+                if (!board.isValid(posMask)) {
                     quitClick();
                     return;
                 }
 
-                if (pushable.contains(row * 10 + col)) {
-                    int initRow = selected / 10;
-                    int initCol = selected % 10;
+                if (pushable.contains(posMask)) {
+                    int initRow = selectedIdx / 8;
+                    int initCol = selectedIdx % 8;
                     char dir = GameUtils.posChangeToDir(initRow, initCol, row, col);
-                    int[] pushResult = board.push(selected / 10, selected % 10, dir);
+                    board.push((1 << selectedIdx), dir);
                     slidesRemaining = 2;
                     quitClick();
-                    if (pushResult[5] != -1) {
-                        winner = 1 - pushResult[5];
+                    if (BitboardUtils.checkWinner(board) != -1) {
+                        winner = BitboardUtils.checkWinner(board);
                         winner();
                     }
                     turn = 1 - turn;
                     awaitNextMove();
-                } else if (board.owns(row, col, turn)) {
+                } else if (board.owns(posMask, turn)) {
                     slideDests.clear();
-                    if (slidesRemaining > 0)
-                        slideDests.addAll(GameUtils.findSlideDests(board, row, col));
+                    if (slidesRemaining > 0) {
+                        int dests = BitboardUtils.findSlideDests(board, posMask);
+                        int dest;
+                        while (dests != 0) {
+                            dest = dests & ~(dests - 1);
+                            dests ^= dest;
+                            slideDests.add(dest);
+                        }
+                    }
                     pushable.clear();
-                    pushable.addAll(GameUtils.findPushablePieces(board, row, col));
-                    selected = row * 10 + col;
-                } else if (slideDests.contains(row * 10 + col)) {
-                    board.slide(selected / 10, selected % 10, row, col);
+                    int pushables = BitboardUtils.findPushablePieces(board, posMask);
+                    int push;
+                    while (pushables != 0) {
+                        push = pushables & ~(pushables - 1);
+                        pushables ^= push;
+                        pushable.add(push);
+                    }
+                    selectedIdx = row * 8 + col;
+                } else if (slideDests.contains(posMask)) {
+                    board.slide((1 << selectedIdx), posMask);
                     slidesRemaining--;
                     quitClick();
                 } else {
@@ -121,7 +134,7 @@ class Canvas extends JPanel {
     private void quitClick() {
         slideDests.clear();
         pushable.clear();
-        selected = -1;
+        selectedIdx = -1;
         repaint();
     }
 
@@ -130,7 +143,6 @@ class Canvas extends JPanel {
      */
     private void winner() {
         if (winner != -1) {
-
             java.awt.EventQueue.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -140,7 +152,7 @@ class Canvas extends JPanel {
                     if (again == JOptionPane.YES_OPTION) {
                         winner = -1;
                         board.reset();
-                        BoardUtils.skipSetup(board);
+                        BitboardUtils.skipSetup(board);
                         turn = 0;
                         repaint();
                         awaitNextMove();
@@ -172,17 +184,17 @@ class Canvas extends JPanel {
         if ((turn == 0 && p1 == null) || (turn == 1 && p2 == null))
             return;
         // otherwise get the move from the appropriate agent
-        int loser;
         if (turn == 0) {
-            loser = AgentUtils.agentMove(p1, board, turn);
+            p1.agentMove(board, turn);
         } else {
-            loser = AgentUtils.agentMove(p2, board, turn);
+            p2.agentMove(board, turn);
         }
         // change turn, repaint, and get next turn
         turn = 1 - turn;
-        if (loser != -1) {
-            winner = 1 - loser;
+        winner = BitboardUtils.checkWinner(board);
+        if (winner != -1) {
             winner();
+            return;
         }
         repaint();
         awaitNextMove();
@@ -323,30 +335,35 @@ class Canvas extends JPanel {
         // draw each player's pieces
         int row, col;
         for (int turn = 0; turn < 2; turn++) {
-            for (int pos : board.getPieceLocs(turn)) {
-                row = pos / 10;
-                col = pos % 10;
+            int pieces = board.getPieces(turn);
+            int piece;
+            while (pieces != 0) {
+                piece = pieces & ~(pieces - 1);
+                pieces ^= piece;
+                int idx = (int) (Math.log(piece) / Math.log(2));
+                row = idx / 8;
+                col = idx % 8;
                 drawPiece(g2d, row, col, turn);
             }
         }
 
         // draw the anchor
-        int anchorPos = board.getAnchorPos();
-        if (anchorPos != 0) {
+        int anchorIdx = board.getAnchorPos();
+        if (anchorIdx != -1) {
             g2d.setColor(Color.RED);
-            drawExtra(g2d, anchorPos);
+            drawExtra(g2d, (1 << anchorIdx));
         }
 
         // highlight movable squares
         g2d.setColor(new Color(0, 0, 0, 75));
-        for (int pos : slideDests) {
-            drawExtra(g2d, pos);
+        for (int posMask : slideDests) {
+            drawExtra(g2d, posMask);
         }
 
         // highlight pushable squares
         g2d.setColor(new Color(255, 0, 0, 125));
-        for (int pos : pushable) {
-            drawArrow(g2d, pos);
+        for (int posMask : pushable) {
+            drawArrow(g2d, posMask);
         }
     }
 
@@ -367,7 +384,7 @@ class Canvas extends JPanel {
         int x = midXPadding + drawLength * col + dividerLength;
         int y = topYPadding + drawLength * row + dividerLength;
 
-        if (board.isSquare(row, col)) {
+        if (board.isSquare((1 << (row * 8 + col)))) {
             g2d.fillRoundRect(x, y, pieceSize, pieceSize, arc, arc);
         } else {
             g2d.fillOval(x, y, pieceSize, pieceSize);
@@ -381,9 +398,10 @@ class Canvas extends JPanel {
      * @param g2d Graphics2D object
      * @param pos Position at which to draw
      */
-    private void drawExtra(Graphics2D g2d, int pos) {
-        int row = pos / 10;
-        int col = pos % 10;
+    private void drawExtra(Graphics2D g2d, int posMask) {
+        int idx = (int) (Math.log(posMask) / Math.log(2));
+        int row = idx / 8;
+        int col = idx % 8;
         int x = (int) (midXPadding + drawLength * col + dividerLength + (pieceSize * .25));
         int y = (int) (topYPadding + drawLength * row + dividerLength + (pieceSize * .25));
         int extraSize = (int) (pieceSize * 0.5);
@@ -397,15 +415,16 @@ class Canvas extends JPanel {
      * @param g2d Graphics2D object
      * @param pos Position at which to draw
      */
-    private void drawArrow(Graphics2D g2d, int pos) {
-        int row = pos / 10;
-        int col = pos % 10;
+    private void drawArrow(Graphics2D g2d, int posMask) {
+        int idx = (int) (Math.log(posMask) / Math.log(2));
+        int row = idx / 8;
+        int col = idx % 8;
         int x = (int) (midXPadding + drawLength * col + dividerLength + (pieceSize * .25));
         int y = (int) (topYPadding + drawLength * row + dividerLength + (pieceSize * .25));
 
         AffineTransform origin = g2d.getTransform();
         g2d.translate(x, y);
-        char dir = GameUtils.posChangeToDir(selected / 10, selected % 10, pos / 10, pos % 10);
+        char dir = GameUtils.posChangeToDir(selectedIdx / 8, selectedIdx % 8, row, col);
         switch (dir) {
             case 'r':
                 g2d.fill(arrowRight);

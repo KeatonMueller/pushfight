@@ -6,8 +6,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import main.java.agents.Agent;
-import main.java.board.Board;
-import main.java.board.BoardUtils;
+import main.java.board.Bitboard;
+import main.java.board.BitboardUtils;
 
 public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -15,14 +15,14 @@ public class GUI extends JFrame {
     private static final int FRAME_WIDTH = 1000, FRAME_HEIGHT = 700;
     private static final String FRAME_TITLE = "Push Fight";
 
-    private Board board;
+    private Bitboard board;
     private Canvas canvas;
     private Agent p1, p2;
 
     public GUI() {
         super();
-        board = new Board();
-        BoardUtils.skipSetup(board);
+        board = new Bitboard();
+        BitboardUtils.skipSetup(board);
         getPlayers();
         canvas = new Canvas(FRAME_WIDTH, FRAME_HEIGHT, board, p1, p2);
         add(canvas);
