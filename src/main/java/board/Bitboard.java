@@ -1,5 +1,7 @@
 package main.java.board;
 
+import java.util.Arrays;
+
 public class Bitboard {
     // bitboards[0] - p1 circles
     // bitboards[1] - p1 squares
@@ -13,6 +15,18 @@ public class Bitboard {
      */
     public Bitboard() {
         bitboards = new int[5];
+    }
+
+    /**
+     * Create a bitboard that copies the given state
+     * 
+     * @param toCopy Bitboard to copy
+     */
+    public Bitboard(Bitboard toCopy) {
+        bitboards = new int[5];
+        for (int i = 0; i < 5; i++) {
+            bitboards[i] = toCopy.bitboards[i];
+        }
     }
 
     /**
@@ -206,23 +220,23 @@ public class Bitboard {
     }
 
     /**
-     * Restore state from BitboardState object
+     * Restore state from another Bitboard object
      * 
-     * @param state BitboardState object to set current state from
+     * @param state Bitboard to set current state from
      */
-    public void restoreState(BitboardState state) {
+    public void restoreState(Bitboard other) {
         for (int i = 0; i < 5; i++) {
-            bitboards[i] = state.bitboards[i];
+            bitboards[i] = other.bitboards[i];
         }
     }
 
     /**
      * Get a copy of the current board state
      * 
-     * @return BitboardState object storing state
+     * @return Copy of current object
      */
-    public BitboardState getState() {
-        return new BitboardState(bitboards);
+    public Bitboard getState() {
+        return new Bitboard(this);
     }
 
     /**
@@ -281,5 +295,28 @@ public class Bitboard {
         }
         System.out.println("    ---------");
         printColumnLabels();
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(bitboards);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+
+        Bitboard other = (Bitboard) obj;
+        for (int i = 0; i < this.bitboards.length; i++) {
+            if (this.bitboards[i] != other.bitboards[i])
+                return false;
+        }
+
+        return true;
     }
 }

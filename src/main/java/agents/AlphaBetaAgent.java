@@ -2,7 +2,6 @@ package main.java.agents;
 
 import main.java.board.Bitboard;
 import main.java.board.BitboardUtils;
-import main.java.board.BitboardState;
 import main.java.board.Heuristic;
 
 public class AlphaBetaAgent extends Agent {
@@ -11,9 +10,9 @@ public class AlphaBetaAgent extends Agent {
      */
     private class AlphaReturn {
         public double value;
-        public BitboardState state;
+        public Bitboard state;
 
-        public AlphaReturn(double v, BitboardState s) {
+        public AlphaReturn(double v, Bitboard s) {
             value = v;
             state = s;
         }
@@ -22,11 +21,11 @@ public class AlphaBetaAgent extends Agent {
     private int DEPTH = 2;
     private int explored;
 
-    public BitboardState getNextState(Bitboard board, int turn) {
+    public Bitboard getNextState(Bitboard board, int turn) {
         System.out.print("Alpha Beta searching for a move for player " + (turn + 1) + "... ");
 
         explored = 0;
-        BitboardState nextState =
+        Bitboard nextState =
                 alphaBeta(board, DEPTH, -Double.MAX_VALUE, Double.MAX_VALUE, turn).state;
         System.out.println(explored + " nodes explored");
 
@@ -53,13 +52,12 @@ public class AlphaBetaAgent extends Agent {
         AlphaReturn localBest;
         if (turn == 0) {
             globalBest.value = -Double.MAX_VALUE;
-            for (BitboardState state : BitboardUtils.getNextStates(board, turn)) {
-                board.restoreState(state);
-                localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn);
+            for (Bitboard child : BitboardUtils.getNextStates(board, turn)) {
+                localBest = alphaBeta(child, depth - 1, alpha, beta, 1 - turn);
 
                 if (localBest.value > globalBest.value) {
                     globalBest.value = localBest.value;
-                    globalBest.state = state;
+                    globalBest.state = child;
                 }
 
                 alpha = Math.max(alpha, globalBest.value);
@@ -69,13 +67,12 @@ public class AlphaBetaAgent extends Agent {
             return globalBest;
         } else {
             globalBest.value = Double.MAX_VALUE;
-            for (BitboardState state : BitboardUtils.getNextStates(board, turn)) {
-                board.restoreState(state);
-                localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn);
+            for (Bitboard child : BitboardUtils.getNextStates(board, turn)) {
+                localBest = alphaBeta(child, depth - 1, alpha, beta, 1 - turn);
 
                 if (localBest.value < globalBest.value) {
                     globalBest.value = localBest.value;
-                    globalBest.state = state;
+                    globalBest.state = child;
                 }
 
                 beta = Math.min(beta, globalBest.value);

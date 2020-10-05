@@ -1,7 +1,6 @@
 package main.java.agents;
 
 import main.java.board.Bitboard;
-import main.java.board.BitboardState;
 
 public abstract class Agent {
     /**
@@ -11,7 +10,7 @@ public abstract class Agent {
      * @param turn  Turn indicator
      * @return A BitboardState of the new board state after the agent has made its move
      */
-    protected abstract BitboardState getNextState(Bitboard board, int turn);
+    protected abstract Bitboard getNextState(Bitboard board, int turn);
 
     /**
      * Get, decode, and perform move from Agent
@@ -20,7 +19,7 @@ public abstract class Agent {
      * @param turn  Turn indicator
      */
     public void agentMove(Bitboard board, int turn) {
-        BitboardState state = getNextState(board, turn);
+        Bitboard state = getNextState(board, turn);
         board.restoreState(state);
     }
 }

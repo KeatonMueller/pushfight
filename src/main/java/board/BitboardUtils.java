@@ -195,12 +195,12 @@ public class BitboardUtils {
      * @param turn  Turn indicator
      * @return List<int[]> of bitboards corresponding to possible next states
      */
-    public static Set<BitboardState> getNextStates(Bitboard board, int turn) {
-        Set<BitboardState> states = new HashSet<>();
+    public static Set<Bitboard> getNextStates(Bitboard board, int turn) {
+        Set<Bitboard> states = new HashSet<>();
 
         int pos1, pos2, dirMask;
         int startMask1 = 0, endMask1 = 0, startMask2 = 0, endMask2 = 0;
-        BitboardState prePush;
+        Bitboard prePush;
         // for all possible first sliding actions
         for (int slide1 : getSlideActions(board, turn)) {
             // perform slide if not skipped
