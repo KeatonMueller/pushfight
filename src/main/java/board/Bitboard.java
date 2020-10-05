@@ -1,7 +1,5 @@
 package main.java.board;
 
-import java.util.Arrays;
-
 public class Bitboard {
     // bitboards[0] - p1 circles
     // bitboards[1] - p1 squares
@@ -10,6 +8,9 @@ public class Bitboard {
     // bitboards[4] - anchor
     private int[] bitboards;
 
+    /**
+     * Initialize empty bitboard
+     */
     public Bitboard() {
         bitboards = new int[5];
     }
@@ -31,6 +32,15 @@ public class Bitboard {
         if (!isValid((1 << idx)))
             return;
         bitboards[val] |= (1 << idx);
+    }
+
+    /**
+     * Used for testing purposes only. Sets the position of the anchor
+     * 
+     * @param idx Position [0, 31] to set anchor
+     */
+    public void setAnchor(int idx) {
+        bitboards[4] = (1 << idx);
     }
 
     /**
@@ -196,23 +206,23 @@ public class Bitboard {
     }
 
     /**
-     * Overwrite the bitboards with the given new bitboards
+     * Restore state from BitboardState object
      * 
-     * @param newBitboards New bitboards used to overwrite current state
+     * @param state BitboardState object to set current state from
      */
-    public void setBitboards(int[] newBitboards) {
-        for (int i = 0; i < bitboards.length; i++) {
-            bitboards[i] = newBitboards[i];
+    public void restoreState(BitboardState state) {
+        for (int i = 0; i < 5; i++) {
+            bitboards[i] = state.bitboards[i];
         }
     }
 
     /**
      * Get a copy of the current board state
      * 
-     * @return int[] copy of the bitboards
+     * @return BitboardState object storing state
      */
-    public int[] getState() {
-        return Arrays.copyOf(bitboards, bitboards.length);
+    public BitboardState getState() {
+        return new BitboardState(bitboards);
     }
 
     /**
@@ -271,10 +281,5 @@ public class Bitboard {
         }
         System.out.println("    ---------");
         printColumnLabels();
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(bitboards);
     }
 }

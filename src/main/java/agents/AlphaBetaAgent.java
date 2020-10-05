@@ -2,6 +2,7 @@ package main.java.agents;
 
 import main.java.board.Bitboard;
 import main.java.board.BitboardUtils;
+import main.java.board.BitboardState;
 import main.java.board.Heuristic;
 
 public class AlphaBetaAgent extends Agent {
@@ -10,9 +11,9 @@ public class AlphaBetaAgent extends Agent {
      */
     private class AlphaReturn {
         public double value;
-        public int[] state;
+        public BitboardState state;
 
-        public AlphaReturn(double v, int[] s) {
+        public AlphaReturn(double v, BitboardState s) {
             value = v;
             state = s;
         }
@@ -21,11 +22,12 @@ public class AlphaBetaAgent extends Agent {
     private int DEPTH = 2;
     private int explored;
 
-    public int[] getNextState(Bitboard board, int turn) {
+    public BitboardState getNextState(Bitboard board, int turn) {
         System.out.print("Alpha Beta searching for a move for player " + (turn + 1) + "... ");
 
         explored = 0;
-        int[] nextState = alphaBeta(board, DEPTH, -Double.MAX_VALUE, Double.MAX_VALUE, turn).state;
+        BitboardState nextState =
+                alphaBeta(board, DEPTH, -Double.MAX_VALUE, Double.MAX_VALUE, turn).state;
         System.out.println(explored + " nodes explored");
 
         return nextState;
@@ -51,8 +53,8 @@ public class AlphaBetaAgent extends Agent {
         AlphaReturn localBest;
         if (turn == 0) {
             globalBest.value = -Double.MAX_VALUE;
-            for (int[] state : BitboardUtils.getNextStates(board, turn)) {
-                board.setBitboards(state);
+            for (BitboardState state : BitboardUtils.getNextStates(board, turn)) {
+                board.restoreState(state);
                 localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn);
 
                 if (localBest.value > globalBest.value) {
@@ -67,8 +69,8 @@ public class AlphaBetaAgent extends Agent {
             return globalBest;
         } else {
             globalBest.value = Double.MAX_VALUE;
-            for (int[] state : BitboardUtils.getNextStates(board, turn)) {
-                board.setBitboards(state);
+            for (BitboardState state : BitboardUtils.getNextStates(board, turn)) {
+                board.restoreState(state);
                 localBest = alphaBeta(board, depth - 1, alpha, beta, 1 - turn);
 
                 if (localBest.value < globalBest.value) {

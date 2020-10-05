@@ -1,10 +1,11 @@
 package main.java.agents;
 
-import java.util.List;
+import java.util.Set;
 import java.util.Random;
 
 import main.java.board.Bitboard;
 import main.java.board.BitboardUtils;
+import main.java.board.BitboardState;
 
 public class RandomAgent extends Agent {
     Random rand;
@@ -13,8 +14,15 @@ public class RandomAgent extends Agent {
         rand = new Random();
     }
 
-    public int[] getNextState(Bitboard board, int turn) {
-        List<int[]> nextStates = BitboardUtils.getNextStates(board, turn);
-        return nextStates.get(rand.nextInt(nextStates.size()));
+    public BitboardState getNextState(Bitboard board, int turn) {
+        Set<BitboardState> nextStates = BitboardUtils.getNextStates(board, turn);
+        int chosenIdx = rand.nextInt(nextStates.size());
+        int idx = 0;
+        for (BitboardState state : nextStates) {
+            if (idx == chosenIdx)
+                return state;
+            idx++;
+        }
+        return null;
     }
 }

@@ -1,8 +1,10 @@
 package main.java.board;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import main.java.game.GameUtils;
@@ -11,6 +13,11 @@ import main.java.game.GameUtils;
  * Utility functions to facilitate play using bitboards
  */
 public class BitboardUtils {
+    private static Map<Integer, Set<Integer>> posToAdjCCID = new HashMap<>();
+    private static Map<Integer, Integer> ccIDToOwner = new HashMap<>();
+    private static Map<Integer, Integer> ownerToCCs = new HashMap<>();
+    private static Map<Integer, Integer> ccIDToCC = new HashMap<>();
+
     /**
      * Count the number of set bits in a bit mask
      * 
@@ -123,24 +130,39 @@ public class BitboardUtils {
      * @return List<Integer> of sliding moves where the source and destination are set to 1
      */
     public static List<Integer> getSlideActions(Bitboard board, int turn) {
+        posToAdjCCID.clear();
+        ccIDToOwner.clear();
+        ownerToCCs.clear();
+        ccIDToCC.clear();
+        int toCheck = (BitMasks.valid & (~board.getPieces()));
+        int check;
+        int cc, ccId = 0;
+        while (toCheck != 0) {
+            check = toCheck & ~(toCheck - 1);
+            cc = SearchUtils.checkSpaces(board, check, ccId, posToAdjCCID, ccIDToOwner, ownerToCCs);
+            toCheck ^= cc;
+            ccIDToCC.put(ccId, cc);
+            ccId++;
+        }
         List<Integer> slides = new ArrayList<>();
-        // add empty slide
         slides.add(0);
-        int piecesMask = board.getPieces(turn);
-        int startMask, destsMask, endMask;
-        // for every piece
-        while (piecesMask != 0) {
-            startMask = piecesMask & ~(piecesMask - 1);
-            piecesMask ^= startMask;
-
-            // find all possible destinations
-            destsMask = findSlideDests(board, startMask);
-            while (destsMask != 0) {
-                endMask = destsMask & ~(destsMask - 1);
-                destsMask ^= endMask;
-                slides.add(startMask | endMask);
+        int pieces = board.getPieces(turn);
+        int pieceMask, dests, destMask;
+        while (pieces != 0) {
+            pieceMask = pieces & ~(pieces - 1);
+            pieces ^= pieceMask;
+            if (posToAdjCCID.containsKey(pieceMask)) {
+                for (int id : posToAdjCCID.get(pieceMask)) {
+                    dests = ccIDToCC.get(id);
+                    while (dests != 0) {
+                        destMask = dests & ~(dests - 1);
+                        dests ^= destMask;
+                        slides.add(pieceMask | destMask);
+                    }
+                }
             }
         }
+
         return slides;
     }
 
@@ -173,13 +195,12 @@ public class BitboardUtils {
      * @param turn  Turn indicator
      * @return List<int[]> of bitboards corresponding to possible next states
      */
-    public static List<int[]> getNextStates(Bitboard board, int turn) {
-        List<int[]> states = new ArrayList<>();
-        Set<Integer> seenStates = new HashSet<>();
+    public static Set<BitboardState> getNextStates(Bitboard board, int turn) {
+        Set<BitboardState> states = new HashSet<>();
 
-        int pos1, pos2, dirMask, hash;
+        int pos1, pos2, dirMask;
         int startMask1 = 0, endMask1 = 0, startMask2 = 0, endMask2 = 0;
-        int[] prePush;
+        BitboardState prePush;
         // for all possible first sliding actions
         for (int slide1 : getSlideActions(board, turn)) {
             // perform slide if not skipped
@@ -229,16 +250,13 @@ public class BitboardUtils {
                         dirMask = push ^ pos1;
                     }
                     board.push(pos1, BitMasks.dirMaskToChar.get(dirMask));
-                    // hash resulting board state
-                    hash = board.hashCode();
-                    if (!seenStates.contains(hash)) {
-                        seenStates.add(hash);
-                        // only keep this state if it's not suicidal
-                        if (checkWinner(board) != 1 - turn)
-                            states.add(board.getState());
-                    }
+
+                    // only keep this state if it's not suicidal
+                    if (checkWinner(board) != 1 - turn)
+                        states.add(board.getState());
+
                     // reset board to pre-push state
-                    board.setBitboards(prePush);
+                    board.restoreState(prePush);
                 }
                 // undo second slide
                 if (slide2 != 0)
