@@ -3,6 +3,7 @@ package main.java.game;
 public class GameUtils {
     public static final int LENGTH = 8;
     public static final int HEIGHT = 4;
+    public static final int NUM_SLIDES = 2;
 
     public static char[] dirIntToChar = new char[] {'r', 'l', 'u', 'd'};
 

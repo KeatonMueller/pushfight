@@ -111,8 +111,8 @@ public class TextGame {
      */
     public void userMove(int turn) {
         int i;
-        // perform two sliding actions
-        for (i = 0; i < 2; i++) {
+        // perform sliding actions
+        for (i = 0; i < GameUtils.NUM_SLIDES; i++) {
             slideAction(turn, i + 1);
         }
         // perform one pushing action

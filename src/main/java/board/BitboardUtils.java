@@ -189,84 +189,108 @@ public class BitboardUtils {
     }
 
     /**
+     * Perform the slide encoded in the given int
+     * 
+     * @param board Bitboard to perform slide on
+     * @param slide Encoded slide action, where source and destination bits are set
+     * @param turn  Turn indicator
+     */
+    public static void decodeSlide(Bitboard board, int slide, int turn) {
+        int pos1 = slide & ~(slide - 1);
+        int pos2 = slide ^ pos1;
+        if (board.owns(pos1, turn)) {
+            board.slide(pos1, pos2);
+        } else if (board.owns(pos2, turn)) {
+            board.slide(pos2, pos1);
+        } else {
+            System.out.println("error in slide");
+        }
+    }
+
+    /**
+     * Perform the push encoded in the given int
+     * 
+     * @param board Bitboard to perform slide on
+     * @param push  Encoded push action, where source bit and direction indicator are set
+     * @param turn  Turn indicator
+     */
+    public static void decodePush(Bitboard board, int push, int turn) {
+        int maskOne = push & ~(push - 1);
+        int maskTwo = push ^ maskOne;
+        if (board.isValid(maskOne)) {
+            board.push(maskOne, BitMasks.dirMaskToChar.get(maskTwo));
+        } else if (board.isValid(maskTwo)) {
+            board.push(maskTwo, BitMasks.dirMaskToChar.get(maskOne));
+        } else {
+            System.out.println("error in push");
+        }
+    }
+
+    /**
      * Find all possible next states from a given board position for a given player
      * 
-     * @param board Board to analyze
-     * @param turn  Turn indicator
-     * @return List<int[]> of bitboards corresponding to possible next states
+     * @param board     Board to analyze
+     * @param turn      Turn indicator
+     * @param numSlides Number of sliding actions permitted
+     * @return Set<Bitboard> of bitboards corresponding to possible next states
      */
     public static Set<Bitboard> getNextStates(Bitboard board, int turn) {
+        // computed list of next states
         Set<Bitboard> states = new HashSet<>();
-
-        int pos1, pos2, dirMask;
-        int startMask1 = 0, endMask1 = 0, startMask2 = 0, endMask2 = 0;
-        Bitboard prePush;
-        // for all possible first sliding actions
-        for (int slide1 : getSlideActions(board, turn)) {
-            // perform slide if not skipped
-            if (slide1 != 0) {
-                pos1 = slide1 & ~(slide1 - 1);
-                pos2 = slide1 ^ pos1;
-                if (board.owns(pos1, turn)) {
-                    startMask1 = pos1;
-                    endMask1 = pos2;
-                } else if (board.owns(pos2, turn)) {
-                    startMask1 = pos2;
-                    endMask1 = pos1;
-                } else {
-                    System.out.println("error in first slide");
-                    continue;
-                }
-                board.slide(startMask1, endMask1);
-            }
-            // for all possible second sliding actions
-            for (int slide2 : getSlideActions(board, turn)) {
-                // perform slide if not skipped
-                if (slide2 != 0) {
-                    pos1 = slide2 & ~(slide2 - 1);
-                    pos2 = slide2 ^ pos1;
-                    if (board.owns(pos1, turn)) {
-                        startMask2 = pos1;
-                        endMask2 = pos2;
-                    } else if (board.owns(pos2, turn)) {
-                        startMask2 = pos2;
-                        endMask2 = pos1;
-                    } else {
-                        System.out.println("error in second slide");
-                        continue;
-                    }
-                    board.slide(startMask2, endMask2);
-                }
-
-                // save board state pre-push
-                prePush = board.getState();
-                // perform all valid pushes
-                for (int push : getPushActions(board, turn)) {
-                    if (!board.isValid(push & ~(push - 1))) {
-                        dirMask = push & ~(push - 1);
-                        pos1 = push ^ dirMask;
-                    } else {
-                        pos1 = push & ~(push - 1);
-                        dirMask = push ^ pos1;
-                    }
-                    board.push(pos1, BitMasks.dirMaskToChar.get(dirMask));
-
-                    // only keep this state if it's not suicidal
-                    if (checkWinner(board) != 1 - turn)
-                        states.add(board.getState());
-
-                    // reset board to pre-push state
-                    board.restoreState(prePush);
-                }
-                // undo second slide
-                if (slide2 != 0)
-                    board.slide(endMask2, startMask2);
-            }
-            // undo first slide
-            if (slide1 != 0)
-                board.slide(endMask1, startMask1);
+        // record set of board states seen at each level to avoid recomputation
+        List<Set<Bitboard>> seen = new ArrayList<>();
+        for (int i = 0; i < GameUtils.NUM_SLIDES + 1; i++) {
+            seen.add(new HashSet<>());
         }
+        getNextStatesHelper(board, turn, GameUtils.NUM_SLIDES, states, seen);
         return states;
+    }
+
+    /**
+     * Helper function for finding next states with a variable number of sliding actions
+     * 
+     * @param board     Board to find moves for
+     * @param turn      Turn indicator
+     * @param numSlides Number of slides remaining in turn
+     * @param states    Set<Bitboard> of computed next states
+     * @param seen      List<Set<Bitboard>> List of seen board states at different levels
+     */
+    public static void getNextStatesHelper(Bitboard board, int turn, int numSlides,
+            Set<Bitboard> states, List<Set<Bitboard>> seen) {
+        // skip if been here before
+        if (seen.get(numSlides).contains(board))
+            return;
+        // remember state
+        seen.get(numSlides).add(board);
+        // save board state
+        Bitboard preState = board.getState();
+
+        if (numSlides == 0) {
+            // if zero slides remaining, check all push actions
+            for (int push : getPushActions(board, turn)) {
+                // perform push
+                decodePush(board, push, turn);
+
+                // only keep this state if it's not suicidal
+                if (checkWinner(board) != 1 - turn)
+                    states.add(board.getState());
+
+                // undo push
+                board.restoreState(preState);
+            }
+        } else {
+            // otherwise check all slide actions
+            for (int slide : getSlideActions(board, turn)) {
+                // perform slide (if not a skipped slide)
+                if (slide != 0)
+                    decodeSlide(board, slide, turn);
+                // recurse
+                getNextStatesHelper(board, turn, numSlides - 1, states, seen);
+                // undo slide (if not a skipped slide)
+                if (slide != 0)
+                    board.restoreState(preState);
+            }
+        }
     }
 
     /**

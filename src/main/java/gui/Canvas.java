@@ -53,7 +53,7 @@ class Canvas extends JPanel {
         winner = -1;
         turn = 0;
         selectedIdx = -1;
-        slidesRemaining = 2;
+        slidesRemaining = GameUtils.NUM_SLIDES;
         slideDests = new HashSet<>();
         pushable = new HashSet<>();
 
@@ -87,7 +87,7 @@ class Canvas extends JPanel {
                     int initCol = selectedIdx % 8;
                     char dir = GameUtils.posChangeToDir(initRow, initCol, row, col);
                     board.push((1 << selectedIdx), dir);
-                    slidesRemaining = 2;
+                    slidesRemaining = GameUtils.NUM_SLIDES;
                     quitClick();
                     if (BitboardUtils.checkWinner(board) != -1) {
                         winner = BitboardUtils.checkWinner(board);
@@ -191,12 +191,14 @@ class Canvas extends JPanel {
         }
         // change turn, repaint, and get next turn
         turn = 1 - turn;
+        repaint();
+
         winner = BitboardUtils.checkWinner(board);
         if (winner != -1) {
             winner();
             return;
         }
-        repaint();
+
         awaitNextMove();
     }
 
