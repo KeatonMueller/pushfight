@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Queue;
 
+import main.java.game.GameUtils;
+
 public class Heuristic {
     /**
      * Hard-coded values of the strength of being in a certain position (very rough values at the
@@ -158,9 +160,9 @@ public class Heuristic {
                 }
                 if (!adjacent) {
                     searchDistance = search(board, circleMask, turn);
-                    if (turn == 0 && searchDistance > 2) {
+                    if (turn == 0 && searchDistance > GameUtils.NUM_SLIDES) {
                         h += p1UnownedWeight * searchDistance;
-                    } else if (turn == 1 && searchDistance > 2) {
+                    } else if (turn == 1 && searchDistance > GameUtils.NUM_SLIDES) {
                         h += p2UnownedWeight * searchDistance;
                     }
                 }
