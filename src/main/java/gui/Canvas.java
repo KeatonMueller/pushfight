@@ -34,6 +34,7 @@ class Canvas extends JPanel {
     private int sideLength, dividerLength, drawLength, wallLength, pieceSize;
     private int topXPadding, topYPadding, botXPadding, botYPadding;
     private int midXPadding, secondYPadding, thirdYPadding;
+    private int boardHeight;
     private int arc;
 
     private Bitboard board;
@@ -68,7 +69,7 @@ class Canvas extends JPanel {
                 int x = e.getX();
                 int y = e.getY();
 
-                if (y - topYPadding < 0 || x - midXPadding < 0) {
+                if (y - topYPadding < 0 || y > boardHeight || x - midXPadding < 0) {
                     quitClick();
                     return;
                 }
@@ -231,6 +232,8 @@ class Canvas extends JPanel {
         topYPadding = PADDING + wallLength;
         botXPadding = PADDING + drawLength;
         botYPadding = PADDING + wallLength + 3 * drawLength;
+
+        boardHeight = topYPadding + 4 * sideLength + 3 * dividerLength;
 
         midXPadding = PADDING;
         secondYPadding = PADDING + wallLength + drawLength;
