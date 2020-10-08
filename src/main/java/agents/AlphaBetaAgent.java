@@ -2,7 +2,7 @@ package main.java.agents;
 
 import main.java.board.Bitboard;
 import main.java.board.BitboardUtils;
-import main.java.board.Heuristic;
+import main.java.board.heuristic.Heuristic;
 
 public class AlphaBetaAgent extends Agent {
     /**
@@ -18,8 +18,25 @@ public class AlphaBetaAgent extends Agent {
         }
     }
 
+    private Heuristic h;
     private int DEPTH = 2;
     private int explored;
+
+    /**
+     * Initialize Alpha Beta Agent with default heuristic
+     */
+    public AlphaBetaAgent() {
+        h = new Heuristic();
+    }
+
+    /**
+     * Initialize Alpha Beta agent with custom heuristic
+     * 
+     * @param values Array of doubles for custom heuristic
+     */
+    public AlphaBetaAgent(double[] values) {
+        h = new Heuristic(values);
+    }
 
     public Bitboard getNextState(Bitboard board, int turn) {
         System.out.print("Alpha Beta searching for a move for player " + (turn + 1) + "... ");
@@ -45,7 +62,7 @@ public class AlphaBetaAgent extends Agent {
     private AlphaReturn alphaBeta(Bitboard board, int depth, double alpha, double beta, int turn) {
         explored++;
         if (depth == 0 || BitboardUtils.checkWinner(board) != -1) {
-            return new AlphaReturn(Heuristic.heuristic(board), null);
+            return new AlphaReturn(h.heuristic(board), null);
         }
 
         AlphaReturn globalBest = new AlphaReturn(0, null);

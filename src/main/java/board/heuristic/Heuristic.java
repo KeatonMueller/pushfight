@@ -1,4 +1,4 @@
-package main.java.board;
+package main.java.board.heuristic;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -6,66 +6,77 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Queue;
 
+import main.java.board.Bitboard;
+import main.java.board.BitMasks;
+import main.java.board.SearchUtils;
 import main.java.game.GameUtils;
 
 public class Heuristic {
     /**
-     * Hard-coded values of the strength of being in a certain position (very rough values at the
-     * moment)
+     * Hard-coded values of the strength of having a piece at a certain position (very rough values
+     * at the moment)
      */
-    private static Map<Integer, Integer> boardValues;
-    static {
-        boardValues = new HashMap<>();
-        boardValues.put((1 << 2), -10); // a3
-        boardValues.put((1 << 3), 3); // a4
-        boardValues.put((1 << 4), 5); // a5
-        boardValues.put((1 << 5), 3); // a6
-        boardValues.put((1 << 6), -10); // a7
-        boardValues.put((1 << 8), -10); // b1
-        boardValues.put((1 << 9), -10); // b2
-        boardValues.put((1 << 10), 1); // b3
-        boardValues.put((1 << 11), 10); // b4
-        boardValues.put((1 << 12), 10); // b5
-        boardValues.put((1 << 13), 7); // b6
-        boardValues.put((1 << 14), 0); // b7
-        boardValues.put((1 << 15), -10); // b8
-        boardValues.put((1 << 16), -10); // c1
-        boardValues.put((1 << 17), 0); // c2
-        boardValues.put((1 << 18), 7); // c3
-        boardValues.put((1 << 19), 10); // c4
-        boardValues.put((1 << 20), 10); // c5
-        boardValues.put((1 << 21), 1); // c6
-        boardValues.put((1 << 22), -10); // c7
-        boardValues.put((1 << 23), -10); // c8
-        boardValues.put((1 << 25), -10); // d2
-        boardValues.put((1 << 26), 3); // d3
-        boardValues.put((1 << 27), 5); // d4
-        boardValues.put((1 << 28), 3); // d5
-        boardValues.put((1 << 29), -10); // d6
-    }
+    private Map<Integer, Double> boardValues = new HashMap<>();
+
     // data structures to facilitate connected component ownership
-    private static Map<Integer, Set<Integer>> posToAdjCCID = new HashMap<>();
-    private static Map<Integer, Integer> ccIDToOwner = new HashMap<>();
-    private static Map<Integer, Integer> ownerToCCs = new HashMap<>();
+    private Map<Integer, Set<Integer>> posToAdjCCID = new HashMap<>();
+    private Map<Integer, Integer> ccIDToOwner = new HashMap<>();
+    private Map<Integer, Integer> ownerToCCs = new HashMap<>();
     // data structures to facilitate BFS
-    private static Queue<Integer> searchQueue = new ArrayDeque<>();
-    private static Map<Integer, Integer> prev = new HashMap<>();
-    private static Map<Integer, Integer> dist = new HashMap<>();
+    private Queue<Integer> searchQueue = new ArrayDeque<>();
+    private Map<Integer, Integer> prev = new HashMap<>();
+    private Map<Integer, Integer> dist = new HashMap<>();
+    // visited bitmap instance variable
+    private int visited;
 
-    private static double squareWeight = 1;
-    private static double circleWeight = 2;
-    private static double p1MWeight = 1;
-    private static double p2MWeight = -1;
-    private static double p1PWeight = 1;
-    private static double p2PWeight = -1;
-    private static double p1CCWeight = -200;
-    private static double p2CCWeight = 200;
-    private static double p1IWeight = -1000000;
-    private static double p2IWeight = 1000000;
-    private static double p1UnownedWeight = -100;
-    private static double p2UnownedWeight = 100;
+    // weights for each heuristic component, default values
+    private double[] weights = new double[] {1, 2, 1, 1, -200, -1000000, -100};
+    // weights[0] = square weight
+    // weights[1] = circle weight
+    // weights[2] = mobility weight
+    // weights[3] = piece location weight
+    // weights[4] = number of connected components weight
+    // weights[5] = isolated circles weight
+    // weights[6] = circle distance to "owned" connected component weight
 
-    private static int visited;
+    /**
+     * Initialize heuristic with all defaults
+     */
+    public Heuristic() {
+        HeuristicUtils.initBoardValues(boardValues);
+    }
+
+    /**
+     * Initialize heuristic with custom values
+     * 
+     * @param values Array of doubles for heuristic weights and board position values
+     */
+    public Heuristic(double[] values) {
+        int i;
+        // change default heuristic weights
+        double[] initWeights = new double[weights.length];
+        for (i = 0; i < weights.length; i++) {
+            initWeights[i] = values[i];
+        }
+        changeWeights(initWeights);
+        // change default board position values
+        double[] initValues = new double[values.length - initWeights.length];
+        for (i = weights.length; i < values.length; i++) {
+            initValues[i - weights.length] = values[i];
+        }
+        HeuristicUtils.initBoardValues(boardValues, initValues);
+    }
+
+    /**
+     * Change the weights of the heuristic
+     * 
+     * @param newWeights
+     */
+    public void changeWeights(double[] newWeights) {
+        for (int i = 0; i < weights.length; i++) {
+            weights[i] = newWeights[i];
+        }
+    }
 
     /**
      * Evaluate the given board state
@@ -73,7 +84,7 @@ public class Heuristic {
      * @param board The board state to evaluate
      * @return The heuristic evalution. Higher values are better for p1/worse for p2
      */
-    public static double heuristic(Bitboard board) {
+    public double heuristic(Bitboard board) {
         double h = 0;
 
         // mobility
@@ -107,7 +118,11 @@ public class Heuristic {
                         p1Isolated++;
                 p1CC++;
             }
-            weight = board.isSquare(posMask) ? squareWeight : circleWeight;
+            weight = board.isSquare(posMask) ? weights[0] : weights[1];
+            if (!boardValues.containsKey(posMask)) {
+                System.out.println("I don't have " + (int) (Math.log(posMask) / Math.log(2)));
+                board.show();
+            }
             p1Position += weight * boardValues.get(posMask);
             p1Pieces++;
         }
@@ -123,7 +138,7 @@ public class Heuristic {
                         p2Isolated++;
                 p2CC++;
             }
-            weight = board.isSquare(posMask) ? squareWeight : circleWeight;
+            weight = board.isSquare(posMask) ? weights[0] : weights[1];
             p2Position += weight * boardValues.get(posMask);
             p2Pieces++;
         }
@@ -161,14 +176,13 @@ public class Heuristic {
                 if (!adjacent) {
                     searchDistance = search(board, circleMask, turn);
                     if (turn == 0 && searchDistance > GameUtils.NUM_SLIDES) {
-                        h += p1UnownedWeight * searchDistance;
+                        h += weights[6] * searchDistance;
                     } else if (turn == 1 && searchDistance > GameUtils.NUM_SLIDES) {
-                        h += p2UnownedWeight * searchDistance;
+                        h += -weights[6] * searchDistance;
                     }
                 }
             }
         }
-
 
         // a player missing a piece is the ultimate bad position
         if (p1Pieces != 5) {
@@ -178,17 +192,17 @@ public class Heuristic {
             return 1000000000000.0;
         }
         // weight the components of the heuristic
-        h += p1MWeight * p1Mobility;
-        h += p2MWeight * p2Mobility;
-        h += p1PWeight * p1Position;
-        h += p2PWeight * p2Position;
+        h += weights[2] * p1Mobility;
+        h += -weights[2] * p2Mobility;
+        h += weights[3] * p1Position;
+        h += -weights[3] * p2Position;
 
         // make it so only > 1 connected components impacts heuristic
-        h += p1CCWeight * (p1CC - 1);
-        h += p2CCWeight * (p2CC - 1);
+        h += weights[4] * (p1CC - 1);
+        h += -weights[4] * (p2CC - 1);
 
-        h += p1IWeight * p1Isolated;
-        h += p2IWeight * p2Isolated;
+        h += weights[5] * p1Isolated;
+        h += -weights[5] * p2Isolated;
         return h;
     }
 
@@ -201,7 +215,7 @@ public class Heuristic {
      * @param turn  Turn indicator
      * @return Number of pieces found in the connected component
      */
-    public static int bfs(Bitboard board, int posMask, int turn) {
+    public int bfs(Bitboard board, int posMask, int turn) {
         // perform basic BFS to explore the connected component
         // (this isn't a real queue... but we're not doing shortest path so its fine)
         int queue = posMask;
@@ -238,7 +252,7 @@ public class Heuristic {
      * @param turn    Whose turn it is
      * @return Shortest distance to an "owned" connected component
      */
-    public static int search(Bitboard board, int posMask, int turn) {
+    public int search(Bitboard board, int posMask, int turn) {
         // if this player doesn't even "own" any connected components, they're in bad shape...
         if (!ownerToCCs.containsKey(turn)) {
             return 1000000;
