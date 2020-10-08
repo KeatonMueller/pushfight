@@ -35,7 +35,7 @@ public class Genome {
     /**
      * Comparator to sort Genomes in descending order
      */
-    public static Comparator<Genome> compare = new Comparator<>() {
+    public static Comparator<Genome> compare = new Comparator<Genome>() {
         @Override
         public int compare(Genome g1, Genome g2) {
             if (g1.fitness < g2.fitness)
