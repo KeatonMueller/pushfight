@@ -31,14 +31,26 @@ public class AlphaBetaAgent extends Agent {
     }
 
     /**
-     * Initialize Alpha Beta agent with custom heuristic
+     * Initialize Alpha Beta Agent with default heuristic and custom depth
      * 
-     * @param values Array of doubles for custom heuristic
+     * @param depth Depth to run minimax to
      */
-    public AlphaBetaAgent(double[] values, int depth) {
+    public AlphaBetaAgent(int depth) {
+        h = new Heuristic();
+        DEPTH = depth;
+    }
+
+    /**
+     * Initialize Alpha Beta agent with custom heuristic and depth
+     * 
+     * @param values  Array of doubles for custom heuristic
+     * @param depth   Depth to run minimax to
+     * @param silence Boolean flag to suppress print statements
+     */
+    public AlphaBetaAgent(double[] values, int depth, boolean silence) {
         h = new Heuristic(values);
         DEPTH = depth;
-        silent = true;
+        silent = silence;
     }
 
     public Bitboard getNextState(Bitboard board, int turn) {

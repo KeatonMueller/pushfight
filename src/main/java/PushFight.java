@@ -1,5 +1,6 @@
 package main.java;
 
+import java.util.Scanner;
 import main.java.board.heuristic.HeuristicUtils;
 import main.java.game.GUIGame;
 import main.java.game.TextGame;
@@ -19,7 +20,12 @@ public class PushFight {
                 new GUIGame();
                 break;
             case "evolve":
-                new Evolution(10, 10, HeuristicUtils.numValues);
+                Scanner scan = new Scanner(System.in);
+                System.out.print("Time limit (seconds): ");
+                int time = Integer.parseInt(scan.nextLine());
+                System.out.print("Population size: ");
+                int size = Integer.parseInt(scan.nextLine());
+                new Evolution(time, size, HeuristicUtils.numValues);
                 break;
         }
     }

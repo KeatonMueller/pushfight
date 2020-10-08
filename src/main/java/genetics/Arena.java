@@ -12,13 +12,18 @@ public class Arena {
      * @param g2 Genome to be player 2
      */
     public static void compete(Genome g1, Genome g2) {
-        Agent a1 = new AlphaBetaAgent(g1.values, 1);
-        Agent a2 = new AlphaBetaAgent(g2.values, 1);
+        // make alpha beta agents with depth of 1 and silent execution
+        Agent a1 = new AlphaBetaAgent(g1.values, 1, true);
+        Agent a2 = new AlphaBetaAgent(g2.values, 1, true);
 
         if (playout(a1, a2) == 0) {
-            g1.fitness++;
+            // System.out.println(0);
+            // g1.fitness++;
+            g1.p1++;
         } else {
-            g2.fitness++;
+            // System.out.println(1);
+            // g2.fitness++;
+            g2.p2++;
         }
     }
 
