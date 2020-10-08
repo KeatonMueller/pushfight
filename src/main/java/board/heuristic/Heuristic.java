@@ -30,7 +30,7 @@ public class Heuristic {
     private int visited;
 
     // weights for each heuristic component, default values
-    private double[] weights = new double[] {1, 2, 1, 1, -200, -1000000, -100};
+    private double[] weights = new double[] {1, 2, 1, 1, 200, 1000000, 100};
     // weights[0] = square weight
     // weights[1] = circle weight
     // weights[2] = mobility weight
@@ -54,29 +54,18 @@ public class Heuristic {
     public Heuristic(double[] values) {
         int i;
         // change default heuristic weights
-        double[] initWeights = new double[weights.length];
         for (i = 0; i < weights.length; i++) {
-            initWeights[i] = values[i];
+            weights[i] = values[i];
         }
-        changeWeights(initWeights);
         // change default board position values
-        double[] initValues = new double[values.length - initWeights.length];
+        double[] initValues = new double[values.length - weights.length];
         for (i = weights.length; i < values.length; i++) {
             initValues[i - weights.length] = values[i];
         }
         HeuristicUtils.initBoardValues(boardValues, initValues);
     }
 
-    /**
-     * Change the weights of the heuristic
-     * 
-     * @param newWeights
-     */
-    public void changeWeights(double[] newWeights) {
-        for (int i = 0; i < weights.length; i++) {
-            weights[i] = newWeights[i];
-        }
-    }
+
 
     /**
      * Evaluate the given board state
@@ -91,8 +80,8 @@ public class Heuristic {
         int p1Mobility = 0;
         int p2Mobility = 0;
         // strength of piece positions
-        int p1Position = 0;
-        int p2Position = 0;
+        double p1Position = 0;
+        double p2Position = 0;
         // number of pieces
         int p1Pieces = 0;
         int p2Pieces = 0;
@@ -113,7 +102,7 @@ public class Heuristic {
             posMask = posMasks & ~(posMasks - 1);
             posMasks ^= posMask;
             if ((visited & posMask) == 0) {
-                if (bfs(board, posMask, 0) == 1)
+                if (exploreCC(board, posMask, 0) == 1)
                     if (!board.isSquare(posMask))
                         p1Isolated++;
                 p1CC++;
@@ -133,7 +122,7 @@ public class Heuristic {
             posMask = posMasks & ~(posMasks - 1);
             posMasks ^= posMask;
             if ((visited & posMask) == 0) {
-                if (bfs(board, posMask, 1) == 1)
+                if (exploreCC(board, posMask, 1) == 1)
                     if (!board.isSquare(posMask))
                         p2Isolated++;
                 p2CC++;
@@ -176,9 +165,9 @@ public class Heuristic {
                 if (!adjacent) {
                     searchDistance = search(board, circleMask, turn);
                     if (turn == 0 && searchDistance > GameUtils.NUM_SLIDES) {
-                        h += weights[6] * searchDistance;
-                    } else if (turn == 1 && searchDistance > GameUtils.NUM_SLIDES) {
                         h += -weights[6] * searchDistance;
+                    } else if (turn == 1 && searchDistance > GameUtils.NUM_SLIDES) {
+                        h += weights[6] * searchDistance;
                     }
                 }
             }
@@ -198,11 +187,11 @@ public class Heuristic {
         h += -weights[3] * p2Position;
 
         // make it so only > 1 connected components impacts heuristic
-        h += weights[4] * (p1CC - 1);
-        h += -weights[4] * (p2CC - 1);
+        h += -weights[4] * (p1CC - 1);
+        h += weights[4] * (p2CC - 1);
 
-        h += weights[5] * p1Isolated;
-        h += -weights[5] * p2Isolated;
+        h += -weights[5] * p1Isolated;
+        h += weights[5] * p2Isolated;
         return h;
     }
 
@@ -215,8 +204,7 @@ public class Heuristic {
      * @param turn  Turn indicator
      * @return Number of pieces found in the connected component
      */
-    public int bfs(Bitboard board, int posMask, int turn) {
-        // perform basic BFS to explore the connected component
+    private int exploreCC(Bitboard board, int posMask, int turn) {
         // (this isn't a real queue... but we're not doing shortest path so its fine)
         int queue = posMask;
         int ccSize = 0;
@@ -252,7 +240,7 @@ public class Heuristic {
      * @param turn    Whose turn it is
      * @return Shortest distance to an "owned" connected component
      */
-    public int search(Bitboard board, int posMask, int turn) {
+    private int search(Bitboard board, int posMask, int turn) {
         // if this player doesn't even "own" any connected components, they're in bad shape...
         if (!ownerToCCs.containsKey(turn)) {
             return 1000000;

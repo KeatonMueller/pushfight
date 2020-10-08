@@ -1,7 +1,9 @@
 package main.java;
 
+import main.java.board.heuristic.HeuristicUtils;
 import main.java.game.GUIGame;
 import main.java.game.TextGame;
+import main.java.genetics.Evolution;
 
 public class PushFight {
     public static void main(String[] args) {
@@ -15,6 +17,9 @@ public class PushFight {
                 break;
             case "gui":
                 new GUIGame();
+                break;
+            case "evolve":
+                new Evolution(10, 10, HeuristicUtils.numValues);
                 break;
         }
     }

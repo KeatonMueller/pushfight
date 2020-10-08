@@ -4,6 +4,11 @@ import java.util.Map;
 
 public class HeuristicUtils {
     /**
+     * Surface the total number of values needed for the heuristic
+     */
+    public static int numValues = 33;
+
+    /**
      * Initialize mapping from board position to values with default values
      * 
      * @param boardValues Map from board position to position value

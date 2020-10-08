@@ -21,6 +21,7 @@ public class AlphaBetaAgent extends Agent {
     private Heuristic h;
     private int DEPTH = 2;
     private int explored;
+    private boolean silent = false;
 
     /**
      * Initialize Alpha Beta Agent with default heuristic
@@ -34,17 +35,22 @@ public class AlphaBetaAgent extends Agent {
      * 
      * @param values Array of doubles for custom heuristic
      */
-    public AlphaBetaAgent(double[] values) {
+    public AlphaBetaAgent(double[] values, int depth) {
         h = new Heuristic(values);
+        DEPTH = depth;
+        silent = true;
     }
 
     public Bitboard getNextState(Bitboard board, int turn) {
-        System.out.print("Alpha Beta searching for a move for player " + (turn + 1) + "... ");
+        if (!silent)
+            System.out.print("Alpha Beta searching for a move for player " + (turn + 1) + "... ");
 
         explored = 0;
         Bitboard nextState =
                 alphaBeta(board, DEPTH, -Double.MAX_VALUE, Double.MAX_VALUE, turn).state;
-        System.out.println(explored + " nodes explored");
+
+        if (!silent)
+            System.out.println(explored + " nodes explored");
 
         return nextState;
     }

@@ -14,5 +14,8 @@ text: pushfight
 gui: pushfight
 	java main/java/PushFight gui
 
+evolve: pushfight
+	java main/java/PushFight evolve
+
 test: pushfight
 	java main/java/PushFight
