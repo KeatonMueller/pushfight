@@ -30,7 +30,7 @@ public class Heuristic {
     private int visited;
 
     // weights for each heuristic component, default values
-    private double[] weights = new double[] {1, 2, 1, 1, 200, 1000000, 100};
+    private double[] weights = new double[HeuristicUtils.numComponents];
     // weights[0] = square weight
     // weights[1] = circle weight
     // weights[2] = mobility weight
@@ -43,29 +43,38 @@ public class Heuristic {
      * Initialize heuristic with all defaults
      */
     public Heuristic() {
-        HeuristicUtils.initBoardValues(boardValues);
+        this(HeuristicUtils.defaultValues);
     }
 
     /**
-     * Initialize heuristic with custom values
+     * Initialize heuristic with given values
      * 
      * @param values Array of doubles for heuristic weights and board position values
      */
     public Heuristic(double[] values) {
+        // validate length of input
+        if (values.length != HeuristicUtils.numValues
+                && values.length != HeuristicUtils.numComponents) {
+            System.out.println("Invalid values given to heuristic");
+            System.exit(1);
+        }
         int i;
-        // change default heuristic weights
-        for (i = 0; i < weights.length; i++) {
+        // fill in heuristic component weights
+        for (i = 0; i < HeuristicUtils.numComponents; i++) {
             weights[i] = values[i];
         }
-        // change default board position values
-        double[] initValues = new double[values.length - weights.length];
-        for (i = weights.length; i < values.length; i++) {
-            initValues[i - weights.length] = values[i];
+
+        // allow the board weights to be optional
+        if (values.length == HeuristicUtils.numComponents)
+            values = HeuristicUtils.defaultValues;
+
+        // fill in board position values
+        double[] initValues = new double[values.length - HeuristicUtils.numComponents];
+        for (i = HeuristicUtils.numComponents; i < values.length; i++) {
+            initValues[i - HeuristicUtils.numComponents] = values[i];
         }
         HeuristicUtils.initBoardValues(boardValues, initValues);
     }
-
-
 
     /**
      * Evaluate the given board state

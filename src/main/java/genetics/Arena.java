@@ -16,14 +16,17 @@ public class Arena {
         Agent a1 = new AlphaBetaAgent(g1.values, 1, true);
         Agent a2 = new AlphaBetaAgent(g2.values, 1, true);
 
-        if (playout(a1, a2) == 0) {
+        int winner = playout(a1, a2);
+        if (winner == 0) {
             // System.out.println(0);
             // g1.fitness++;
             g1.p1++;
-        } else {
+        } else if (winner == 1) {
             // System.out.println(1);
             // g2.fitness++;
             g2.p2++;
+        } else {
+            // tie, no fitness update
         }
     }
 

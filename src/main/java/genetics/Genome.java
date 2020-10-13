@@ -17,7 +17,7 @@ public class Genome {
     public Genome(int numValues) {
         values = new double[numValues];
         for (int i = 0; i < numValues; i++) {
-            values[i] = rand.nextDouble();
+            values[i] = rand.nextDouble() * 2 - 1;
         }
         fitness = 0;
     }

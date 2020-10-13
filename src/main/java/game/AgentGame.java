@@ -1,5 +1,8 @@
 package main.java.game;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import main.java.agents.Agent;
 import main.java.board.Bitboard;
 import main.java.board.BitboardUtils;
@@ -8,6 +11,8 @@ public class AgentGame {
     private Bitboard board;
     private int turn;
     private Agent a1, a2;
+
+    private Map<Bitboard, Integer> stateToNum;
 
     /**
      * Perform a fully automated game between two agents
@@ -23,18 +28,26 @@ public class AgentGame {
         a2 = agent2;
 
         BitboardUtils.skipSetup(board);
+        stateToNum = new HashMap<>();
     }
 
     /**
      * Run the game loop until someone wins
      */
     public int getWinner() {
-        int winner;
+        int winner, count;
         while (true) {
             makeMove(turn);
+            count = stateToNum.getOrDefault(board, 0);
+            stateToNum.put(board, count + 1);
+
             winner = BitboardUtils.checkWinner(board);
             if (winner != -1) {
                 return winner;
+            }
+            // detect fifth time repeating a board state, call it a tie
+            if (count >= 5) {
+                return -1;
             }
             // change turns
             turn = 1 - turn;

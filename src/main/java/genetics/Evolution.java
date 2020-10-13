@@ -30,20 +30,26 @@ public class Evolution {
      */
     private void evolve() {
         // initialize two populations, one to optimize P1 and one for P2
-        List<Genome> pop = new ArrayList<>();
-        initPopulation(pop);
+        List<Genome> pop1 = new ArrayList<>();
+        List<Genome> pop2 = new ArrayList<>();
+        initPopulation(pop1);
+        initPopulation(pop2);
 
         long startTime = System.currentTimeMillis();
         while (System.currentTimeMillis() - startTime < timeLimit) {
             // run fitness function
-            fitnessEval(pop);
+            fitnessEval(pop1, pop2);
             // select next generation
-            pop = selection(pop);
-            mutate(pop);
+            pop1 = selection(pop1);
+            pop2 = selection(pop2);
+            mutate(pop1);
+            mutate(pop2);
         }
-        fitnessEval(pop);
-        pop.sort(Genome.compare);
-        System.out.println(pop.get(0));
+        fitnessEval(pop1, pop2);
+        pop1.sort(Genome.compare);
+        pop2.sort(Genome.compare);
+        System.out.println(pop1.get(0));
+        System.out.println(pop2.get(0));
     }
 
     /**
@@ -91,6 +97,28 @@ public class Evolution {
         }
         for (Genome g : pop) {
             g.fitness = g.p1 + g.p2 - (Math.abs(g.p1 - g.p2));
+        }
+    }
+
+    /**
+     * Perform round robin evalaution between the two populations. Each member of one population
+     * plays all members of the other.
+     * 
+     * @param pop1 List of Genomes optimizing P1
+     * @param pop2 List of Genomes optimizing P2
+     */
+    private void fitnessEval(List<Genome> pop1, List<Genome> pop2) {
+        for (Genome g1 : pop1) {
+            for (Genome g2 : pop2) {
+                Arena.compete(g1, g2);
+            }
+        }
+        // pop1's fitness is P1 wins, pop2's fitness is P2 wins
+        for (Genome g : pop1) {
+            g.fitness = g.p1;
+        }
+        for (Genome g : pop2) {
+            g.fitness = g.p2;
         }
     }
 

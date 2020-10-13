@@ -34,10 +34,12 @@ public class AlphaBetaAgent extends Agent {
      * Initialize Alpha Beta Agent with default heuristic and custom depth
      * 
      * @param depth Depth to run minimax to
+     * @param silence Boolean flag to suppress print statements
      */
-    public AlphaBetaAgent(int depth) {
+    public AlphaBetaAgent(int depth, boolean silence) {
         h = new Heuristic();
         DEPTH = depth;
+        silent = silence;
     }
 
     /**
