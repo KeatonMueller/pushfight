@@ -12,9 +12,9 @@ public class Arena {
      * @param g2 Genome to be player 2
      */
     public static void compete(Genome g1, Genome g2) {
-        // make alpha beta agents with depth of 1 and silent execution
-        Agent a1 = new AlphaBetaAgent(g1.values, 1, true);
-        Agent a2 = new AlphaBetaAgent(g2.values, 1, true);
+        // make alpha beta agents with each genome
+        Agent a1 = new AlphaBetaAgent(g1.values, EvolutionUtils.fitnessDepth, true);
+        Agent a2 = new AlphaBetaAgent(g2.values, EvolutionUtils.fitnessDepth, true);
 
         int winner = playout(a1, a2);
         if (winner == 0) {
