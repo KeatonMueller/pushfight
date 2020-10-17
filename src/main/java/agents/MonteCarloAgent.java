@@ -63,7 +63,7 @@ public class MonteCarloAgent extends Agent {
         private boolean isTerminal; // whether or not node is terminal
         private boolean isFullyExpanded; // whether or not node is fully expanded
         private List<Bitboard> unexplored; // list of unexplored children
-        private int T; // number of times current node has been visited
+        private int totalVisits; // number of times current node has been visited
         private Map<Node, Stats> childToStats; // map from child node to stats
 
         /**
@@ -79,7 +79,7 @@ public class MonteCarloAgent extends Agent {
             this.isFullyExpanded = this.unexplored.size() == 0;
             this.children = new ArrayList<>();
             this.parents = new ArrayList<>();
-            this.T = 0;
+            this.totalVisits = 0;
             this.childToStats = new HashMap<>();
         }
 
@@ -106,15 +106,15 @@ public class MonteCarloAgent extends Agent {
      * Stats object to track statistics for EDGES in the game tree
      */
     private class Stats {
-        private int n; // number of time edge has been taken
-        private int r; // aggregate reward seen along edge
+        private int numPlays; // number of times this action/edge has been played
+        private int totalReward; // aggregate reward seen along edge
 
         /**
          * Initialize Stats object with zero values
          */
         public Stats() {
-            this.n = 0;
-            this.r = 0;
+            this.numPlays = 0;
+            this.totalReward = 0;
         }
     }
 
@@ -213,7 +213,7 @@ public class MonteCarloAgent extends Agent {
      */
     private void updateStats(Node node, int result) {
         // increment number of visits
-        node.T += 1;
+        node.totalVisits += 1;
 
         // stop if reached root
         if (node.parents.size() == 0)
@@ -224,8 +224,8 @@ public class MonteCarloAgent extends Agent {
 
         // update edge statistics
         Stats stats = parent.childToStats.get(node);
-        stats.n += 1;
-        stats.r += result;
+        stats.numPlays += 1;
+        stats.totalReward += result;
 
         // recurse
         updateStats(parent, result);
@@ -239,22 +239,22 @@ public class MonteCarloAgent extends Agent {
      */
     private Node bestUCT(Node node) {
         Node bestNode = null;
-        double bestUCB, ucb;
-        int numerator, denominator;
+        double bestUCB, ucb, avgReward;
+        int totalReward, totalPlays;
         Stats stats;
         if (turn == 0) {
             bestUCB = -Double.MAX_VALUE;
             for (Node child : node.children) {
-                numerator = 0;
-                denominator = 0;
+                totalReward = 0;
+                totalPlays = 0;
                 for (Node parent : child.parents) {
                     stats = parent.childToStats.get(child);
-                    numerator += stats.r;
-                    denominator += stats.n;
+                    totalReward += stats.totalReward;
+                    totalPlays += stats.numPlays;
                 }
+                avgReward = (double) totalReward / totalPlays;
                 stats = node.childToStats.get(child);
-                ucb = ((double) numerator / denominator)
-                        + (2 * Math.log(node.T) / Math.pow(stats.n, 0.5));
+                ucb = avgReward + Math.pow(2 * Math.log(node.totalVisits) / stats.numPlays, 0.5);
 
                 if (ucb > bestUCB) {
                     bestUCB = ucb;
@@ -264,16 +264,16 @@ public class MonteCarloAgent extends Agent {
         } else {
             bestUCB = Double.MAX_VALUE;
             for (Node child : node.children) {
-                numerator = 0;
-                denominator = 0;
+                totalReward = 0;
+                totalPlays = 0;
                 for (Node parent : child.parents) {
                     stats = parent.childToStats.get(child);
-                    numerator += stats.r;
-                    denominator += stats.n;
+                    totalReward += stats.totalReward;
+                    totalPlays += stats.numPlays;
                 }
+                avgReward = (double) totalReward / totalPlays;
                 stats = node.childToStats.get(child);
-                ucb = ((double) numerator / denominator)
-                        - (2 * Math.log(node.T) / Math.pow(stats.n, 0.5));
+                ucb = avgReward - Math.pow(2 * Math.log(node.totalVisits) / stats.numPlays, 0.5);
 
                 if (ucb < bestUCB) {
                     bestUCB = ucb;
@@ -292,25 +292,25 @@ public class MonteCarloAgent extends Agent {
      */
     private Bitboard getBestState(Node node) {
         Node bestNode = null;
-        double bestR, r;
+        double bestReward, reward;
         Stats stats;
         if (turn == 0) {
-            bestR = -Double.MAX_VALUE;
+            bestReward = -Double.MAX_VALUE;
             for (Node child : node.childToStats.keySet()) {
                 stats = node.childToStats.get(child);
-                r = (double) stats.r / stats.n;
-                if (r > bestR) {
-                    bestR = r;
+                reward = (double) stats.totalReward / stats.numPlays;
+                if (reward > bestReward) {
+                    bestReward = reward;
                     bestNode = child;
                 }
             }
         } else {
-            bestR = Double.MAX_VALUE;
+            bestReward = Double.MAX_VALUE;
             for (Node child : node.childToStats.keySet()) {
                 stats = node.childToStats.get(child);
-                r = (double) stats.r / stats.n;
-                if (r < bestR) {
-                    bestR = r;
+                reward = (double) stats.totalReward / stats.numPlays;
+                if (reward < bestReward) {
+                    bestReward = reward;
                     bestNode = child;
                 }
             }

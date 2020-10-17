@@ -12,9 +12,11 @@ import javax.swing.JRadioButton;
 import main.java.agents.Agent;
 import main.java.agents.RandomAgent;
 import main.java.agents.AlphaBetaAgent;
+import main.java.agents.MonteCarloAgent;
 
 public class PlayerSelect extends JPanel {
     private static final long serialVersionUID = 1L;
+    private static final int NUM_OPTIONS = 4;
     private Agent p1, p2;
 
     public PlayerSelect() {
@@ -22,6 +24,7 @@ public class PlayerSelect extends JPanel {
         JRadioButton human;
         JRadioButton random;
         JRadioButton alpha;
+        JRadioButton mcts;
         List<JRadioButton> options;
 
         int i;
@@ -29,24 +32,27 @@ public class PlayerSelect extends JPanel {
             human = new JRadioButton("Human");
             random = new JRadioButton("Random");
             alpha = new JRadioButton("Alpha Beta");
+            mcts = new JRadioButton("MCTS");
 
             options = new ArrayList<>();
             options.add(human);
             options.add(random);
             options.add(alpha);
+            options.add(mcts);
 
             instrument(human, options, null, i);
             instrument(random, options, new RandomAgent(), i);
             instrument(alpha, options, new AlphaBetaAgent(), i);
+            instrument(mcts, options, new MonteCarloAgent(5), i);
 
             human.setSelected(true);
             buttons.add(options);
         }
 
-        setLayout(new GridLayout(4, 2));
+        setLayout(new GridLayout(NUM_OPTIONS + 1, 2));
         add(new JLabel("Player 1"));
         add(new JLabel("Player 2"));
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < NUM_OPTIONS; i++) {
             add(buttons.get(0).get(i));
             add(buttons.get(1).get(i));
         }
