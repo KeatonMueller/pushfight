@@ -13,7 +13,7 @@ public class EvolutionUtils {
     /**
      * The depth to run minimax algorithm when doing fitness function
      */
-    public static int fitnessDepth = 1;
+    public static int fitnessDepth = 2;
 
     /**
      * The number of previous generation genomes to use as reference genomes when evaluating next

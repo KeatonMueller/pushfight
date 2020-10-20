@@ -14,7 +14,7 @@ public class PushFight {
                         return;
                 }
                 Scanner scan = new Scanner(System.in);
-                int time, size;
+                int time, size, type;
                 switch (args[0]) {
                         case "text":
                                 new TextGame();
@@ -34,7 +34,9 @@ public class PushFight {
                                 time = Integer.parseInt(scan.nextLine());
                                 System.out.print("Population size: ");
                                 size = Integer.parseInt(scan.nextLine());
-                                new Coevolution(time, size);
+                                System.out.print("Type of coevolution (1|2): ");
+                                type = Integer.parseInt(scan.nextLine());
+                                new Coevolution(time, size, type);
                                 break;
                 }
                 scan.close();
