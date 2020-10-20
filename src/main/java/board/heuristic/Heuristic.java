@@ -77,6 +77,17 @@ public class Heuristic {
     }
 
     /**
+     * Initialize heuristic with given values
+     * 
+     * @param componentWeights Array of doubles for component weights
+     * @param positionWeights  Array of doubles for position weights
+     */
+    public Heuristic(double[] componentWeights, double[] positionWeights) {
+        weights = componentWeights;
+        HeuristicUtils.initBoardValues(boardValues, positionWeights);
+    }
+
+    /**
      * Evaluate the given board state
      * 
      * @param board The board state to evaluate

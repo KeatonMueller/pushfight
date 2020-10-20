@@ -33,7 +33,7 @@ public class AlphaBetaAgent extends Agent {
     /**
      * Initialize Alpha Beta Agent with default heuristic and custom depth
      * 
-     * @param depth Depth to run minimax to
+     * @param depth   Depth to run minimax to
      * @param silence Boolean flag to suppress print statements
      */
     public AlphaBetaAgent(int depth, boolean silence) {
@@ -51,6 +51,21 @@ public class AlphaBetaAgent extends Agent {
      */
     public AlphaBetaAgent(double[] values, int depth, boolean silence) {
         h = new Heuristic(values);
+        DEPTH = depth;
+        silent = silence;
+    }
+
+    /**
+     * Initialize Alpha Beta agent with custom heuristic and depth
+     * 
+     * @param componentWeights Array of doubles for component weights of heuristic
+     * @param positionWeights  Array of doubles for position weights of heuristic
+     * @param depth            Depth to run minimax to
+     * @param silence          Boolean flag to suppress print statements
+     */
+    public AlphaBetaAgent(double[] componentWeights, double[] positionWeights, int depth,
+            boolean silence) {
+        h = new Heuristic(componentWeights, positionWeights);
         DEPTH = depth;
         silent = silence;
     }

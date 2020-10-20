@@ -21,6 +21,11 @@ public class HeuristicUtils {
     public static int numComponents = 7;
 
     /**
+     * Number of board position weights
+     */
+    public static int numPositions = numValues - numComponents;
+
+    /**
      * Initialize mapping from board position to values with given values
      * 
      * @param boardValues Map from board position to position value

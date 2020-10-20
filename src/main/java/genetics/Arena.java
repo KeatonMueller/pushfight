@@ -6,7 +6,7 @@ import main.java.game.AgentGame;
 
 public class Arena {
     /**
-     * Have two genomes compete head to head using depth-1 Minimax
+     * Have two genomes compete head to head using an alpha beta agent
      * 
      * @param g1 Genome to be player 1
      * @param g2 Genome to be player 2
@@ -27,6 +27,37 @@ public class Arena {
             g2.p2++;
         } else {
             // tie, no fitness update
+        }
+    }
+
+    /**
+     * Have two cooperative genomes compete against two other cooperative genomes using an alpha
+     * beta agent
+     * 
+     * @param g1a Genome responsible for p1's component weights
+     * @param g1b Genome repsonsible for p1's position weights
+     * @param g2a Genome responsible for p2's component weights
+     * @param g2b Genome responsible for p2's position weights
+     */
+    public static void compete(Genome g1a, Genome g1b, Genome g2a, Genome g2b) {
+        Agent a1 = new AlphaBetaAgent(g1a.values, g1b.values, EvolutionUtils.fitnessDepth, true);
+        Agent a2 = new AlphaBetaAgent(g2a.values, g2b.values, EvolutionUtils.fitnessDepth, true);
+
+        int winner = playout(a1, a2);
+        if (winner == 0) {
+            // p1 win, g1 genomes get +2 fitness
+            g1a.p1 += 2;
+            g1b.p1 += 2;
+        } else if (winner == 1) {
+            // p2 win, g2 genomes get +2 fitness
+            g2a.p2 += 2;
+            g2b.p2 += 2;
+        } else {
+            // tie, all genomes get +1 fitness
+            g1a.p1 += 1;
+            g1b.p1 += 1;
+            g2a.p2 += 1;
+            g2b.p2 += 1;
         }
     }
 
