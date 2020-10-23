@@ -5,9 +5,9 @@ import java.util.Random;
 
 public class Genome {
     private static Random rand = new Random();
-    protected double[] values;
-    protected double fitness;
-    protected int p1, p2;
+    public double[] values;
+    public double fitness;
+    public int p1, p2;
 
     /**
      * Initialize a Genome with random values
