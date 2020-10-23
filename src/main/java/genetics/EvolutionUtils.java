@@ -22,6 +22,15 @@ public class EvolutionUtils {
     public static int referenceSize = 5;
 
     /**
+     * Overwrite the fitness depth
+     * 
+     * @param depth New depth value
+     */
+    public static void setFitnessDepth(int depth) {
+        fitnessDepth = depth;
+    }
+
+    /**
      * Initialize the population randomly
      * 
      * @param pop       Empty list of Genomes to populate
