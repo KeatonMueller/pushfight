@@ -1,13 +1,42 @@
 package main.java.genetics;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 
+import main.java.board.heuristic.HeuristicUtils;
+
 public class Genome {
+    public enum DefaultType {
+        COMPONENTS, POSITIONS, ALL
+    }
+
     private static Random rand = new Random();
     public double[] values;
     public double fitness;
     public int p1, p2;
+
+    /**
+     * Initialize a Genome with default values
+     * 
+     * @param type DefaultType enum corresponding to type of default Genome
+     */
+    public Genome(DefaultType type) {
+        switch (type) {
+            case COMPONENTS:
+                values = Arrays.copyOfRange(HeuristicUtils.defaultValues, 0,
+                        HeuristicUtils.numComponents);
+                break;
+            case POSITIONS:
+                values = Arrays.copyOfRange(HeuristicUtils.defaultValues,
+                        HeuristicUtils.numComponents, HeuristicUtils.numValues);
+                break;
+            case ALL:
+                values = Arrays.copyOf(HeuristicUtils.defaultValues, HeuristicUtils.numValues);
+                break;
+        }
+        fitness = 0;
+    }
 
     /**
      * Initialize a Genome with random values
@@ -28,7 +57,7 @@ public class Genome {
      * @param vals Values to use for initialization
      */
     public Genome(double[] vals) {
-        values = vals;
+        values = Arrays.copyOf(vals, vals.length);
         fitness = 0;
     }
 

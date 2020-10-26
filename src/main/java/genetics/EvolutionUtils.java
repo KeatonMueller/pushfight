@@ -75,7 +75,7 @@ public class EvolutionUtils {
         // ensure remaining popSize to select is even
         if ((popSize - keep) % 2 != 0)
             keep++;
-        EvolutionUtils.roulette(lastGen, nextGen, (popSize - keep) / 2);
+        roulette(lastGen, nextGen, (popSize - keep) / 2);
 
         for (int i = 0; i < keep; i++) {
             nextGen.add(lastGen.get(i));

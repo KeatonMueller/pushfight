@@ -8,6 +8,7 @@ import main.java.genetics.strategy.CoevolutionSplit;
 import main.java.genetics.strategy.CoevolutionSplitRef;
 import main.java.genetics.strategy.CoopCoevolution;
 import main.java.genetics.strategy.CoopCoevolutionSplit;
+import main.java.genetics.strategy.CoopCoevolutionSplitRef;
 
 public class Evolution {
 
@@ -23,6 +24,7 @@ public class Evolution {
         System.out.println("\t3. Coevolution with Split and Reference Populations");
         System.out.println("\t4. Cooperative Coevolution");
         System.out.println("\t5. Cooperative Coevolution with Split Populations");
+        System.out.println("\t6. Cooperative Coevolution with Split and Reference Populations");
         int type = Integer.parseInt(scan.nextLine().trim());
 
         int num = 0;
@@ -61,6 +63,9 @@ public class Evolution {
                 break;
             case 5:
                 new CoopCoevolutionSplit(time, size);
+                break;
+            case 6:
+                new CoopCoevolutionSplitRef(time, size);
                 break;
         }
         scan.close();
