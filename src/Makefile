@@ -17,5 +17,8 @@ gui: pushfight
 evolve: pushfight
 	java main/java/PushFight evolve
 
+evaluate: pushfight
+	java main/java/PushFight evaluate
+
 test: pushfight
 	java main/java/PushFight

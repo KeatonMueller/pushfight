@@ -15,6 +15,16 @@ import main.java.genetics.Genome;
  * pairs using the best member from the previous generation.
  */
 public class CoopCoevolution {
+    /**
+     * Weights after 8 hours of training
+     */
+    public static double[] weights = {-0.776162659738739, -0.3549946163174271, -0.4945135714318394,
+            -0.5126436728426429, 0.7837807365029039, 0.8181361806915345, 0.1561907410439045,
+            0.24423959457745026, 0.6046054197371902, 0.8095602181130259, 0.8536854380381231,
+            -0.4172114452237199, 0.38559101796554085, -0.5411274337275029, -0.8922206904646692,
+            0.5883683042692811, 0.8463679305068612, -0.5924699580833095, -0.6283127361884846,
+            0.08733782182401773};
+
     private long timeLimit;
     private int popSize;
 

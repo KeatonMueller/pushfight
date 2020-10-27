@@ -11,12 +11,13 @@ import javax.swing.JRadioButton;
 
 import main.java.agents.Agent;
 import main.java.agents.RandomAgent;
+import main.java.agents.StochasticABAgent;
 import main.java.agents.AlphaBetaAgent;
 import main.java.agents.MonteCarloAgent;
 
 public class PlayerSelect extends JPanel {
     private static final long serialVersionUID = 1L;
-    private static final int NUM_OPTIONS = 4;
+    private static final int NUM_OPTIONS = 5;
     private Agent p1, p2;
 
     public PlayerSelect() {
@@ -24,6 +25,7 @@ public class PlayerSelect extends JPanel {
         JRadioButton human;
         JRadioButton random;
         JRadioButton alpha;
+        JRadioButton stoch;
         JRadioButton mcts;
         List<JRadioButton> options;
 
@@ -32,17 +34,20 @@ public class PlayerSelect extends JPanel {
             human = new JRadioButton("Human");
             random = new JRadioButton("Random");
             alpha = new JRadioButton("Alpha Beta");
+            stoch = new JRadioButton("Stochastic Alpha Beta");
             mcts = new JRadioButton("MCTS");
 
             options = new ArrayList<>();
             options.add(human);
             options.add(random);
             options.add(alpha);
+            options.add(stoch);
             options.add(mcts);
 
             instrument(human, options, null, i);
             instrument(random, options, new RandomAgent(), i);
             instrument(alpha, options, new AlphaBetaAgent(), i);
+            instrument(stoch, options, new StochasticABAgent(), i);
             instrument(mcts, options, new MonteCarloAgent(5), i);
 
             human.setSelected(true);

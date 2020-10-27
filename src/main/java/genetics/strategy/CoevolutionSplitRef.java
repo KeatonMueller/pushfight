@@ -9,6 +9,17 @@ import main.java.genetics.EvolutionUtils;
 import main.java.genetics.Genome;
 
 public class CoevolutionSplitRef {
+    /**
+     * Weights after 2 days of training for P1
+     */
+    public static double[] p1Weights = {0.8445876921792111, 0.8970492450753385, 0.9080945965208406,
+            0.14852226490091258, -0.2540021511646249, 0.4553156647079748, 0.10447428668541514};
+    /**
+     * Weights after 2 days of training for P1
+     */
+    public static double[] p2Weights = {0.429423050881819, 0.7135061645010079, 0.3595997234686382,
+            0.5104436521900898, 0.27424875411762906, 0.7611561274508133, 0.8775339091415143};
+
     private long timeLimit;
     private int popSize;
     private int numValues;

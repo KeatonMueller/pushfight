@@ -1,9 +1,7 @@
 Heuristic Weights computed from genetic evolution
 
 Depth = 1
-Two Populations
-Round robin evaluation
-All weights
+CoevolutionSplit
 8hrs
 
         double[] p1 = {0.0794914991072968, 0.4299348894188404, 0.5032706590481537,
@@ -21,9 +19,7 @@ All weights
 
 
 Depth = 2
-Two Populations
-Round robin evaluation
-Component weights
+CoevolutionSplit
 8hrs
 
         double[] p1 = {0.1415312926332415, 0.19428886838354908, 0.8630174228895959,
@@ -33,9 +29,7 @@ Component weights
 
 
 Depth = 2
-One Population
-Evaluated against best from previous generation
-Component weights
+CoevolutionRef (deprecated)
 8hrs
 
         double[] p = {0.3909289592185081, 0.6584738365761535, 0.5504681606434048,
@@ -43,9 +37,7 @@ Component weights
 
 
 Depth = 2
-Two Populations
-Evaluated against best from previous generation
-Component weights
+CoevolutionSplitRef
 8hrs
 
         double[] p1 = {0.6437563536855124, 0.6196819403405889, 0.2200654726359509,
@@ -54,9 +46,7 @@ Component weights
                 -0.039148046244779744, 0.5161271271505156, 0.6463777936774562, -0.8932208801672896};
 
 Depth = 2
-Two Populations
-Evaluated against best from previous generation
-Component weights
+CoevolutionSplitRef
 2 days
 
         double[] p1_w = {0.8445876921792111, 0.8970492450753385, 0.9080945965208406,
@@ -67,8 +57,7 @@ Component weights
                 0.8775339091415143};
 
 Depth = 2
-Cooperative Coevolution
-One set of two populations
+CoopCoevolution
 8hrs
 
         double[] wei = {-0.776162659738739, -0.3549946163174271, -0.4945135714318394,
@@ -80,8 +69,7 @@ One set of two populations
                 -0.6283127361884846, 0.08733782182401773};
 
 Depth = 2
-Cooperative Coevolution
-Two sets of two populations
+CoopCoevolutionSplit
 8hrs
 
         double[] p1_coop = {0.5948264151331693, 0.5281978608286046, 0.9198849691855848,
@@ -98,3 +86,22 @@ Two sets of two populations
                 0.9726408949962617, 0.5598255358234272, -0.9299163766483127,
                 0.44098961133117975, 0.6996761804761772, 0.7194769712270498,
                 -0.02239087160044062, 0.9453451139177038};
+
+Depth = 2
+CoopCoevolutionSplitRef
+8hrs
+
+        double[] p1_coe = {0.24583380087876483, 0.960068691261917, -0.7793757844577769,
+                        0.16434658123452195, -0.05238374519456346, -0.997871622988638,
+                        0.04245656389238861, 0.5781587763635905, 0.4642193904792369,
+                        0.617392796322179, 0.04956464022597684, -0.1526386459750122,
+                        0.14394138227219222, -0.43018214190940607, -0.8003453401658471,
+                        0.9513003164469569, 0.37338413405869253, -0.19445388001208785,
+                        -0.17029724651656397, 0.36110362679898333};
+        double[] p2_coe = {-0.4357790804494637, -0.9691242517854948, 0.44032974755764454,
+                        -0.1223065695283061, 0.7525698883396663, 0.6422930727842218,
+                        0.23291888277216954, -0.40205636893285845, -0.8388130059988659,
+                        -0.41151782489014055, -0.266696601560666, 0.35299924671843064,
+                        0.32610378019262964, -0.14380267479282516, -0.18110815717907514,
+                        -0.29802765332197345, 0.3412007082808495, 0.18462667030299995,
+                        0.9861639476670861, 0.7203049537868078};

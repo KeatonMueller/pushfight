@@ -2,6 +2,7 @@ package main.java.genetics;
 
 import main.java.agents.Agent;
 import main.java.agents.AlphaBetaAgent;
+import main.java.agents.StochasticABAgent;
 import main.java.game.AgentGame;
 
 public class Arena {
@@ -70,5 +71,41 @@ public class Arena {
      */
     public static int playout(Agent a1, Agent a2) {
         return new AgentGame(a1, a2).getWinner();
+    }
+
+    /**
+     * Test an agent as P1 with given heuristic weights against the stochastic alpha beta agent
+     * 
+     * @param values   Weight values for heuristic
+     * @param numGames Number of games to play
+     */
+    public static void testP1(double[] values, int numGames) {
+        Agent p1 = new AlphaBetaAgent(values, 2, true);
+        Agent p2 = new StochasticABAgent();
+        int winCount = 0;
+        for (int i = 0; i < numGames; i++) {
+            if (playout(p1, p2) == 0)
+                winCount++;
+        }
+        System.out.println("P1 won " + winCount + "/" + numGames + " games = "
+                + Math.round((double) winCount / numGames * 10000) / 100.0 + "%");
+    }
+
+    /**
+     * Test an agent as P2 with given heuristic weights against the stochastic alpha beta agent
+     * 
+     * @param values   Weight values for heuristic
+     * @param numGames Number of games to play
+     */
+    public static void testP2(double[] values, int numGames) {
+        Agent p1 = new StochasticABAgent();
+        Agent p2 = new AlphaBetaAgent(values, 2, true);
+        int winCount = 0;
+        for (int i = 0; i < numGames; i++) {
+            if (playout(p1, p2) == 1)
+                winCount++;
+        }
+        System.out.println("P2 won " + winCount + "/" + numGames + " games = "
+                + Math.round((double) winCount / numGames * 10000) / 100.0 + "%");
     }
 }

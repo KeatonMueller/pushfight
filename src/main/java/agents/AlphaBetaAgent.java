@@ -75,13 +75,12 @@ public class AlphaBetaAgent extends Agent {
             System.out.print("Alpha Beta searching for a move for player " + (turn + 1) + "... ");
 
         explored = 0;
-        Bitboard nextState =
-                alphaBeta(board, DEPTH, -Double.MAX_VALUE, Double.MAX_VALUE, turn).state;
+        AlphaReturn r = alphaBeta(board, DEPTH, -Double.MAX_VALUE, Double.MAX_VALUE, turn);
 
         if (!silent)
-            System.out.println(explored + " nodes explored");
+            System.out.println(explored + " nodes explored. Best had value " + r.value);
 
-        return nextState;
+        return r.state;
     }
 
     /**
@@ -100,38 +99,38 @@ public class AlphaBetaAgent extends Agent {
             return new AlphaReturn(h.heuristic(board), null);
         }
 
-        AlphaReturn globalBest = new AlphaReturn(0, null);
-        AlphaReturn localBest;
+        AlphaReturn best = new AlphaReturn(0, null);
+        double candidateValue;
         if (turn == 0) {
-            globalBest.value = -Double.MAX_VALUE;
+            best.value = -Double.MAX_VALUE;
             for (Bitboard child : BitboardUtils.getNextStates(board, turn)) {
-                localBest = alphaBeta(child, depth - 1, alpha, beta, 1 - turn);
+                candidateValue = alphaBeta(child, depth - 1, alpha, beta, 1 - turn).value;
 
-                if (localBest.value > globalBest.value) {
-                    globalBest.value = localBest.value;
-                    globalBest.state = child;
+                if (candidateValue > best.value) {
+                    best.value = candidateValue;
+                    best.state = child;
                 }
 
-                alpha = Math.max(alpha, globalBest.value);
+                alpha = Math.max(alpha, best.value);
                 if (alpha >= beta)
                     break;
             }
-            return globalBest;
+            return best;
         } else {
-            globalBest.value = Double.MAX_VALUE;
+            best.value = Double.MAX_VALUE;
             for (Bitboard child : BitboardUtils.getNextStates(board, turn)) {
-                localBest = alphaBeta(child, depth - 1, alpha, beta, 1 - turn);
+                candidateValue = alphaBeta(child, depth - 1, alpha, beta, 1 - turn).value;
 
-                if (localBest.value < globalBest.value) {
-                    globalBest.value = localBest.value;
-                    globalBest.state = child;
+                if (candidateValue < best.value) {
+                    best.value = candidateValue;
+                    best.state = child;
                 }
 
-                beta = Math.min(beta, globalBest.value);
+                beta = Math.min(beta, best.value);
                 if (beta <= alpha)
                     break;
             }
-            return globalBest;
+            return best;
         }
     }
 }

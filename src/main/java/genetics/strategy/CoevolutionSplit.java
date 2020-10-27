@@ -12,6 +12,18 @@ import main.java.genetics.Genome;
  * evaluation is done within members of the same generation.
  */
 public class CoevolutionSplit {
+    /**
+     * Weights after 8 hours of training for P1
+     */
+    public static double[] p1Weights = {0.1415312926332415, 0.19428886838354908, 0.8630174228895959,
+            0.24582914883145413, 0.7574034273115752, 0.8224579777440452, 0.3357179455194377};
+    /**
+     * Weights after 8 hours of training for P2
+     */
+    public static double[] p2Weights = {0.8472841002973188, 0.65057018922715, -0.9935848587945897,
+            0.1403019151584265, 0.15224401772107354, 0.8116787145122498, 0.31303062999272224};
+
+
     private long timeLimit;
     private int popSize;
     private int numValues;

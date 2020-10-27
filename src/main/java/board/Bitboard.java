@@ -30,6 +30,18 @@ public class Bitboard {
     }
 
     /**
+     * For debugging purposes. Create a bitboard that copies the given bitboards
+     * 
+     * @param toCopy
+     */
+    public Bitboard(int[] toCopy) {
+        bitboards = new int[5];
+        for (int i = 0; i < 5; i++) {
+            bitboards[i] = toCopy[i];
+        }
+    }
+
+    /**
      * Reset the bitboard back to an empty state
      */
     public void reset() {
@@ -237,6 +249,16 @@ public class Bitboard {
      */
     public Bitboard getState() {
         return new Bitboard(this);
+    }
+
+    /**
+     * For debugging purposes. Print unique representation of board state to the console
+     */
+    public void repr() {
+        for (int i = 0; i < 4; i++) {
+            System.out.print(bitboards[i] + ", ");
+        }
+        System.out.println(bitboards[4]);
     }
 
     /**
