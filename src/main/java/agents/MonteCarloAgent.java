@@ -132,6 +132,14 @@ public class MonteCarloAgent extends Agent {
         this.rand = new Random();
     }
 
+    /**
+     * Initialize Monte-Carlo Tree Search agent with default time limit of 5 seconds
+     */
+    public MonteCarloAgent() {
+        this.timeLimit = 5000;
+        this.rand = new Random();
+    }
+
     public Bitboard getNextState(Bitboard board, int turn) {
         this.turn = turn;
         Tree tree = new Tree(board, this.turn);
@@ -167,8 +175,8 @@ public class MonteCarloAgent extends Agent {
             return node;
         }
 
-        // randomly choose an unexplored child
-        Bitboard nextBoard = node.unexplored.remove(rand.nextInt(node.unexplored.size()));
+        // choose first unexplored child
+        Bitboard nextBoard = node.unexplored.remove(0);
         nextNode = tree.getNode(nextBoard, turn);
         node.isFullyExpanded = node.unexplored.size() == 0;
 

@@ -48,7 +48,7 @@ public class PlayerSelect extends JPanel {
             instrument(random, options, new RandomAgent(), i);
             instrument(alpha, options, new AlphaBetaAgent(), i);
             instrument(stoch, options, new StochasticABAgent(), i);
-            instrument(mcts, options, new MonteCarloAgent(5), i);
+            instrument(mcts, options, new MonteCarloAgent(), i);
 
             human.setSelected(true);
             buttons.add(options);

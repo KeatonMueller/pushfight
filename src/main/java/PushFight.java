@@ -1,9 +1,9 @@
 package main.java;
 
+import main.java.agents.Evaluation;
 import main.java.board.heuristic.HeuristicUtils;
 import main.java.game.GUIGame;
 import main.java.game.TextGame;
-import main.java.genetics.Evaluation;
 import main.java.genetics.Evolution;
 
 public class PushFight {
