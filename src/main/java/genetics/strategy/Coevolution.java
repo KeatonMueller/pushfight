@@ -12,6 +12,12 @@ import main.java.genetics.Genome;
  * of the same generation.
  */
 public class Coevolution {
+    /**
+     * Weights after 2 days of training
+     */
+    public static double[] weights = {0.12808120614166763, -0.9984497530047178, 0.08058234074884363,
+            -0.529587564365785, 0.9784933008517469, 0.5620729724330126, 0.9262268553631087};
+
     private long timeLimit;
     private int popSize;
     private int numValues;

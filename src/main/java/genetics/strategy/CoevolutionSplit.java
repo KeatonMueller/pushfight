@@ -13,15 +13,15 @@ import main.java.genetics.Genome;
  */
 public class CoevolutionSplit {
     /**
-     * Weights after 8 hours of training for P1
+     * Weights after 2 days of training for P1
      */
-    public static double[] p1Weights = {0.1415312926332415, 0.19428886838354908, 0.8630174228895959,
-            0.24582914883145413, 0.7574034273115752, 0.8224579777440452, 0.3357179455194377};
+    public static double[] p1Weights = {0.4470917254952085, -0.9204980411673434, 0.7132774089338966,
+            0.17521488568014731, 0.844944073700155, 0.6030821040676043, 0.8642230339081908};
     /**
-     * Weights after 8 hours of training for P2
+     * Weights after 2 days of training for P2
      */
-    public static double[] p2Weights = {0.8472841002973188, 0.65057018922715, -0.9935848587945897,
-            0.1403019151584265, 0.15224401772107354, 0.8116787145122498, 0.31303062999272224};
+    public static double[] p2Weights = {0.6975941149848557, 0.6631396149044878, 0.12527247607651526,
+            0.15857850844552657, 0.4010626840263476, 0.9751960444413503, 0.16317777110633014};
 
 
     private long timeLimit;
