@@ -59,7 +59,8 @@ public class Evaluation {
                         evalP1(new AlphaBetaAgent(), numGames);
                         evalP2(new AlphaBetaAgent(), numGames);
                     case 1:
-                        // no weights currently
+                        Arena.testP1(Coevolution.weights, numGames);
+                        Arena.testP2(Coevolution.weights, numGames);
                         break;
                     case 2:
                         Arena.testP1(CoevolutionSplit.p1Weights, numGames);
