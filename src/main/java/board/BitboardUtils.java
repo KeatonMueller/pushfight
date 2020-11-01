@@ -196,6 +196,8 @@ public class BitboardUtils {
      * @param turn  Turn indicator
      */
     public static void decodeSlide(Bitboard board, int slide, int turn) {
+        if (slide == 0)
+            return;
         int pos1 = slide & ~(slide - 1);
         int pos2 = slide ^ pos1;
         if (board.owns(pos1, turn)) {
@@ -229,9 +231,8 @@ public class BitboardUtils {
     /**
      * Find all possible next states from a given board position for a given player
      * 
-     * @param board     Board to analyze
-     * @param turn      Turn indicator
-     * @param numSlides Number of sliding actions permitted
+     * @param board Board to analyze
+     * @param turn  Turn indicator
      * @return Set<Bitboard> of bitboards corresponding to possible next states
      */
     public static Set<Bitboard> getNextStates(Bitboard board, int turn) {
@@ -281,14 +282,12 @@ public class BitboardUtils {
         } else {
             // otherwise check all slide actions
             for (int slide : getSlideActions(board, turn)) {
-                // perform slide (if not a skipped slide)
-                if (slide != 0)
-                    decodeSlide(board, slide, turn);
+                // perform slide
+                decodeSlide(board, slide, turn);
                 // recurse
                 getNextStatesHelper(board, turn, numSlides - 1, states, seen);
-                // undo slide (if not a skipped slide)
-                if (slide != 0)
-                    board.restoreState(preState);
+                // undo slide
+                board.restoreState(preState);
             }
         }
     }
