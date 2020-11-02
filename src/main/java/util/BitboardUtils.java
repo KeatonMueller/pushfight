@@ -146,44 +146,6 @@ public class BitboardUtils {
             ccId++;
         }
         List<Integer> slides = new ArrayList<>();
-        slides.add(0);
-        int pieces = board.getPieces(turn);
-        int pieceMask, dests, destMask;
-        while (pieces != 0) {
-            pieceMask = pieces & ~(pieces - 1);
-            pieces ^= pieceMask;
-            if (posToAdjCCID.containsKey(pieceMask)) {
-                for (int id : posToAdjCCID.get(pieceMask)) {
-                    dests = ccIDToCC.get(id);
-                    while (dests != 0) {
-                        destMask = dests & ~(dests - 1);
-                        dests ^= destMask;
-                        slides.add(pieceMask | destMask);
-                    }
-                }
-            }
-        }
-
-        return slides;
-    }
-
-    public static List<Integer> getSlideActionsAlt(Bitboard board, int turn) {
-        posToAdjCCID.clear();
-        ccIDToOwner.clear();
-        ownerToCCs.clear();
-        ccIDToCC.clear();
-        int toCheck = (BitMasks.valid & (~board.getPieces()));
-        int check;
-        int cc, ccId = 0;
-        while (toCheck != 0) {
-            check = toCheck & ~(toCheck - 1);
-            cc = SearchUtils.checkSpaces(board, check, ccId, posToAdjCCID, ccIDToOwner, ownerToCCs);
-            toCheck ^= cc;
-            ccIDToCC.put(ccId, cc);
-            ccId++;
-        }
-        List<Integer> slides = new ArrayList<>();
-        slides.add(0);
         int pieces = board.getPieces(turn);
         int pieceMask, dests, destMask;
         while (pieces != 0) {
@@ -327,13 +289,17 @@ public class BitboardUtils {
             }
         } else {
             // otherwise check all slide actions
-            for (int slide : getSlideActions(board, turn)) {
+            List<Integer> slides = getSlideActions(board, turn);
+            // recurse on skipped slide action
+            getNextStatesHelper(board, turn, numSlides - 1, states, seen);
+            // check all slides
+            for (int i = 0; i < slides.size() - 1; i += 2) {
                 // perform slide
-                decodeSlide(board, slide, turn);
+                board.slide(slides.get(i), slides.get(i + 1));
                 // recurse
                 getNextStatesHelper(board, turn, numSlides - 1, states, seen);
                 // undo slide
-                board.restoreState(preState);
+                board.slide(slides.get(i + 1), slides.get(i));
             }
         }
     }

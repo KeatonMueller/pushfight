@@ -13,6 +13,8 @@ import main.java.board.Heuristic;
 import main.java.util.BitboardUtils;
 import main.java.util.GameUtils;
 
+// TODO: This agent no longer works with the new getSlideActions implementation
+
 public class OEPAgent extends Agent {
     private static final long TIME_BUDGET = 5 * 1000L; // 5 seconds per move
     private static final int POPULATION_SIZE = 100; // this number should always be even
@@ -132,7 +134,11 @@ public class OEPAgent extends Agent {
 
     public int randomSlide(Bitboard board, int turn) {
         List<Integer> actions = BitboardUtils.getSlideActions(board, turn);
-        return actions.get(rand.nextInt(actions.size()));
+        int choice = rand.nextInt((actions.size() / 2) + 1); // plus one for skipped slide
+        // skip slide
+        if (choice * 2 >= actions.size())
+            return 0;
+        return actions.get(choice * 2);
     }
 
     public int randomPush(Bitboard board, int turn) {

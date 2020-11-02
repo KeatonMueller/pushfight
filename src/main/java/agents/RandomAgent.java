@@ -41,7 +41,7 @@ public class RandomAgent extends Agent {
         int i, push;
         while (true) {
             for (i = 0; i < GameUtils.NUM_SLIDES; i++) {
-                BitboardUtils.decodeSlide(board, randomSlide(board, turn, rand), turn);
+                randomSlide(board, turn, rand);
             }
 
             push = randomPush(board, turn, rand);
@@ -60,11 +60,14 @@ public class RandomAgent extends Agent {
      * @param board Board to perform random slide on
      * @param turn  Turn indicator
      * @param rand  Instance of the Random class
-     * @return A random bit mask corresponding to a valid sliding action
      */
-    public static int randomSlide(Bitboard board, int turn, Random rand) {
+    public static void randomSlide(Bitboard board, int turn, Random rand) {
         List<Integer> actions = BitboardUtils.getSlideActions(board, turn);
-        return actions.get(rand.nextInt(actions.size()));
+        int choice = rand.nextInt((actions.size() / 2) + 1); // plus one for skipped slide
+        // skip slide
+        if (choice * 2 >= actions.size())
+            return;
+        board.slide(actions.get(choice * 2), actions.get((choice * 2) + 1));
     }
 
     /**

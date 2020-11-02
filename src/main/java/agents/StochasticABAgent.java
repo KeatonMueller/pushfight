@@ -87,7 +87,7 @@ public class StochasticABAgent extends Agent {
     public Bitboard getNextState(Bitboard board, int turn) {
         options.clear();
         alphaBeta(board, DEPTH, -Double.MAX_VALUE, Double.MAX_VALUE, turn);
-        int numOptions = options.size();
+        // int numOptions = options.size();
 
         // Set<Bitboard> next = BitboardUtils.getNextStates(board, turn);
 

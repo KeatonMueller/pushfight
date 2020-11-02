@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Queue;
 
-import main.java.board.Bitboard;
-import main.java.board.BitMasks;
 import main.java.util.GameUtils;
 import main.java.util.HeuristicUtils;
 import main.java.util.SearchUtils;
