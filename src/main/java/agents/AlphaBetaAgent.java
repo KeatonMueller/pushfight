@@ -3,6 +3,7 @@ package main.java.agents;
 import main.java.board.Bitboard;
 import main.java.board.Heuristic;
 import main.java.util.BitboardUtils;
+import main.java.util.SuccessorUtils;
 
 public class AlphaBetaAgent extends Agent {
     /**
@@ -103,7 +104,7 @@ public class AlphaBetaAgent extends Agent {
         double candidateValue;
         if (turn == 0) {
             best.value = -Double.MAX_VALUE;
-            for (Bitboard child : BitboardUtils.getNextStates(board, turn)) {
+            for (Bitboard child : SuccessorUtils.getNextStates(board, turn)) {
                 candidateValue = alphaBeta(child, depth - 1, alpha, beta, 1 - turn).value;
 
                 if (candidateValue > best.value) {
@@ -118,7 +119,7 @@ public class AlphaBetaAgent extends Agent {
             return best;
         } else {
             best.value = Double.MAX_VALUE;
-            for (Bitboard child : BitboardUtils.getNextStates(board, turn)) {
+            for (Bitboard child : SuccessorUtils.getNextStates(board, turn)) {
                 candidateValue = alphaBeta(child, depth - 1, alpha, beta, 1 - turn).value;
 
                 if (candidateValue < best.value) {

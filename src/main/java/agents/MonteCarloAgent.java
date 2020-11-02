@@ -8,6 +8,7 @@ import java.util.Random;
 
 import main.java.board.Bitboard;
 import main.java.util.BitboardUtils;
+import main.java.util.SuccessorUtils;
 
 /**
  * Agent to find next move using Monte-Carlo Tree Search.
@@ -75,7 +76,7 @@ public class MonteCarloAgent extends Agent {
         public Node(Bitboard board, int turn) {
             this.board = board;
             this.isTerminal = BitboardUtils.checkWinner(board) != -1;
-            this.unexplored = new ArrayList<>(BitboardUtils.getNextStates(board, turn));
+            this.unexplored = new ArrayList<>(SuccessorUtils.getNextStates(board, turn));
             this.isFullyExpanded = this.unexplored.size() == 0;
             this.children = new ArrayList<>();
             this.parents = new ArrayList<>();

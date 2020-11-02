@@ -7,6 +7,7 @@ import java.util.Random;
 import main.java.board.Bitboard;
 import main.java.util.BitboardUtils;
 import main.java.util.GameUtils;
+import main.java.util.SuccessorUtils;
 
 public class RandomAgent extends Agent {
     Random rand;
@@ -16,7 +17,7 @@ public class RandomAgent extends Agent {
     }
 
     public Bitboard getNextState(Bitboard board, int turn) {
-        Set<Bitboard> nextStates = BitboardUtils.getNextStates(board, turn);
+        Set<Bitboard> nextStates = SuccessorUtils.getNextStates(board, turn);
         int chosenIdx = rand.nextInt(nextStates.size());
         int idx = 0;
         for (Bitboard state : nextStates) {
@@ -62,7 +63,7 @@ public class RandomAgent extends Agent {
      * @param rand  Instance of the Random class
      */
     public static void randomSlide(Bitboard board, int turn, Random rand) {
-        List<Integer> actions = BitboardUtils.getSlideActions(board, turn);
+        List<Integer> actions = SuccessorUtils.getSlideActions(board, turn);
         int choice = rand.nextInt((actions.size() / 2) + 1); // plus one for skipped slide
         // skip slide
         if (choice * 2 >= actions.size())
@@ -80,7 +81,7 @@ public class RandomAgent extends Agent {
      *         from the given position
      */
     public static int randomPush(Bitboard board, int turn, Random rand) {
-        List<Integer> actions = BitboardUtils.getPushActions(board, turn);
+        List<Integer> actions = SuccessorUtils.getPushActions(board, turn);
 
         if (actions.size() == 0)
             return -1;
