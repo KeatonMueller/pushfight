@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 
 import main.java.agents.Agent;
 import main.java.board.Bitboard;
-import main.java.board.BitboardUtils;
+import main.java.util.BitboardUtils;
 
 public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;

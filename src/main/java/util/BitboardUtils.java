@@ -1,4 +1,4 @@
-package main.java.board;
+package main.java.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import main.java.game.GameUtils;
+import main.java.board.Bitboard;
+import main.java.board.BitMasks;
 
 /**
  * Utility functions to facilitate play using bitboards
@@ -166,6 +167,44 @@ public class BitboardUtils {
         return slides;
     }
 
+    public static List<Integer> getSlideActionsAlt(Bitboard board, int turn) {
+        posToAdjCCID.clear();
+        ccIDToOwner.clear();
+        ownerToCCs.clear();
+        ccIDToCC.clear();
+        int toCheck = (BitMasks.valid & (~board.getPieces()));
+        int check;
+        int cc, ccId = 0;
+        while (toCheck != 0) {
+            check = toCheck & ~(toCheck - 1);
+            cc = SearchUtils.checkSpaces(board, check, ccId, posToAdjCCID, ccIDToOwner, ownerToCCs);
+            toCheck ^= cc;
+            ccIDToCC.put(ccId, cc);
+            ccId++;
+        }
+        List<Integer> slides = new ArrayList<>();
+        slides.add(0);
+        int pieces = board.getPieces(turn);
+        int pieceMask, dests, destMask;
+        while (pieces != 0) {
+            pieceMask = pieces & ~(pieces - 1);
+            pieces ^= pieceMask;
+            if (posToAdjCCID.containsKey(pieceMask)) {
+                for (int id : posToAdjCCID.get(pieceMask)) {
+                    dests = ccIDToCC.get(id);
+                    while (dests != 0) {
+                        destMask = dests & ~(dests - 1);
+                        dests ^= destMask;
+                        slides.add(pieceMask);
+                        slides.add(destMask);
+                    }
+                }
+            }
+        }
+
+        return slides;
+    }
+
     /**
      * Get all the push actions for a given board state for a given player
      * 
@@ -226,6 +265,13 @@ public class BitboardUtils {
         } else {
             System.out.println("error in push");
         }
+    }
+
+    public static void decodeActions(Bitboard board, int[] actions, int turn) {
+        for (int i = 0; i < actions.length - 1; i++) {
+            decodeSlide(board, actions[i], turn);
+        }
+        decodePush(board, actions[actions.length - 1], turn);
     }
 
     /**
@@ -352,5 +398,31 @@ public class BitboardUtils {
         if (posMask == 0)
             return false;
         return true;
+    }
+
+    public static boolean isValidPush(Bitboard board, int push, int turn) {
+        int maskOne = push & ~(push - 1);
+        int maskTwo = push ^ maskOne;
+        if (board.owns(maskOne, turn)) {
+            return isValidPush(board, maskOne, BitMasks.dirMaskToChar.get(maskTwo));
+        } else if (board.owns(maskTwo, turn)) {
+            return isValidPush(board, maskTwo, BitMasks.dirMaskToChar.get(maskOne));
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isValidSlide(Bitboard board, int slide, int turn) {
+        if (slide == 0)
+            return true;
+        int pos1 = slide & ~(slide - 1);
+        int pos2 = slide ^ pos1;
+        if (board.owns(pos1, turn) && board.isEmpty(pos2)) {
+            return true;
+        } else if (board.owns(pos2, turn) && board.isEmpty(pos1)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

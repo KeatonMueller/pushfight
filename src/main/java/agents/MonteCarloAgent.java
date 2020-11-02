@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Random;
 
 import main.java.board.Bitboard;
-import main.java.board.BitboardUtils;
+import main.java.util.BitboardUtils;
 
 /**
  * Agent to find next move using Monte-Carlo Tree Search.

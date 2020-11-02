@@ -5,7 +5,7 @@ import java.util.Map;
 
 import main.java.agents.Agent;
 import main.java.board.Bitboard;
-import main.java.board.BitboardUtils;
+import main.java.util.BitboardUtils;
 
 public class AgentGame {
     private Bitboard board;

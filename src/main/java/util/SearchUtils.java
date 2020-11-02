@@ -1,8 +1,11 @@
-package main.java.board;
+package main.java.utils;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import main.java.board.Bitboard;
+import main.java.board.BitMasks;
 
 public class SearchUtils {
     /**

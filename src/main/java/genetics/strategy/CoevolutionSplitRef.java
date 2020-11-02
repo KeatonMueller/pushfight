@@ -3,10 +3,10 @@ package main.java.genetics.strategy;
 import java.util.ArrayList;
 import java.util.List;
 
-import main.java.board.heuristic.HeuristicUtils;
 import main.java.genetics.Arena;
 import main.java.genetics.EvolutionUtils;
 import main.java.genetics.Genome;
+import main.java.util.HeuristicUtils;
 
 public class CoevolutionSplitRef {
     /**

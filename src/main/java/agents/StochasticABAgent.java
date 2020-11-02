@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Random;
 
 import main.java.board.Bitboard;
-import main.java.board.BitboardUtils;
-import main.java.board.heuristic.Heuristic;
+import main.java.board.Heuristic;
+import main.java.util.BitboardUtils;
 
 /**
  * Class to perform a modified Minimax search using Alpha Beta. This method introduces a pruning

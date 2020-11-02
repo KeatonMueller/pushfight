@@ -5,8 +5,8 @@ import java.util.Set;
 import java.util.Random;
 
 import main.java.board.Bitboard;
-import main.java.board.BitboardUtils;
-import main.java.game.GameUtils;
+import main.java.util.BitboardUtils;
+import main.java.util.GameUtils;
 
 public class RandomAgent extends Agent {
     Random rand;

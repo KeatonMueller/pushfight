@@ -1,4 +1,4 @@
-package main.java.board.heuristic;
+package main.java.board;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -8,8 +8,9 @@ import java.util.Queue;
 
 import main.java.board.Bitboard;
 import main.java.board.BitMasks;
-import main.java.board.SearchUtils;
-import main.java.game.GameUtils;
+import main.java.util.GameUtils;
+import main.java.util.HeuristicUtils;
+import main.java.util.SearchUtils;
 
 public class Heuristic {
     /**

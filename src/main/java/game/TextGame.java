@@ -7,7 +7,8 @@ import main.java.agents.AlphaBetaAgent;
 import main.java.agents.MonteCarloAgent;
 import main.java.agents.RandomAgent;
 import main.java.board.Bitboard;
-import main.java.board.BitboardUtils;
+import main.java.util.BitboardUtils;
+import main.java.util.GameUtils;
 
 public class TextGame {
     private Scanner scan;

@@ -2,6 +2,8 @@ package main.java.board;
 
 import java.util.Arrays;
 
+import main.java.util.BitboardUtils;
+
 public class Bitboard {
     // bitboards[0] - p1 circles
     // bitboards[1] - p1 squares

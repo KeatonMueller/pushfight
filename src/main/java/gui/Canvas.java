@@ -15,8 +15,8 @@ import javax.swing.JPanel;
 
 import main.java.agents.Agent;
 import main.java.board.Bitboard;
-import main.java.board.BitboardUtils;
-import main.java.game.GameUtils;
+import main.java.util.BitboardUtils;
+import main.java.util.GameUtils;
 
 class Canvas extends JPanel {
     private static final long serialVersionUID = 1L;

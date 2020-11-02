@@ -2,13 +2,13 @@ package main.java.genetics;
 
 import java.util.Scanner;
 
-import main.java.board.heuristic.HeuristicUtils;
 import main.java.genetics.strategy.Coevolution;
 import main.java.genetics.strategy.CoevolutionSplit;
 import main.java.genetics.strategy.CoevolutionSplitRef;
 import main.java.genetics.strategy.CoopCoevolution;
 import main.java.genetics.strategy.CoopCoevolutionSplit;
 import main.java.genetics.strategy.CoopCoevolutionSplitRef;
+import main.java.util.HeuristicUtils;
 
 public class Evolution {
 

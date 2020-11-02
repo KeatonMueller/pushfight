@@ -1,4 +1,4 @@
-package main.java.game;
+package main.java.util;
 
 public class GameUtils {
     public static final int LENGTH = 8;

@@ -4,8 +4,8 @@ import java.util.*;
 
 import main.java.agents.*;
 import main.java.board.*;
-import main.java.board.heuristic.*;
 import main.java.game.*;
+import main.java.util.*;
 
 public class Debug {
     public Debug() {

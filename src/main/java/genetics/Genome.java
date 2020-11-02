@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 
-import main.java.board.heuristic.HeuristicUtils;
+import main.java.util.HeuristicUtils;
 
 public class Genome {
     public enum DefaultType {
