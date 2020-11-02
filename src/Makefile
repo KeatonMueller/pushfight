@@ -6,8 +6,11 @@ RESOURCES := $(shell find . | grep .*\\.java$)
 
 all: pushfight
 
-pushfight: $(RESOURCES)
+pushfight: clean $(RESOURCES)
 	javac $(RESOURCES)
 
 text gui evolve evaluate debug: pushfight
 	java main/java/PushFight $@
+
+clean:
+	$(shell find . -name "*.class" -type f -delete)

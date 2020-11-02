@@ -6,6 +6,7 @@ import main.java.agents.Agent;
 import main.java.agents.AlphaBetaAgent;
 import main.java.agents.MonteCarloAgent;
 import main.java.agents.RandomAgent;
+import main.java.agents.oep.OEPAgent;
 import main.java.board.Bitboard;
 import main.java.util.BitboardUtils;
 import main.java.util.GameUtils;
@@ -36,7 +37,7 @@ public class TextGame {
      * @param turn Turn indicator
      */
     public void choosePlayer(int turn) {
-        System.out.print("Choose Player " + (turn + 1) + " (human|random|alpha|mcts): ");
+        System.out.print("Choose Player " + (turn + 1) + " (human|random|alpha|mcts|oep): ");
         String player = scan.nextLine();
         switch (player.trim().toLowerCase()) {
             case "random":
@@ -46,7 +47,10 @@ public class TextGame {
                 setAgent(turn, new AlphaBetaAgent());
                 break;
             case "mcts":
-                setAgent(turn, new MonteCarloAgent(5));
+                setAgent(turn, new MonteCarloAgent());
+                break;
+            case "oep":
+                setAgent(turn, new OEPAgent());
                 break;
             case "human":
             default:

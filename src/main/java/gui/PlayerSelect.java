@@ -12,21 +12,18 @@ import javax.swing.JRadioButton;
 import main.java.agents.Agent;
 import main.java.agents.RandomAgent;
 import main.java.agents.StochasticABAgent;
+import main.java.agents.oep.OEPAgent;
 import main.java.agents.AlphaBetaAgent;
 import main.java.agents.MonteCarloAgent;
 
 public class PlayerSelect extends JPanel {
     private static final long serialVersionUID = 1L;
-    private static final int NUM_OPTIONS = 5;
+    private static final int NUM_OPTIONS = 6;
     private Agent p1, p2;
 
     public PlayerSelect() {
         List<List<JRadioButton>> buttons = new ArrayList<>();
-        JRadioButton human;
-        JRadioButton random;
-        JRadioButton alpha;
-        JRadioButton stoch;
-        JRadioButton mcts;
+        JRadioButton human, random, alpha, stoch, mcts, oep;
         List<JRadioButton> options;
 
         int i;
@@ -36,6 +33,7 @@ public class PlayerSelect extends JPanel {
             alpha = new JRadioButton("Alpha Beta");
             stoch = new JRadioButton("Stochastic Alpha Beta");
             mcts = new JRadioButton("MCTS");
+            oep = new JRadioButton("Online Evolutionary Planning");
 
             options = new ArrayList<>();
             options.add(human);
@@ -43,12 +41,14 @@ public class PlayerSelect extends JPanel {
             options.add(alpha);
             options.add(stoch);
             options.add(mcts);
+            options.add(oep);
 
             instrument(human, options, null, i);
             instrument(random, options, new RandomAgent(), i);
             instrument(alpha, options, new AlphaBetaAgent(), i);
             instrument(stoch, options, new StochasticABAgent(), i);
             instrument(mcts, options, new MonteCarloAgent(), i);
+            instrument(oep, options, new OEPAgent(), i);
 
             human.setSelected(true);
             buttons.add(options);
