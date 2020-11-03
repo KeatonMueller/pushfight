@@ -1,7 +1,8 @@
 package main.java.agents;
 
 import java.util.Scanner;
-
+import main.java.agents.mcts.MASTAgent;
+import main.java.agents.mcts.MonteCarloAgent;
 import main.java.game.AgentGame;
 import main.java.genetics.Arena;
 import main.java.genetics.strategy.Coevolution;
@@ -25,6 +26,7 @@ public class Evaluation {
         System.out.println("\t2. Alpha Beta");
         System.out.println("\t3. Stochastic Alpha Beta");
         System.out.println("\t4. MCTS");
+        System.out.println("\t5. MCTS with MAST");
         System.out.print("Choice: ");
         int agentType = Integer.parseInt(scan.nextLine().trim());
 
@@ -91,6 +93,10 @@ public class Evaluation {
             case 4:
                 evalP1(new MonteCarloAgent(), numGames);
                 evalP2(new MonteCarloAgent(), numGames);
+                break;
+            case 5:
+                evalP1(new MASTAgent(), numGames);
+                evalP2(new MASTAgent(), numGames);
                 break;
         }
         scan.close();

@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 import main.java.agents.Agent;
 import main.java.agents.AlphaBetaAgent;
-import main.java.agents.MonteCarloAgent;
 import main.java.agents.RandomAgent;
+import main.java.agents.mcts.MonteCarloAgent;
 // import main.java.agents.oep.OEPAgent;
 import main.java.board.Bitboard;
 import main.java.util.BitboardUtils;

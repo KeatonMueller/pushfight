@@ -36,27 +36,6 @@ public class BitMasks {
     public static int bottomSide = setBits(new int[] {25, 26, 27, 28, 29});
 
     /**
-     * Map from direction encoded as an int (0|1|2|3) to bit mask
-     */
-    public static int[] dirMasks = new int[4];
-    static {
-        dirMasks[0] = 1;
-        dirMasks[1] = (1 << 1);
-        dirMasks[2] = (1 << 30);
-        dirMasks[3] = (1 << 31);
-    }
-    /**
-     * Map from direction encoded as a bit mask to character (r|l|u|d)
-     */
-    public static Map<Integer, Character> dirMaskToChar = new HashMap<>();
-    static {
-        dirMaskToChar.put(dirMasks[0], 'r');
-        dirMaskToChar.put(dirMasks[1], 'l');
-        dirMaskToChar.put(dirMasks[2], 'u');
-        dirMaskToChar.put(dirMasks[3], 'd');
-    }
-
-    /**
      * Orthogonally connected squares to the given bit mask. Ignores invalid positions
      */
     public static Map<Integer, Integer> orthogonal = new HashMap<>();

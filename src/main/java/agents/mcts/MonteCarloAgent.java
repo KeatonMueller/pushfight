@@ -1,14 +1,15 @@
-package main.java.agents;
+package main.java.agents.mcts;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import main.java.agents.Agent;
+import main.java.agents.RandomAgent;
 import main.java.board.Bitboard;
+import main.java.board.State;
 import main.java.util.BitboardUtils;
-import main.java.util.SuccessorUtils;
+// import main.java.util.SuccessorUtils;
 
 /**
  * Agent to find next move using Monte-Carlo Tree Search.
@@ -16,109 +17,6 @@ import main.java.util.SuccessorUtils;
  * Adapted from my own homework from CPSC 474.
  */
 public class MonteCarloAgent extends Agent {
-    /**
-     * Data structure to maintain the game tree that the agent explores
-     */
-    private class Tree {
-        Node root; // root of tree
-        Map<Bitboard, Node> map; // map from board positions to corresponding Nodes
-
-        /**
-         * Initialize game tree with given board position at the root
-         * 
-         * @param rootPos Root board position
-         * @param turn    Turn indicator
-         */
-        public Tree(Bitboard rootPos, int turn) {
-            root = new Node(rootPos, turn);
-            map = new HashMap<>();
-            map.put(rootPos, root);
-        }
-
-        /**
-         * Get the Node corresponding to the given board state, or create a new one if none.
-         * 
-         * @param board The board to get the node for
-         * @param turn  Turn indicator
-         * @return The corresponding Node
-         */
-        public Node getNode(Bitboard board, int turn) {
-            if (map.containsKey(board)) {
-                return map.get(board);
-            }
-            Node node = new Node(board, turn);
-            map.put(board, node);
-            return node;
-        }
-    }
-
-    /**
-     * Data structure for individual nodes in the game tree
-     */
-    private class Node {
-        private List<Node> children; // (visited) children of current node
-        private List<Node> parents; // list of parents (there can be more than one)
-        private Node chosenParent; // specific parent chosen during a playout
-
-        private Bitboard board; // board state associated with this node
-        private boolean isTerminal; // whether or not node is terminal
-        private boolean isFullyExpanded; // whether or not node is fully expanded
-        private List<Bitboard> unexplored; // list of unexplored children
-        private int totalVisits; // number of times current node has been visited
-        private Map<Node, Stats> childToStats; // map from child node to stats
-
-        /**
-         * Initialize new Node for given board state
-         * 
-         * @param board Board state
-         * @param turn  Turn indicator
-         */
-        public Node(Bitboard board, int turn) {
-            this.board = board;
-            this.isTerminal = BitboardUtils.checkWinner(board) != -1;
-            this.unexplored = new ArrayList<>(SuccessorUtils.getNextStates(board, turn));
-            this.isFullyExpanded = this.unexplored.size() == 0;
-            this.children = new ArrayList<>();
-            this.parents = new ArrayList<>();
-            this.totalVisits = 0;
-            this.childToStats = new HashMap<>();
-        }
-
-        @Override
-        public int hashCode() {
-            return board.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-
-            Node other = (Node) obj;
-            return this.board.equals(other.board);
-        }
-    }
-
-    /**
-     * Stats object to track statistics for EDGES in the game tree
-     */
-    private class Stats {
-        private int numPlays; // number of times this action/edge has been played
-        private int totalReward; // aggregate reward seen along edge
-
-        /**
-         * Initialize Stats object with zero values
-         */
-        public Stats() {
-            this.numPlays = 0;
-            this.totalReward = 0;
-        }
-    }
-
     private long timeLimit; // time allowed to explore game tree
     private Random rand; // Random object used for random playouts
     private int turn; // turn indicator
@@ -147,11 +45,14 @@ public class MonteCarloAgent extends Agent {
         Node leaf;
         int result;
         long startTime = System.currentTimeMillis();
+        int i = 0;
         while (System.currentTimeMillis() - startTime < timeLimit) {
             leaf = traverse(tree);
             result = playout(leaf);
             updateStats(leaf, result);
+            i++;
         }
+        System.out.println("explored " + i + " paths");
         return getBestState(tree.root);
     }
 
@@ -177,8 +78,8 @@ public class MonteCarloAgent extends Agent {
         }
 
         // choose first unexplored child
-        Bitboard nextBoard = node.unexplored.remove(0);
-        nextNode = tree.getNode(nextBoard, turn);
+        State state = node.unexplored.remove(0);
+        nextNode = tree.getNode(state, turn);
         node.isFullyExpanded = node.unexplored.size() == 0;
 
         // add child to node's children and initialize new edge Stats
@@ -199,14 +100,22 @@ public class MonteCarloAgent extends Agent {
      * @return Result of playout (1 if p1 win, -1 if p2 win)
      */
     private int playout(Node node) {
-        Bitboard board = new Bitboard(node.board);
-        int winner;
+        Map<Bitboard, Integer> boardToNum = new HashMap<>();
+        Bitboard board = new Bitboard(node.state.board);
+        int winner, count;
         while (true) {
             winner = BitboardUtils.checkWinner(board);
             if (winner != -1) {
                 if (winner == 0)
                     return 1;
                 return -1;
+            }
+
+            // add tie logic in rare case of long loop
+            count = boardToNum.getOrDefault(board, 0);
+            boardToNum.put(board, count + 1);
+            if (count >= 5) {
+                return 0;
             }
 
             RandomAgent.randomMove(board, turn, rand);
@@ -324,6 +233,6 @@ public class MonteCarloAgent extends Agent {
                 }
             }
         }
-        return bestNode.board;
+        return bestNode.state.board;
     }
 }

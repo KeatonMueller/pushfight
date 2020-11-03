@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.Random;
 
 import main.java.board.Bitboard;
-import main.java.util.BitboardUtils;
 import main.java.util.GameUtils;
 import main.java.util.SuccessorUtils;
 
@@ -39,18 +38,16 @@ public class RandomAgent extends Agent {
      */
     public static void randomMove(Bitboard board, int turn, Random rand) {
         Bitboard initState = board.getState();
-        int i, push;
+        int i;
         while (true) {
             for (i = 0; i < GameUtils.NUM_SLIDES; i++) {
                 randomSlide(board, turn, rand);
             }
 
-            push = randomPush(board, turn, rand);
-            if (push == -1) {
+            if (!randomPush(board, turn, rand)) {
                 board.restoreState(initState);
                 continue;
             }
-            BitboardUtils.decodePush(board, push, turn);
             return;
         }
     }
@@ -76,16 +73,17 @@ public class RandomAgent extends Agent {
      * 
      * @param board Board to perform random push on
      * @param turn  Turn indicator
-     * @param rand  Instanc eof the Random class
-     * @return A random bit mask corresponding to a valid push action, or -1 if no pushes possible
-     *         from the given position
+     * @param rand  Instance of the Random class
+     * @return true if push was performed, else false
      */
-    public static int randomPush(Bitboard board, int turn, Random rand) {
+    public static boolean randomPush(Bitboard board, int turn, Random rand) {
         List<Integer> actions = SuccessorUtils.getPushActions(board, turn);
 
         if (actions.size() == 0)
-            return -1;
+            return false;
 
-        return actions.get(rand.nextInt(actions.size()));
+        int choice = rand.nextInt(actions.size() / 2);
+        board.push(actions.get(choice), (char) (int) actions.get(choice + 1));
+        return true;
     }
 }

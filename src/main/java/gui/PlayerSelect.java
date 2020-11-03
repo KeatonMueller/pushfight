@@ -12,9 +12,9 @@ import javax.swing.JRadioButton;
 import main.java.agents.Agent;
 import main.java.agents.RandomAgent;
 import main.java.agents.StochasticABAgent;
-// import main.java.agents.oep.OEPAgent;
 import main.java.agents.AlphaBetaAgent;
-import main.java.agents.MonteCarloAgent;
+import main.java.agents.mcts.MonteCarloAgent;
+// import main.java.agents.oep.OEPAgent;
 
 public class PlayerSelect extends JPanel {
     private static final long serialVersionUID = 1L;

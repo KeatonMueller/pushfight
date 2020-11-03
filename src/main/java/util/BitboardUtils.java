@@ -104,9 +104,9 @@ public class BitboardUtils {
         int pushable = 0;
         if (!board.isSquare(posMask))
             return pushable;
-        for (int dir = 0; dir < 4; dir++) {
-            if (isValidPush(board, posMask, GameUtils.dirIntToChar[dir])) {
-                pushable |= updateMask(posMask, GameUtils.dirIntToChar[dir]);
+        for (char dir : GameUtils.DIRECTIONS) {
+            if (isValidPush(board, posMask, dir)) {
+                pushable |= updateMask(posMask, dir);
             }
         }
         return pushable;
@@ -131,32 +131,6 @@ public class BitboardUtils {
         } else {
             System.out.println("error in slide");
         }
-    }
-
-    /**
-     * Perform the push encoded in the given int
-     * 
-     * @param board Bitboard to perform slide on
-     * @param push  Encoded push action, where source bit and direction indicator are set
-     * @param turn  Turn indicator
-     */
-    public static void decodePush(Bitboard board, int push, int turn) {
-        int maskOne = push & ~(push - 1);
-        int maskTwo = push ^ maskOne;
-        if (board.isValid(maskOne)) {
-            board.push(maskOne, BitMasks.dirMaskToChar.get(maskTwo));
-        } else if (board.isValid(maskTwo)) {
-            board.push(maskTwo, BitMasks.dirMaskToChar.get(maskOne));
-        } else {
-            System.out.println("error in push");
-        }
-    }
-
-    public static void decodeActions(Bitboard board, int[] actions, int turn) {
-        for (int i = 0; i < actions.length - 1; i++) {
-            decodeSlide(board, actions[i], turn);
-        }
-        decodePush(board, actions[actions.length - 1], turn);
     }
 
     /**
@@ -219,31 +193,5 @@ public class BitboardUtils {
         if (posMask == 0)
             return false;
         return true;
-    }
-
-    public static boolean isValidPush(Bitboard board, int push, int turn) {
-        int maskOne = push & ~(push - 1);
-        int maskTwo = push ^ maskOne;
-        if (board.owns(maskOne, turn)) {
-            return isValidPush(board, maskOne, BitMasks.dirMaskToChar.get(maskTwo));
-        } else if (board.owns(maskTwo, turn)) {
-            return isValidPush(board, maskTwo, BitMasks.dirMaskToChar.get(maskOne));
-        } else {
-            return false;
-        }
-    }
-
-    public static boolean isValidSlide(Bitboard board, int slide, int turn) {
-        if (slide == 0)
-            return true;
-        int pos1 = slide & ~(slide - 1);
-        int pos2 = slide ^ pos1;
-        if (board.owns(pos1, turn) && board.isEmpty(pos2)) {
-            return true;
-        } else if (board.owns(pos2, turn) && board.isEmpty(pos1)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }
