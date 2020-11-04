@@ -27,6 +27,9 @@ public class AgentGame {
         a1 = agent1;
         a2 = agent2;
 
+        a1.newGame(0);
+        a2.newGame(1);
+
         BitboardUtils.skipSetup(board);
         stateToNum = new HashMap<>();
     }

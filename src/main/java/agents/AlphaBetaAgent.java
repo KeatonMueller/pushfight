@@ -19,16 +19,37 @@ public class AlphaBetaAgent extends Agent {
         }
     }
 
+    private Heuristic[] heuristics = {new Heuristic(), new Heuristic()};
     private Heuristic h;
     private int DEPTH = 2;
     private int explored;
-    private boolean silent = false;
+    private boolean silent = true;
 
     /**
      * Initialize Alpha Beta Agent with default heuristic
      */
     public AlphaBetaAgent() {
-        h = new Heuristic();
+    }
+
+    /**
+     * Initialize Alpha Beta Agent with custom heuristic
+     * 
+     * @param weights Array of doubles for heuristic
+     */
+    public AlphaBetaAgent(double[] weights) {
+        heuristics[0] = new Heuristic(weights);
+        heuristics[1] = new Heuristic(weights);
+    }
+
+    /**
+     * Initialize Alpha Beta Agent with different heuristic depending on the player
+     * 
+     * @param p1Weights Array of doubles for heuristic if playing as P1
+     * @param p2Weights Array of doubles for heuristic if playing as P2
+     */
+    public AlphaBetaAgent(double[] p1Weights, double[] p2Weights) {
+        heuristics[0] = new Heuristic(p1Weights);
+        heuristics[1] = new Heuristic(p2Weights);
     }
 
     /**
@@ -38,7 +59,6 @@ public class AlphaBetaAgent extends Agent {
      * @param silence Boolean flag to suppress print statements
      */
     public AlphaBetaAgent(int depth, boolean silence) {
-        h = new Heuristic();
         DEPTH = depth;
         silent = silence;
     }
@@ -51,7 +71,8 @@ public class AlphaBetaAgent extends Agent {
      * @param silence Boolean flag to suppress print statements
      */
     public AlphaBetaAgent(double[] values, int depth, boolean silence) {
-        h = new Heuristic(values);
+        heuristics[0] = new Heuristic(values);
+        heuristics[1] = new Heuristic(values);
         DEPTH = depth;
         silent = silence;
     }
@@ -66,9 +87,14 @@ public class AlphaBetaAgent extends Agent {
      */
     public AlphaBetaAgent(double[] componentWeights, double[] positionWeights, int depth,
             boolean silence) {
-        h = new Heuristic(componentWeights, positionWeights);
+        heuristics[0] = new Heuristic(componentWeights, positionWeights);
+        heuristics[1] = new Heuristic(componentWeights, positionWeights);
         DEPTH = depth;
         silent = silence;
+    }
+
+    public void newGame(int turn) {
+        h = heuristics[turn];
     }
 
     public Bitboard getNextState(Bitboard board, int turn) {
@@ -133,5 +159,10 @@ public class AlphaBetaAgent extends Agent {
             }
             return best;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Alpha Beta Agent";
     }
 }

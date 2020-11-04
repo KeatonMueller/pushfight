@@ -86,4 +86,9 @@ public class RandomAgent extends Agent {
         board.push(actions.get(choice), (char) (int) actions.get(choice + 1));
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "Random Agent";
+    }
 }

@@ -22,4 +22,14 @@ public abstract class Agent {
         Bitboard state = getNextState(board, turn);
         board.restoreState(state);
     }
+
+    /**
+     * Signal to the agent a new game is starting so it can perform any necessary cleanup/resetting
+     * of data structures
+     * 
+     * @param turn Turn indicator for what player the agent will be
+     */
+    public void newGame(int turn) {
+        return;
+    }
 }

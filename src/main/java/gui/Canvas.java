@@ -151,16 +151,30 @@ class Canvas extends JPanel {
                             JOptionPane.PLAIN_MESSAGE);
                     int again = JOptionPane.showConfirmDialog(null, "Play Again?");
                     if (again == JOptionPane.YES_OPTION) {
-                        winner = -1;
-                        board.reset();
-                        BitboardUtils.skipSetup(board);
-                        turn = 0;
-                        repaint();
-                        awaitNextMove();
+                        playAgain();
                     }
                 }
             });
         }
+    }
+
+    /**
+     * Restart game loop by resetting winner, turn indicator, board state, and agents
+     */
+    private void playAgain() {
+        winner = -1;
+        turn = 0;
+
+        board.reset();
+        BitboardUtils.skipSetup(board);
+
+        if (p1 != null)
+            p1.newGame(0);
+        if (p2 != null)
+            p2.newGame(1);
+
+        repaint();
+        awaitNextMove();
     }
 
     /**

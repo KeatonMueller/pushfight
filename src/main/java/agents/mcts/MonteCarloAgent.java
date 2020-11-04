@@ -235,4 +235,9 @@ public class MonteCarloAgent extends Agent {
         }
         return bestNode.state.board;
     }
+
+    @Override
+    public String toString() {
+        return "Vanilla MCTS Agent";
+    }
 }

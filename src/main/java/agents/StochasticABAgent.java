@@ -210,4 +210,9 @@ public class StochasticABAgent extends Agent {
             return best;
         }
     }
+
+    @Override
+    public String toString() {
+        return "Stochastic Alpha Beta Agent";
+    }
 }

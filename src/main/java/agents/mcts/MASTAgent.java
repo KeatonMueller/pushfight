@@ -302,4 +302,9 @@ public class MASTAgent extends Agent {
         }
         return bestNode.state.board;
     }
+
+    @Override
+    public String toString() {
+        return "MAST Agent";
+    }
 }
