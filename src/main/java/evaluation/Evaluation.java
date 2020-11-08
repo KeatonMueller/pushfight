@@ -61,6 +61,13 @@ public class Evaluation {
             evolutionType = Integer.parseInt(scan.nextLine().trim());
         }
 
+        // if mcts, choose iterations per move
+        int iterations = 5000;
+        if (agentType == 4 || agentType == 5) {
+            System.out.print("Choose number of iterations per move:");
+            iterations = Integer.parseInt(scan.nextLine().trim());
+        }
+
         switch (agentType) {
             case 1:
                 return new RandomAgent();
@@ -89,9 +96,9 @@ public class Evaluation {
             case 3:
                 return new StochasticABAgent();
             case 4:
-                return new MonteCarloAgent();
+                return new MonteCarloAgent(iterations);
             case 5:
-                return new MASTAgent();
+                return new MASTAgent(iterations);
         }
         return null;
     }

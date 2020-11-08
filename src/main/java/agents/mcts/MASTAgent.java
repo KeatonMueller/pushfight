@@ -22,29 +22,24 @@ import main.java.util.SuccessorUtils;
  */
 public class MASTAgent extends Agent {
     private final double TAU = 1.0; // tunable parameter for MAST exploration
-    private long timeLimit; // time allowed to explore game tree
-    private Random rand; // Random object used for random playouts
+    private long iterations = 5000; // iterations allowed to explore game tree
+    private Random rand = new Random(); // Random object used for random playouts
     private int turn; // turn indicator
-    private Map<Move, Stats> moveMap;
+    private Map<Move, Stats> moveMap = new HashMap<>();;
 
     /**
-     * Initialize Monte-Carlo Tree Search agent using MAST with given time limit
+     * Initialize Monte-Carlo Tree Search agent using MAST with given iteration limit
      * 
-     * @param timeLimit Max time (in seconds) allowed per move
+     * @param iterations Max iterations allowed per move
      */
-    public MASTAgent(long timeLimit) {
-        this.timeLimit = timeLimit * 1000; // convert seconds to milliseconds
-        this.rand = new Random();
-        this.moveMap = new HashMap<>();
+    public MASTAgent(long iterations) {
+        this.iterations = iterations;
     }
 
     /**
-     * Initialize Monte-Carlo Tree Search agent using MAST with default time limit of 5 seconds
+     * Initialize Monte-Carlo Tree Search agent using MAST
      */
     public MASTAgent() {
-        this.timeLimit = 5000;
-        this.rand = new Random();
-        this.moveMap = new HashMap<>();
     }
 
     public Bitboard getNextState(Bitboard board, int turn) {
@@ -53,16 +48,14 @@ public class MASTAgent extends Agent {
         Node leaf;
         int result;
         List<Move> path = new ArrayList<>();
-        long startTime = System.currentTimeMillis();
         int i = 0;
-        while (System.currentTimeMillis() - startTime < timeLimit) {
+        while (i < this.iterations) {
             leaf = traverse(tree, path);
             result = playout(leaf, path);
             updateStats(leaf, result);
             updateStats(path, result);
             i++;
         }
-        System.out.println("explored " + i + " paths");
         return getBestState(tree.root);
     }
 

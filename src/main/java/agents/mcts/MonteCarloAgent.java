@@ -17,26 +17,23 @@ import main.java.util.BitboardUtils;
  * Adapted from my own homework from CPSC 474.
  */
 public class MonteCarloAgent extends Agent {
-    private long timeLimit; // time allowed to explore game tree
-    private Random rand; // Random object used for random playouts
+    private long iterations = 5000; // iterations allowed to explore game tree
+    private Random rand = new Random();; // Random object used for random playouts
     private int turn; // turn indicator
 
     /**
-     * Initialize Monte-Carlo Tree Search agent with given time limit
+     * Initialize Monte-Carlo Tree Search agent with given iteration limit
      * 
-     * @param timeLimit Max time (in seconds) allowed per move
+     * @param iterations Max number of iterations allowed per move
      */
-    public MonteCarloAgent(long timeLimit) {
-        this.timeLimit = timeLimit * 1000; // convert seconds to milliseconds
-        this.rand = new Random();
+    public MonteCarloAgent(long iterations) {
+        this.iterations = iterations;
     }
 
     /**
-     * Initialize Monte-Carlo Tree Search agent with default time limit of 5 seconds
+     * Initialize Monte-Carlo Tree Search agent
      */
     public MonteCarloAgent() {
-        this.timeLimit = 5000;
-        this.rand = new Random();
     }
 
     public Bitboard getNextState(Bitboard board, int turn) {
@@ -44,15 +41,13 @@ public class MonteCarloAgent extends Agent {
         Tree tree = new Tree(board, this.turn);
         Node leaf;
         int result;
-        long startTime = System.currentTimeMillis();
         int i = 0;
-        while (System.currentTimeMillis() - startTime < timeLimit) {
+        while (i < this.iterations) {
             leaf = traverse(tree);
             result = playout(leaf);
             updateStats(leaf, result);
             i++;
         }
-        System.out.println("explored " + i + " paths");
         return getBestState(tree.root);
     }
 

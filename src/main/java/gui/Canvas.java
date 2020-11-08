@@ -58,6 +58,11 @@ class Canvas extends JPanel {
         slideDests = new HashSet<>();
         pushable = new HashSet<>();
 
+        if (p1 != null)
+            p1.newGame(0);
+        if (p2 != null)
+            p2.newGame(1);
+
         calculateLengths();
         // listen for clicks now that board is loaded
         addMouseListener(new MouseAdapter() {
