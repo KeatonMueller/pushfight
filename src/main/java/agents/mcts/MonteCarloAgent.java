@@ -17,6 +17,7 @@ import main.java.util.BitboardUtils;
  * Adapted from my own homework from CPSC 474.
  */
 public class MonteCarloAgent extends Agent {
+    private Map<Bitboard, Integer> boardToNum = new HashMap<>(); // facilitate tie checking
     private long iterations = 5000; // iterations allowed to explore game tree
     private Random rand = new Random();; // Random object used for random playouts
     private int turn; // turn indicator
@@ -95,7 +96,7 @@ public class MonteCarloAgent extends Agent {
      * @return Result of playout (1 if p1 win, -1 if p2 win)
      */
     private int playout(Node node) {
-        Map<Bitboard, Integer> boardToNum = new HashMap<>();
+        boardToNum.clear();
         Bitboard board = new Bitboard(node.state.board);
         int winner, count;
         while (true) {
@@ -128,20 +129,20 @@ public class MonteCarloAgent extends Agent {
         // increment number of visits
         node.totalVisits += 1;
 
-        // stop if reached root
-        if (node.parents.size() == 0)
-            return;
+        Node parent;
+        Stats stats;
+        while (node.chosenParent != null) {
+            parent = node.chosenParent;
+            node.chosenParent = null;
+            parent.totalVisits += 1;
 
-        Node parent = node.chosenParent;
-        node.chosenParent = null;
+            // update edge statistics
+            stats = parent.childToStats.get(node);
+            stats.numPlays += 1;
+            stats.totalReward += result;
 
-        // update edge statistics
-        Stats stats = parent.childToStats.get(node);
-        stats.numPlays += 1;
-        stats.totalReward += result;
-
-        // recurse
-        updateStats(parent, result);
+            node = parent;
+        }
     }
 
     /**

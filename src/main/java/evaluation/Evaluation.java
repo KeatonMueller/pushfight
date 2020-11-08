@@ -64,7 +64,7 @@ public class Evaluation {
         // if mcts, choose iterations per move
         int iterations = 5000;
         if (agentType == 4 || agentType == 5) {
-            System.out.print("Choose number of iterations per move:");
+            System.out.print("Choose number of iterations per move: ");
             iterations = Integer.parseInt(scan.nextLine().trim());
         }
 
