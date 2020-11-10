@@ -95,7 +95,7 @@ public class MonteCarloAgent extends Agent {
      * @param node Node to playout from
      * @return Result of playout (1 if p1 win, -1 if p2 win)
      */
-    private int playout(Node node) {
+    protected double playout(Node node) {
         boardToNum.clear();
         Bitboard board = new Bitboard(node.state.board);
         int winner, count;

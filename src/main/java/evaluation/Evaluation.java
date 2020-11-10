@@ -7,6 +7,7 @@ import main.java.agents.RandomAgent;
 import main.java.agents.StochasticABAgent;
 import main.java.agents.mcts.MASTAgent;
 import main.java.agents.mcts.MonteCarloAgent;
+import main.java.agents.mcts.SeededMCTSAgent;
 import main.java.game.AgentGame;
 import main.java.genetics.strategy.Coevolution;
 import main.java.genetics.strategy.CoevolutionSplit;
@@ -43,6 +44,7 @@ public class Evaluation {
         System.out.println("\t3. Stochastic Alpha Beta");
         System.out.println("\t4. MCTS");
         System.out.println("\t5. MCTS with MAST");
+        System.out.println("\t6. Heuristic-Seeded MCTS");
         System.out.print("Choice: ");
         int agentType = Integer.parseInt(scan.nextLine().trim());
 
@@ -62,8 +64,9 @@ public class Evaluation {
         }
 
         // if mcts, choose iterations per move
+        int mctsLow = 4, mctsHigh = 6;
         int iterations = 5000;
-        if (agentType == 4 || agentType == 5) {
+        if (mctsLow <= agentType && agentType <= mctsHigh) {
             System.out.print("Choose number of iterations per move: ");
             iterations = Integer.parseInt(scan.nextLine().trim());
         }
@@ -99,6 +102,8 @@ public class Evaluation {
                 return new MonteCarloAgent(iterations);
             case 5:
                 return new MASTAgent(iterations);
+            case 6:
+                return new SeededMCTSAgent(iterations);
         }
         return null;
     }
