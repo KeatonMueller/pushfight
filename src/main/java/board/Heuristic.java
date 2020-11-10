@@ -194,10 +194,10 @@ public class Heuristic {
 
         // a player missing a piece is the ultimate bad position
         if (p1Pieces != 5) {
-            return -1000000000000.0;
+            return -10000.0;
         }
         if (p2Pieces != 5) {
-            return 1000000000000.0;
+            return 10000.0;
         }
         // weight the components of the heuristic
         h += weights[2] * p1Mobility;
@@ -211,6 +211,8 @@ public class Heuristic {
 
         h += -weights[5] * p1Isolated;
         h += weights[5] * p2Isolated;
+
+        h /= 6200; // normalize
         return h;
     }
 
@@ -262,7 +264,7 @@ public class Heuristic {
     private int search(Bitboard board, int posMask, int turn) {
         // if this player doesn't even "own" any connected components, they're in bad shape...
         if (!ownerToCCs.containsKey(turn)) {
-            return 1000000;
+            return 100;
         }
 
         // perform basic BFS to explore the connected component
@@ -309,6 +311,6 @@ public class Heuristic {
             }
         }
         // no path found to a target (the circle is isolated)
-        return 10000;
+        return 100;
     }
 }

@@ -124,7 +124,7 @@ public class SuccessorUtils {
      * @param seen       List<Set<Bitboard>> List of seen board states at different levels
      */
     public static void getSuccessorsHelper(Bitboard board, int turn, int numSlides, Move move,
-            Set<State> states, List<Set<Bitboard>> seen) {
+            Set<State> successors, List<Set<Bitboard>> seen) {
         // skip if been here before
         if (seen.get(numSlides).contains(board))
             return;
@@ -144,7 +144,7 @@ public class SuccessorUtils {
 
                 // only keep this state if it's not suicidal
                 if (BitboardUtils.checkWinner(board) != 1 - turn)
-                    states.add(new State(board.getState(), move));
+                    successors.add(new State(board.getState(), move));
 
                 // undo push
                 board.restoreState(preState);
@@ -155,7 +155,7 @@ public class SuccessorUtils {
             // otherwise check all slide actions
             List<Integer> slides = getSlideActions(board, turn);
             // recurse on skipped slide action
-            getSuccessorsHelper(board, turn, numSlides - 1, move, states, seen);
+            getSuccessorsHelper(board, turn, numSlides - 1, move, successors, seen);
             // check all slides
             for (int i = 0; i < slides.size() - 1; i += 2) {
                 // perform slide
@@ -163,7 +163,7 @@ public class SuccessorUtils {
                 move.add(slides.get(i));
                 move.add(slides.get(i + 1));
                 // recurse
-                getSuccessorsHelper(board, turn, numSlides - 1, move, states, seen);
+                getSuccessorsHelper(board, turn, numSlides - 1, move, successors, seen);
                 // undo slide
                 board.slide(slides.get(i + 1), slides.get(i));
                 move.pop();

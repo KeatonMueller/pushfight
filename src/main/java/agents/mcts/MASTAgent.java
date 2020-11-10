@@ -142,7 +142,7 @@ public class MASTAgent extends Agent {
             for (State state : nextStates) {
                 if (moveMap.containsKey(state.move)) {
                     stats = moveMap.get(state.move);
-                    value = Math.exp((double) stats.totalReward / stats.numPlays / TAU);
+                    value = Math.exp(stats.totalReward / stats.numPlays / TAU);
                     totalValue += value;
                     qMap.put(state.move, value);
                 } else {
@@ -218,7 +218,8 @@ public class MASTAgent extends Agent {
     private Node bestUCT(Node node) {
         Node bestNode = null;
         double bestUCB, ucb, avgReward;
-        int totalReward, totalPlays;
+        int totalPlays;
+        double totalReward;
         Stats stats;
         if (turn == 0) {
             bestUCB = -Double.MAX_VALUE;
@@ -230,7 +231,7 @@ public class MASTAgent extends Agent {
                     totalReward += stats.totalReward;
                     totalPlays += stats.numPlays;
                 }
-                avgReward = (double) totalReward / totalPlays;
+                avgReward = totalReward / totalPlays;
                 stats = node.childToStats.get(child);
                 ucb = avgReward + Math.pow(2 * Math.log(node.totalVisits) / stats.numPlays, 0.5);
 
@@ -249,7 +250,7 @@ public class MASTAgent extends Agent {
                     totalReward += stats.totalReward;
                     totalPlays += stats.numPlays;
                 }
-                avgReward = (double) totalReward / totalPlays;
+                avgReward = totalReward / totalPlays;
                 stats = node.childToStats.get(child);
                 ucb = avgReward - Math.pow(2 * Math.log(node.totalVisits) / stats.numPlays, 0.5);
 
@@ -276,7 +277,7 @@ public class MASTAgent extends Agent {
             bestReward = -Double.MAX_VALUE;
             for (Node child : node.childToStats.keySet()) {
                 stats = node.childToStats.get(child);
-                reward = (double) stats.totalReward / stats.numPlays;
+                reward = stats.totalReward / stats.numPlays;
                 if (reward > bestReward) {
                     bestReward = reward;
                     bestNode = child;
@@ -286,7 +287,7 @@ public class MASTAgent extends Agent {
             bestReward = Double.MAX_VALUE;
             for (Node child : node.childToStats.keySet()) {
                 stats = node.childToStats.get(child);
-                reward = (double) stats.totalReward / stats.numPlays;
+                reward = stats.totalReward / stats.numPlays;
                 if (reward < bestReward) {
                     bestReward = reward;
                     bestNode = child;

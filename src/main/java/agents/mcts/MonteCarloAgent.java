@@ -41,7 +41,7 @@ public class MonteCarloAgent extends Agent {
         this.turn = turn;
         Tree tree = new Tree(board, this.turn);
         Node leaf;
-        int result;
+        double result;
         int i = 0;
         while (i < this.iterations) {
             leaf = traverse(tree);
@@ -125,7 +125,7 @@ public class MonteCarloAgent extends Agent {
      * @param node   Node to traverse from
      * @param result Game result to propagate
      */
-    private void updateStats(Node node, int result) {
+    private void updateStats(Node node, double result) {
         // increment number of visits
         node.totalVisits += 1;
 
@@ -154,7 +154,8 @@ public class MonteCarloAgent extends Agent {
     private Node bestUCT(Node node) {
         Node bestNode = null;
         double bestUCB, ucb, avgReward;
-        int totalReward, totalPlays;
+        int totalPlays;
+        double totalReward;
         Stats stats;
         if (turn == 0) {
             bestUCB = -Double.MAX_VALUE;
@@ -166,7 +167,7 @@ public class MonteCarloAgent extends Agent {
                     totalReward += stats.totalReward;
                     totalPlays += stats.numPlays;
                 }
-                avgReward = (double) totalReward / totalPlays;
+                avgReward = totalReward / totalPlays;
                 stats = node.childToStats.get(child);
                 ucb = avgReward + Math.pow(2 * Math.log(node.totalVisits) / stats.numPlays, 0.5);
 
@@ -185,7 +186,7 @@ public class MonteCarloAgent extends Agent {
                     totalReward += stats.totalReward;
                     totalPlays += stats.numPlays;
                 }
-                avgReward = (double) totalReward / totalPlays;
+                avgReward = totalReward / totalPlays;
                 stats = node.childToStats.get(child);
                 ucb = avgReward - Math.pow(2 * Math.log(node.totalVisits) / stats.numPlays, 0.5);
 
@@ -212,7 +213,7 @@ public class MonteCarloAgent extends Agent {
             bestReward = -Double.MAX_VALUE;
             for (Node child : node.childToStats.keySet()) {
                 stats = node.childToStats.get(child);
-                reward = (double) stats.totalReward / stats.numPlays;
+                reward = stats.totalReward / stats.numPlays;
                 if (reward > bestReward) {
                     bestReward = reward;
                     bestNode = child;
@@ -222,7 +223,7 @@ public class MonteCarloAgent extends Agent {
             bestReward = Double.MAX_VALUE;
             for (Node child : node.childToStats.keySet()) {
                 stats = node.childToStats.get(child);
-                reward = (double) stats.totalReward / stats.numPlays;
+                reward = stats.totalReward / stats.numPlays;
                 if (reward < bestReward) {
                     bestReward = reward;
                     bestNode = child;

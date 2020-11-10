@@ -7,7 +7,7 @@ public class HeuristicUtils {
     /**
      * Default values used to weight heuristic
      */
-    public static double[] defaultValues = {1.0, 2.0, 1.0, 1.0, 200.0, 1000000.0, 100.0, -10.0, 3.0,
+    public static double[] defaultValues = {1.0, 2.0, 1.0, 1.0, 50.0, 1000.0, 20.0, -10.0, 3.0,
             -10.0, -10.0, 1.0, 10.0, -10.0, 0.0, 7.0, 10.0, -10.0, 3.0, 5.0};
 
     /**
