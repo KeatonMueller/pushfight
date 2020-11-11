@@ -11,7 +11,7 @@ import main.java.genetics.strategy.CoopCoevolutionSplitRef;
 /**
  * Used to compare the old weights of a particular evolution strategy to new ones
  */
-public class ComparePrevious extends Evaluation {
+public class ComparePrevious {
     public ComparePrevious() {
         Scanner scan = new Scanner(System.in);
 
@@ -51,7 +51,7 @@ public class ComparePrevious extends Evaluation {
         int numGames = Integer.parseInt(scan.nextLine().trim());
 
         System.out.println("New values start as P1 with old values starting as P2");
-        evalAgents(a1, a2, numGames);
+        Evaluation.evalAgents(a1, a2, numGames);
 
         scan.close();
     }
