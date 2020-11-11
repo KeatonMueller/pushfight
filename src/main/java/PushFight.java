@@ -1,5 +1,6 @@
 package main.java;
 
+import main.java.evaluation.ComparePrevious;
 import main.java.evaluation.Evaluation;
 import main.java.game.GUIGame;
 import main.java.game.TextGame;
@@ -23,6 +24,9 @@ public class PushFight {
                                 break;
                         case "evaluate":
                                 new Evaluation();
+                                break;
+                        case "compare":
+                                new ComparePrevious();
                                 break;
                         case "debug":
                                 new Debug();
