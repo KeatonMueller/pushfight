@@ -116,13 +116,15 @@ public class Evaluation {
      * @param numGames Number of games to play
      */
     public static void evalAgents(Agent p1, Agent p2, int numGames) {
-        int winner, p1Wins = 0, p2Wins = 0;
+        int winner, p1Wins = 0, p2Wins = 0, ties = 0;
         for (int i = 0; i < numGames; i++) {
             winner = (new AgentGame(p1, p2)).getWinner();
             if (winner == 0)
                 p1Wins++;
             else if (winner == 1)
                 p2Wins++;
+            else
+                ties++;
         }
         System.out.println("Results after " + numGames + " games:");
         System.out.println("\tPlayer 1: " + p1 + " won " + p1Wins + "/" + numGames + " games ("
@@ -130,5 +132,6 @@ public class Evaluation {
 
         System.out.println("\tPlayer 2: " + p2 + " won " + p2Wins + "/" + numGames + " games ("
                 + Math.round((double) p2Wins / numGames * 10000) / 100.0 + "%)");
+        System.out.println("Ties: " + ties);
     }
 }

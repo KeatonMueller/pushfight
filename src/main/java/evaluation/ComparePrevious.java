@@ -50,8 +50,10 @@ public class ComparePrevious {
         System.out.print("Number of games: ");
         int numGames = Integer.parseInt(scan.nextLine().trim());
 
-        System.out.println("New values start as P1 with old values starting as P2");
+        System.out.println("New values playing as Player 1:");
         Evaluation.evalAgents(a1, a2, numGames);
+        System.out.println("New values playing as Player 2:");
+        Evaluation.evalAgents(a2, a1, numGames);
 
         scan.close();
     }
