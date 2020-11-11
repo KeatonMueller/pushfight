@@ -132,6 +132,6 @@ public class Evaluation {
 
         System.out.println("\tPlayer 2: " + p2 + " won " + p2Wins + "/" + numGames + " games ("
                 + Math.round((double) p2Wins / numGames * 10000) / 100.0 + "%)");
-        System.out.println("Ties: " + ties);
+        System.out.println("\tTies: " + ties);
     }
 }
