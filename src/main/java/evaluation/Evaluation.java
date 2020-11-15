@@ -1,6 +1,7 @@
 package main.java.evaluation;
 
 import java.util.Scanner;
+
 import main.java.agents.Agent;
 import main.java.agents.AlphaBetaAgent;
 import main.java.agents.RandomAgent;
@@ -15,6 +16,7 @@ import main.java.genetics.strategy.CoevolutionSplitRef;
 import main.java.genetics.strategy.CoopCoevolution;
 import main.java.genetics.strategy.CoopCoevolutionSplit;
 import main.java.genetics.strategy.CoopCoevolutionSplitRef;
+import main.java.util.NumberUtils;
 
 /**
  * Evaluation tool to compare any two different agents against one another
@@ -128,10 +130,10 @@ public class Evaluation {
         }
         System.out.println("Results after " + numGames + " games:");
         System.out.println("\tPlayer 1: " + p1 + " won " + p1Wins + "/" + numGames + " games ("
-                + Math.round((double) p1Wins / numGames * 10000) / 100.0 + "%)");
+                + NumberUtils.round((double) p1Wins / numGames * 100, 2) + "%)");
 
         System.out.println("\tPlayer 2: " + p2 + " won " + p2Wins + "/" + numGames + " games ("
-                + Math.round((double) p2Wins / numGames * 10000) / 100.0 + "%)");
+                + NumberUtils.round((double) p2Wins / numGames * 100, 2) + "%)");
         System.out.println("\tTies: " + ties);
     }
 }

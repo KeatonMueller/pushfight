@@ -1,5 +1,6 @@
 package main.java;
 
+import main.java.evaluation.BranchingAnalysis;
 import main.java.evaluation.ComparePrevious;
 import main.java.evaluation.Evaluation;
 import main.java.game.GUIGame;
@@ -30,6 +31,9 @@ public class PushFight {
                                 break;
                         case "debug":
                                 new Debug();
+                                break;
+                        case "analyze":
+                                new BranchingAnalysis();
                                 break;
                 }
         }

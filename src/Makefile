@@ -9,7 +9,7 @@ all: pushfight
 pushfight: clean $(RESOURCES)
 	javac $(RESOURCES)
 
-text gui evolve evaluate compare debug: pushfight
+text gui evolve evaluate compare debug analyze: pushfight
 	java -Xmx5g main/java/PushFight $@
 
 clean:

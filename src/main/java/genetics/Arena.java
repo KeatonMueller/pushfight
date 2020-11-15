@@ -4,6 +4,7 @@ import main.java.agents.Agent;
 import main.java.agents.AlphaBetaAgent;
 import main.java.agents.StochasticABAgent;
 import main.java.game.AgentGame;
+import main.java.util.NumberUtils;
 
 public class Arena {
     /**
@@ -88,7 +89,7 @@ public class Arena {
                 winCount++;
         }
         System.out.println("P1 won " + winCount + "/" + numGames + " games = "
-                + Math.round((double) winCount / numGames * 10000) / 100.0 + "%");
+                + NumberUtils.round((double) winCount / numGames * 100, 2) + "%");
     }
 
     /**
@@ -106,6 +107,6 @@ public class Arena {
                 winCount++;
         }
         System.out.println("P2 won " + winCount + "/" + numGames + " games = "
-                + Math.round((double) winCount / numGames * 10000) / 100.0 + "%");
+                + NumberUtils.round((double) winCount / numGames * 100, 2) + "%");
     }
 }
