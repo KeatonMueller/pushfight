@@ -34,6 +34,10 @@ public class BitMasks {
      * Just the very bottom row of the board
      */
     public static int bottomSide = setBits(new int[] {25, 26, 27, 28, 29});
+    /**
+     * All edge positions that you can be pushed off from
+     */
+    public static int edges = setBits(new int[] {2, 6, 8, 9, 15, 16, 22, 23, 25, 29});
 
     /**
      * Orthogonally connected squares to the given bit mask. Ignores invalid positions

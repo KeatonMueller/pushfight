@@ -11,6 +11,7 @@ import main.java.board.Bitboard;
 import main.java.board.BitMasks;
 import main.java.board.Move;
 import main.java.board.State;
+import main.java.board.StateSet;
 
 /**
  * Utility functions to determine the next states or available actions for a board state
@@ -97,8 +98,8 @@ public class SuccessorUtils {
      * 
      * @param board Board to analyze
      * @param turn  Turn indicator
-     * @return Set<Successor> of Successors corresponding to possible next states and the moves
-     *         taken to reach them
+     * @return Set<State> of State objects corresponding to possible next states and the moves taken
+     *         to reach them
      */
     public static Set<State> getSuccessors(Bitboard board, int turn) {
         // computed list of next states
@@ -120,7 +121,7 @@ public class SuccessorUtils {
      * @param turn       Turn indicator
      * @param numSlides  Number of slides remaining in turn
      * @param move       Generated Move so far
-     * @param successors Set<Successor> of computed next successors
+     * @param successors Set<State> of computed next states
      * @param seen       List<Set<Bitboard>> List of seen board states at different levels
      */
     public static void getSuccessorsHelper(Bitboard board, int turn, int numSlides, Move move,
@@ -237,5 +238,97 @@ public class SuccessorUtils {
             }
         }
         return pushes;
+    }
+
+    /**
+     * Find all possible next states from a given board position for a given player, and also record
+     * the move taken to reach that state. Group next states into categories
+     * 
+     * @param board Board to analyze
+     * @param turn  Turn indicator
+     * @return A SetSet of corresponding to possible next states and the moves taken to reach them
+     */
+    public static StateSet getStateSet(Bitboard board, int turn) {
+        // computed list of next states
+        StateSet stateSet = new StateSet();
+        // record set of board states seen at each level to avoid recomputation
+        List<Set<Bitboard>> seen = new ArrayList<>();
+        for (int i = 0; i < GameUtils.NUM_SLIDES + 1; i++) {
+            seen.add(new HashSet<>());
+        }
+        getStateSetHelper(board, turn, GameUtils.NUM_SLIDES, new Move(), stateSet, seen);
+        return stateSet;
+    }
+
+    /**
+     * Helper function for finding next successors with a variable number of sliding actions
+     * 
+     * @param board     Board to find moves for
+     * @param turn      Turn indicator
+     * @param numSlides Number of slides remaining in turn
+     * @param move      Generated Move so far
+     * @param stateSet  StateSet of computed next successors
+     * @param seen      List<Set<Bitboard>> List of seen board states at different levels
+     */
+    public static void getStateSetHelper(Bitboard board, int turn, int numSlides, Move move,
+            StateSet stateSet, List<Set<Bitboard>> seen) {
+        // skip if been here before
+        if (seen.get(numSlides).contains(board))
+            return;
+        // remember state
+        seen.get(numSlides).add(board);
+        // save board state
+        Bitboard preState = board.getState();
+        int winner;
+        if (numSlides == 0) {
+            // if zero slides remaining, check all push actions
+            List<Integer> pushes = getPushActions(board, turn);
+            for (int i = 0; i < pushes.size() - 1; i += 2) {
+                // perform push
+                board.push(pushes.get(i), (char) (int) pushes.get(i + 1));
+                move.add(pushes.get(i));
+                move.add(pushes.get(i + 1));
+
+                // pick group to put move in
+                winner = BitboardUtils.checkWinner(board);
+                if (winner == turn) {
+                    // this state is a winning state
+                    stateSet.winningStates.add(new State(board.getState(), move));
+                } else if (winner == -1) {
+                    if (!BitboardUtils.onEdge(board, turn)) {
+                        // this state does not put you on an edge
+                        stateSet.noBorderStates.add(new State(board.getState(), move));
+                    } else {
+                        // this state puts you on an edge
+                        stateSet.otherStates.add(new State(board.getState(), move));
+                    }
+                } else {
+                    // this state is suicidal. don't add it to the StateSet
+                }
+
+                // undo push
+                board.restoreState(preState);
+                move.pop();
+                move.pop();
+            }
+        } else {
+            // otherwise check all slide actions
+            List<Integer> slides = getSlideActions(board, turn);
+            // recurse on skipped slide action
+            getStateSetHelper(board, turn, numSlides - 1, move, stateSet, seen);
+            // check all slides
+            for (int i = 0; i < slides.size() - 1; i += 2) {
+                // perform slide
+                board.slide(slides.get(i), slides.get(i + 1));
+                move.add(slides.get(i));
+                move.add(slides.get(i + 1));
+                // recurse
+                getStateSetHelper(board, turn, numSlides - 1, move, stateSet, seen);
+                // undo slide
+                board.slide(slides.get(i + 1), slides.get(i));
+                move.pop();
+                move.pop();
+            }
+        }
     }
 }

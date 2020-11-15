@@ -24,6 +24,18 @@ public class BitboardUtils {
     }
 
     /**
+     * Check if the given player is on an edge of the given board
+     * 
+     * @param board The board to check
+     * @param turn  Turn indicator
+     * @return true if given player is on an edge, else false
+     */
+    public static boolean onEdge(Bitboard board, int turn) {
+        int pieces = board.getPieces(turn);
+        return !((pieces & BitMasks.edges) == 0);
+    }
+
+    /**
      * Check the board state to see if someone has won
      * 
      * @param board The board to check
