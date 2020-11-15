@@ -37,8 +37,11 @@ public class BranchingAnalysis {
         playerToBranches.put(1, new ArrayList<>());
 
         for (int i = 0; i < numGames; i++) {
+            System.out.print("Running game " + i + "\r");
             simulate();
         }
+        System.out.println();
+
         // perform analysis on recorded branching factors
         double p1Avg, p2Avg, totalAvg;
         int p1Sum = 0, p2Sum = 0, totalSum;
