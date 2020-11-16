@@ -2,9 +2,9 @@ package main.java.agents.mcts;
 
 import main.java.board.Heuristic;
 
-public class SeededMCTSAgent extends MonteCarloAgent {
+public class SeededMCTSAgent extends VanillaMCTSAgent {
     private Heuristic h = new Heuristic();
-    
+
     /**
      * Initialize Heuristic-Seeded Monte-Carlo Tree Search agent with given iteration limit
      * 
@@ -22,12 +22,12 @@ public class SeededMCTSAgent extends MonteCarloAgent {
     }
 
     @Override
-    protected double playout(Node node){
+    protected double playout(Node node) {
         return h.heuristic(node.state.board);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Heuristic-Seeded MCTS Agent";
     }
 }

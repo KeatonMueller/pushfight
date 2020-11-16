@@ -5,9 +5,7 @@ import java.util.Scanner;
 import main.java.agents.Agent;
 import main.java.agents.RandomAgent;
 import main.java.agents.alphaBeta.AlphaBetaAgent;
-import main.java.agents.mcts.MASTAgent;
 import main.java.agents.mcts.MonteCarloAgent;
-import main.java.agents.mcts.SeededMCTSAgent;
 import main.java.game.AgentGame;
 import main.java.genetics.strategy.Coevolution;
 import main.java.genetics.strategy.CoevolutionSplit;
@@ -100,11 +98,11 @@ public class Evaluation {
             case 3:
                 return new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
             case 4:
-                return new MonteCarloAgent(iterations);
+                return new MonteCarloAgent(MonteCarloAgent.Type.VANILLA, iterations);
             case 5:
-                return new MASTAgent(iterations);
+                return new MonteCarloAgent(MonteCarloAgent.Type.MAST, iterations);
             case 6:
-                return new SeededMCTSAgent(iterations);
+                return new MonteCarloAgent(MonteCarloAgent.Type.SEEDED, iterations);
         }
         return null;
     }

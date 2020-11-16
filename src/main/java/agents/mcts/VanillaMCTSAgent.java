@@ -1,60 +1,53 @@
 package main.java.agents.mcts;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import main.java.agents.Agent;
 import main.java.agents.AgentInterface;
+import main.java.agents.RandomAgent;
 import main.java.board.Bitboard;
-import main.java.board.Move;
 import main.java.board.State;
 import main.java.util.BitboardUtils;
-import main.java.util.SuccessorUtils;
+// import main.java.util.SuccessorUtils;
 
 /**
  * Agent to find next move using Monte-Carlo Tree Search.
  * 
  * Adapted from my own homework from CPSC 474.
  */
-public class MASTAgent extends Agent implements AgentInterface {
-    private final double TAU = 1.0; // tunable parameter for MAST exploration
+public class VanillaMCTSAgent extends Agent implements AgentInterface {
+    private Map<Bitboard, Integer> boardToNum = new HashMap<>(); // facilitate tie checking
     private long iterations = 5000; // iterations allowed to explore game tree
-    private Random rand = new Random(); // Random object used for random playouts
+    private Random rand = new Random();; // Random object used for random playouts
     private int turn; // turn indicator
-    private Map<Move, Stats> moveMap = new HashMap<>();;
 
     /**
-     * Initialize Monte-Carlo Tree Search agent using MAST with given iteration limit
+     * Initialize Monte-Carlo Tree Search agent with given iteration limit
      * 
-     * @param iterations Max iterations allowed per move
+     * @param iterations Max number of iterations allowed per move
      */
-    public MASTAgent(long iterations) {
+    public VanillaMCTSAgent(long iterations) {
         this.iterations = iterations;
     }
 
     /**
-     * Initialize Monte-Carlo Tree Search agent using MAST
+     * Initialize Monte-Carlo Tree Search agent
      */
-    public MASTAgent() {
+    public VanillaMCTSAgent() {
     }
 
     public Bitboard getNextState(Bitboard board, int turn) {
         this.turn = turn;
         Tree tree = new Tree(board, this.turn);
         Node leaf;
-        int result;
-        List<Move> path = new ArrayList<>();
+        double result;
         int i = 0;
         while (i < this.iterations) {
-            leaf = traverse(tree, path);
-            result = playout(leaf, path);
+            leaf = traverse(tree);
+            result = playout(leaf);
             updateStats(leaf, result);
-            updateStats(path, result);
             i++;
         }
         return getBestState(tree.root);
@@ -64,18 +57,15 @@ public class MASTAgent extends Agent implements AgentInterface {
      * Traverse the game tree by following UCT algorithm
      * 
      * @param tree Tree to traverse
-     * @param path List of Moves used on current traversal
      * @return Leaf Node at the bottom of the traversal
      */
-    private Node traverse(Tree tree, List<Move> path) {
-        path.clear();
+    private Node traverse(Tree tree) {
         Node node = tree.root;
         Node nextNode;
 
         // follow UCT until you find a non-fully-expanded node
         while (node.isFullyExpanded && !node.isTerminal) {
             nextNode = bestUCT(node);
-            path.add(nextNode.state.move);
             nextNode.chosenParent = node;
             node = nextNode;
             turn = 1 - turn;
@@ -88,9 +78,6 @@ public class MASTAgent extends Agent implements AgentInterface {
         State state = node.unexplored.remove(0);
         nextNode = tree.getNode(state, turn);
         node.isFullyExpanded = node.unexplored.size() == 0;
-
-        // add node's move to the path
-        path.add(state.move);
 
         // add child to node's children and initialize new edge Stats
         node.children.add(nextNode);
@@ -107,20 +94,12 @@ public class MASTAgent extends Agent implements AgentInterface {
      * Randomly playout from the given Node to a terminal state
      * 
      * @param node Node to playout from
-     * @param path List of Moves used on current traversal
      * @return Result of playout (1 if p1 win, -1 if p2 win)
      */
-    private int playout(Node node, List<Move> path) {
-        Bitboard board = node.state.board;
+    protected double playout(Node node) {
+        boardToNum.clear();
+        Bitboard board = new Bitboard(node.state.board);
         int winner, count;
-        Set<State> nextStates;
-        Map<Move, Double> qMap = new HashMap<>();
-        double value, randChoice, totalValue = 0.0;
-        Stats stats;
-        State choice = null;
-        Iterator<State> iter;
-        boolean found;
-        Map<Bitboard, Integer> boardToNum = new HashMap<>();
         while (true) {
             winner = BitboardUtils.checkWinner(board);
             if (winner != -1) {
@@ -136,41 +115,7 @@ public class MASTAgent extends Agent implements AgentInterface {
                 return 0;
             }
 
-            nextStates = SuccessorUtils.getSuccessors(board, turn);
-            // calculate total value, as well as value for each move
-            qMap.clear();
-            found = false;
-            for (State state : nextStates) {
-                if (moveMap.containsKey(state.move)) {
-                    stats = moveMap.get(state.move);
-                    value = Math.exp(stats.totalReward / stats.numPlays / TAU);
-                    totalValue += value;
-                    qMap.put(state.move, value);
-                } else {
-                    // totalValue += 100.0;
-                    // mastMap.put(state.move, 100.0);
-                    // always choose unexplored random move
-                    board = state.board;
-                    turn = 1 - turn;
-                    found = true;
-                    path.add(state.move);
-                    break;
-                }
-            }
-
-            if (found) {
-                continue;
-            }
-
-            randChoice = rand.nextDouble() * totalValue;
-            value = 0;
-            iter = nextStates.iterator();
-            while (iter.hasNext() && value <= randChoice) {
-                choice = iter.next();
-                value += qMap.get(choice.move);
-            }
-            board = choice.board;
-            path.add(choice.move);
+            RandomAgent.randomMove(board, turn, rand);
             turn = 1 - turn;
         }
     }
@@ -181,32 +126,23 @@ public class MASTAgent extends Agent implements AgentInterface {
      * @param node   Node to traverse from
      * @param result Game result to propagate
      */
-    private void updateStats(Node node, int result) {
+    private void updateStats(Node node, double result) {
         // increment number of visits
         node.totalVisits += 1;
 
-        // stop if reached root
-        if (node.parents.size() == 0)
-            return;
-
-        Node parent = node.chosenParent;
-        node.chosenParent = null;
-
-        // update edge statistics
-        Stats stats = parent.childToStats.get(node);
-        stats.numPlays += 1;
-        stats.totalReward += result;
-
-        // recurse
-        updateStats(parent, result);
-    }
-
-    public void updateStats(List<Move> path, int result) {
+        Node parent;
         Stats stats;
-        for (Move move : path) {
-            stats = moveMap.getOrDefault(move, new Stats());
+        while (node.chosenParent != null) {
+            parent = node.chosenParent;
+            node.chosenParent = null;
+            parent.totalVisits += 1;
+
+            // update edge statistics
+            stats = parent.childToStats.get(node);
             stats.numPlays += 1;
             stats.totalReward += result;
+
+            node = parent;
         }
     }
 
@@ -300,6 +236,6 @@ public class MASTAgent extends Agent implements AgentInterface {
 
     @Override
     public String toString() {
-        return "MAST Agent";
+        return "Vanilla MCTS Agent";
     }
 }

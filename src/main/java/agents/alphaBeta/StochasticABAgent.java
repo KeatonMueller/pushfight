@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import main.java.agents.Agent;
+import main.java.agents.AgentInterface;
 import main.java.board.Bitboard;
 import main.java.board.Heuristic;
 import main.java.util.BitboardUtils;
@@ -17,7 +18,7 @@ import main.java.util.SuccessorUtils;
  * of the minimax value. The final choice is a stochastic one based off of the values of the root's
  * children.
  */
-public class StochasticABAgent extends Agent implements AlphaBetaTemplate {
+public class StochasticABAgent extends Agent implements AgentInterface {
     /**
      * Private class to store return value of alpha beta function
      */

@@ -1,6 +1,7 @@
 package main.java.agents.alphaBeta;
 
 import main.java.agents.Agent;
+import main.java.agents.AgentInterface;
 import main.java.board.Bitboard;
 
 /**
@@ -12,7 +13,7 @@ public class AlphaBetaAgent extends Agent {
         VANILLA, STOCHASTIC, MOVE_ORDER
     }
 
-    private AlphaBetaTemplate agent;
+    private AgentInterface agent;
 
     /**
      * Initialize alpha beta agent of requested type
@@ -81,6 +82,8 @@ public class AlphaBetaAgent extends Agent {
     public AlphaBetaAgent(double[] componentWeights, double[] positionWeights, int depth) {
         this.agent = new VanillaABAgent(componentWeights, positionWeights, depth); // good
     }
+
+    // === route function calls to agent object ===
 
     public Bitboard getNextState(Bitboard board, int turn) {
         return this.agent.getNextState(board, turn);

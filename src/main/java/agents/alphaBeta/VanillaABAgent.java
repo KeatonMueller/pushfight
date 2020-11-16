@@ -1,12 +1,13 @@
 package main.java.agents.alphaBeta;
 
 import main.java.agents.Agent;
+import main.java.agents.AgentInterface;
 import main.java.board.Bitboard;
 import main.java.board.Heuristic;
 import main.java.util.BitboardUtils;
 import main.java.util.SuccessorUtils;
 
-public class VanillaABAgent extends Agent implements AlphaBetaTemplate {
+public class VanillaABAgent extends Agent implements AgentInterface {
     /**
      * Private class to store return value of alpha beta function
      */
