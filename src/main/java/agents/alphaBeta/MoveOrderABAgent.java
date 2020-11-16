@@ -1,11 +1,13 @@
-package main.java.agents;
+package main.java.agents.alphaBeta;
 
+import main.java.agents.Agent;
 import main.java.board.Bitboard;
 import main.java.board.Heuristic;
+import main.java.board.State;
 import main.java.util.BitboardUtils;
 import main.java.util.SuccessorUtils;
 
-public class AlphaBetaAgent extends Agent {
+public class MoveOrderABAgent extends Agent implements AlphaBetaTemplate {
     /**
      * Private class to store return value of alpha beta function
      */
@@ -28,7 +30,7 @@ public class AlphaBetaAgent extends Agent {
     /**
      * Initialize Alpha Beta Agent with default heuristic
      */
-    public AlphaBetaAgent() {
+    public MoveOrderABAgent() {
     }
 
     /**
@@ -36,7 +38,7 @@ public class AlphaBetaAgent extends Agent {
      * 
      * @param weights Array of doubles for heuristic
      */
-    public AlphaBetaAgent(double[] weights) {
+    public MoveOrderABAgent(double[] weights) {
         heuristics[0] = new Heuristic(weights);
         heuristics[1] = new Heuristic(weights);
     }
@@ -47,20 +49,9 @@ public class AlphaBetaAgent extends Agent {
      * @param p1Weights Array of doubles for heuristic if playing as P1
      * @param p2Weights Array of doubles for heuristic if playing as P2
      */
-    public AlphaBetaAgent(double[] p1Weights, double[] p2Weights) {
+    public MoveOrderABAgent(double[] p1Weights, double[] p2Weights) {
         heuristics[0] = new Heuristic(p1Weights);
         heuristics[1] = new Heuristic(p2Weights);
-    }
-
-    /**
-     * Initialize Alpha Beta Agent with default heuristic and custom depth
-     * 
-     * @param depth   Depth to run minimax to
-     * @param silence Boolean flag to suppress print statements
-     */
-    public AlphaBetaAgent(int depth, boolean silence) {
-        DEPTH = depth;
-        silent = silence;
     }
 
     /**
@@ -70,11 +61,10 @@ public class AlphaBetaAgent extends Agent {
      * @param depth   Depth to run minimax to
      * @param silence Boolean flag to suppress print statements
      */
-    public AlphaBetaAgent(double[] values, int depth, boolean silence) {
+    public MoveOrderABAgent(double[] values, int depth) {
         heuristics[0] = new Heuristic(values);
         heuristics[1] = new Heuristic(values);
         DEPTH = depth;
-        silent = silence;
     }
 
     /**
@@ -85,12 +75,10 @@ public class AlphaBetaAgent extends Agent {
      * @param depth            Depth to run minimax to
      * @param silence          Boolean flag to suppress print statements
      */
-    public AlphaBetaAgent(double[] componentWeights, double[] positionWeights, int depth,
-            boolean silence) {
+    public MoveOrderABAgent(double[] componentWeights, double[] positionWeights, int depth) {
         heuristics[0] = new Heuristic(componentWeights, positionWeights);
         heuristics[1] = new Heuristic(componentWeights, positionWeights);
         DEPTH = depth;
-        silent = silence;
     }
 
     public void newGame(int turn) {
@@ -128,9 +116,11 @@ public class AlphaBetaAgent extends Agent {
 
         AlphaReturn best = new AlphaReturn(0, null);
         double candidateValue;
+        Bitboard child;
         if (turn == 0) {
             best.value = -Double.MAX_VALUE;
-            for (Bitboard child : SuccessorUtils.getNextStates(board, turn)) {
+            for (State state : SuccessorUtils.getStateSet(board, turn)) {
+                child = state.board;
                 candidateValue = alphaBeta(child, depth - 1, alpha, beta, 1 - turn).value;
 
                 if (candidateValue > best.value) {
@@ -145,7 +135,8 @@ public class AlphaBetaAgent extends Agent {
             return best;
         } else {
             best.value = Double.MAX_VALUE;
-            for (Bitboard child : SuccessorUtils.getNextStates(board, turn)) {
+            for (State state : SuccessorUtils.getStateSet(board, turn)) {
+                child = state.board;
                 candidateValue = alphaBeta(child, depth - 1, alpha, beta, 1 - turn).value;
 
                 if (candidateValue < best.value) {

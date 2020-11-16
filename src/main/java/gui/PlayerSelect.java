@@ -11,8 +11,7 @@ import javax.swing.JRadioButton;
 
 import main.java.agents.Agent;
 import main.java.agents.RandomAgent;
-import main.java.agents.StochasticABAgent;
-import main.java.agents.AlphaBetaAgent;
+import main.java.agents.alphaBeta.AlphaBetaAgent;
 import main.java.agents.mcts.MonteCarloAgent;
 // import main.java.agents.oep.OEPAgent;
 
@@ -46,7 +45,7 @@ public class PlayerSelect extends JPanel {
             instrument(human, options, null, i);
             instrument(random, options, new RandomAgent(), i);
             instrument(alpha, options, new AlphaBetaAgent(), i);
-            instrument(stoch, options, new StochasticABAgent(), i);
+            instrument(stoch, options, new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC), i);
             instrument(mcts, options, new MonteCarloAgent(), i);
             // instrument(oep, options, new OEPAgent(), i);
 

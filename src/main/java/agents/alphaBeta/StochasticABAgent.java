@@ -1,10 +1,11 @@
-package main.java.agents;
+package main.java.agents.alphaBeta;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import main.java.agents.Agent;
 import main.java.board.Bitboard;
 import main.java.board.Heuristic;
 import main.java.util.BitboardUtils;
@@ -16,7 +17,7 @@ import main.java.util.SuccessorUtils;
  * of the minimax value. The final choice is a stochastic one based off of the values of the root's
  * children.
  */
-public class StochasticABAgent extends Agent {
+public class StochasticABAgent extends Agent implements AlphaBetaTemplate {
     /**
      * Private class to store return value of alpha beta function
      */
@@ -71,18 +72,6 @@ public class StochasticABAgent extends Agent {
      */
     public StochasticABAgent() {
         h = new Heuristic();
-    }
-
-    /**
-     * Initialize Alpha Beta Agent with default heuristic and custom depth
-     * 
-     * @param depth     Depth to run minimax to
-     * @param threshold Threshold to prune at lower depths
-     */
-    public StochasticABAgent(int depth, double threshold) {
-        h = new Heuristic();
-        DEPTH = depth;
-        PT = threshold;
     }
 
     public Bitboard getNextState(Bitboard board, int turn) {

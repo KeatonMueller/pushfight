@@ -3,9 +3,8 @@ package main.java.evaluation;
 import java.util.Scanner;
 
 import main.java.agents.Agent;
-import main.java.agents.AlphaBetaAgent;
 import main.java.agents.RandomAgent;
-import main.java.agents.StochasticABAgent;
+import main.java.agents.alphaBeta.AlphaBetaAgent;
 import main.java.agents.mcts.MASTAgent;
 import main.java.agents.mcts.MonteCarloAgent;
 import main.java.agents.mcts.SeededMCTSAgent;
@@ -99,7 +98,7 @@ public class Evaluation {
                 }
                 break;
             case 3:
-                return new StochasticABAgent();
+                return new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
             case 4:
                 return new MonteCarloAgent(iterations);
             case 5:

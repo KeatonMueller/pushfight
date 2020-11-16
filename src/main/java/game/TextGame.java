@@ -3,8 +3,8 @@ package main.java.game;
 import java.util.Scanner;
 
 import main.java.agents.Agent;
-import main.java.agents.AlphaBetaAgent;
 import main.java.agents.RandomAgent;
+import main.java.agents.alphaBeta.AlphaBetaAgent;
 import main.java.agents.mcts.MonteCarloAgent;
 // import main.java.agents.oep.OEPAgent;
 import main.java.board.Bitboard;

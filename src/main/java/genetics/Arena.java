@@ -1,8 +1,7 @@
 package main.java.genetics;
 
 import main.java.agents.Agent;
-import main.java.agents.AlphaBetaAgent;
-import main.java.agents.StochasticABAgent;
+import main.java.agents.alphaBeta.AlphaBetaAgent;
 import main.java.game.AgentGame;
 import main.java.util.NumberUtils;
 
@@ -15,8 +14,8 @@ public class Arena {
      */
     public static void compete(Genome g1, Genome g2) {
         // make alpha beta agents with each genome
-        Agent a1 = new AlphaBetaAgent(g1.values, EvolutionUtils.fitnessDepth, true);
-        Agent a2 = new AlphaBetaAgent(g2.values, EvolutionUtils.fitnessDepth, true);
+        Agent a1 = new AlphaBetaAgent(g1.values, EvolutionUtils.fitnessDepth);
+        Agent a2 = new AlphaBetaAgent(g2.values, EvolutionUtils.fitnessDepth);
 
         int winner = playout(a1, a2);
         if (winner == 0) {
@@ -42,8 +41,8 @@ public class Arena {
      * @param g2b Genome responsible for p2's position weights
      */
     public static void compete(Genome g1a, Genome g1b, Genome g2a, Genome g2b) {
-        Agent a1 = new AlphaBetaAgent(g1a.values, g1b.values, EvolutionUtils.fitnessDepth, true);
-        Agent a2 = new AlphaBetaAgent(g2a.values, g2b.values, EvolutionUtils.fitnessDepth, true);
+        Agent a1 = new AlphaBetaAgent(g1a.values, g1b.values, EvolutionUtils.fitnessDepth);
+        Agent a2 = new AlphaBetaAgent(g2a.values, g2b.values, EvolutionUtils.fitnessDepth);
 
         int winner = playout(a1, a2);
         if (winner == 0) {
@@ -81,8 +80,8 @@ public class Arena {
      * @param numGames Number of games to play
      */
     public static void testP1(double[] values, int numGames) {
-        Agent p1 = new AlphaBetaAgent(values, 2, true);
-        Agent p2 = new StochasticABAgent();
+        Agent p1 = new AlphaBetaAgent(values, 2);
+        Agent p2 = new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
         int winCount = 0;
         for (int i = 0; i < numGames; i++) {
             if (playout(p1, p2) == 0)
@@ -99,8 +98,8 @@ public class Arena {
      * @param numGames Number of games to play
      */
     public static void testP2(double[] values, int numGames) {
-        Agent p1 = new StochasticABAgent();
-        Agent p2 = new AlphaBetaAgent(values, 2, true);
+        Agent p1 = new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
+        Agent p2 = new AlphaBetaAgent(values, 2);
         int winCount = 0;
         for (int i = 0; i < numGames; i++) {
             if (playout(p1, p2) == 1)

@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import main.java.agents.Agent;
-import main.java.agents.StochasticABAgent;
+import main.java.agents.alphaBeta.AlphaBetaAgent;
 import main.java.board.Bitboard;
 import main.java.util.BitboardUtils;
 import main.java.util.NumberUtils;
@@ -19,8 +19,8 @@ import main.java.util.SuccessorUtils;
 public class BranchingAnalysis {
     private Bitboard board = new Bitboard();
     private int turn;
-    private Agent a1 = new StochasticABAgent();
-    private Agent a2 = new StochasticABAgent();
+    private Agent a1 = new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
+    private Agent a2 = new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
     private Map<Bitboard, Integer> stateToNum = new HashMap<>();
     private Map<Integer, List<Integer>> playerToBranches = new HashMap<>();
 
