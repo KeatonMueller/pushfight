@@ -18,10 +18,10 @@ import main.java.util.BitboardUtils;
  * Adapted from my own homework from CPSC 474.
  */
 public class VanillaMCTSAgent extends Agent implements AgentInterface {
-    private Map<Bitboard, Integer> boardToNum = new HashMap<>(); // facilitate tie checking
+    protected Map<Bitboard, Integer> boardToNum = new HashMap<>(); // facilitate tie checking
     private long iterations = 5000; // iterations allowed to explore game tree
-    private Random rand = new Random();; // Random object used for random playouts
-    private int turn; // turn indicator
+    protected Random rand = new Random();; // Random object used for random playouts
+    protected int turn; // turn indicator
 
     /**
      * Initialize Monte-Carlo Tree Search agent with given iteration limit

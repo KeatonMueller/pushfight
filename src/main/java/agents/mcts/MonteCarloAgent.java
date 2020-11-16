@@ -9,7 +9,7 @@ import main.java.board.Bitboard;
  */
 public class MonteCarloAgent extends Agent {
     public enum Type {
-        VANILLA, MAST, SEEDED
+        VANILLA, MAST, SEEDED, BIASED
     }
 
     private AgentInterface agent;
@@ -30,6 +30,9 @@ public class MonteCarloAgent extends Agent {
             case SEEDED:
                 this.agent = new SeededMCTSAgent();
                 break;
+            case BIASED:
+                this.agent = new BiasedMCTSAgent();
+                break;
         }
     }
 
@@ -49,6 +52,9 @@ public class MonteCarloAgent extends Agent {
                 break;
             case SEEDED:
                 this.agent = new SeededMCTSAgent(iterations);
+                break;
+            case BIASED:
+                this.agent = new BiasedMCTSAgent(iterations);
                 break;
         }
     }
@@ -83,5 +89,10 @@ public class MonteCarloAgent extends Agent {
 
     public void newGame(int turn) {
         this.agent.newGame(turn);
+    }
+
+    @Override
+    public String toString() {
+        return this.agent.toString();
     }
 }

@@ -44,6 +44,7 @@ public class Evaluation {
         System.out.println("\t4. MCTS");
         System.out.println("\t5. MCTS with MAST");
         System.out.println("\t6. Heuristic-Seeded MCTS");
+        System.out.println("\t7. Biased MCTS");
         System.out.print("Choice: ");
         int agentType = Integer.parseInt(scan.nextLine().trim());
 
@@ -63,7 +64,7 @@ public class Evaluation {
         }
 
         // if mcts, choose iterations per move
-        int mctsLow = 4, mctsHigh = 6;
+        int mctsLow = 4, mctsHigh = 7;
         int iterations = 5000;
         if (mctsLow <= agentType && agentType <= mctsHigh) {
             System.out.print("Choose number of iterations per move: ");
@@ -103,6 +104,8 @@ public class Evaluation {
                 return new MonteCarloAgent(MonteCarloAgent.Type.MAST, iterations);
             case 6:
                 return new MonteCarloAgent(MonteCarloAgent.Type.SEEDED, iterations);
+            case 7:
+                return new MonteCarloAgent(MonteCarloAgent.Type.BIASED, iterations);
         }
         return null;
     }

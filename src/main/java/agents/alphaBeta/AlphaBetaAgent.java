@@ -96,4 +96,9 @@ public class AlphaBetaAgent extends Agent {
     public void newGame(int turn) {
         this.agent.newGame(turn);
     }
+
+    @Override
+    public String toString() {
+        return this.agent.toString();
+    }
 }
