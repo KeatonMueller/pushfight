@@ -1,6 +1,9 @@
 package main.java.board;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,6 +73,45 @@ public class BitMasks {
         orthogonal.put((1 << 27), setBits(new int[] {19, 26, 28}));
         orthogonal.put((1 << 28), setBits(new int[] {20, 27, 29}));
         orthogonal.put((1 << 29), setBits(new int[] {21, 28}));
+    }
+
+    /**
+     * List of checkmate patterns against circle pieces. Each element in the outer list is a single
+     * checkmate pattern. Inner lists contain bitmasks in the following order: opponent's circle
+     * piece location, current player's square piece location, current player's any-piece locations.
+     */
+    public static List<List<Integer>> circleCheckmatePatterns = new ArrayList<>();
+    static {
+        // capture circle in top left corner
+        circleCheckmatePatterns.add(Arrays.asList((1 << 2), (1 << 3), (1 << 10)));
+        // capture circle in bottom left corner
+        circleCheckmatePatterns.add(Arrays.asList((1 << 25), (1 << 26), (1 << 17)));
+        // capture circle in top right corner
+        circleCheckmatePatterns.add(Arrays.asList((1 << 6), (1 << 5), (1 << 14)));
+        // capture circle in bottom right corner
+        circleCheckmatePatterns.add(Arrays.asList((1 << 29), (1 << 28), (1 << 21)));
+    }
+
+    /**
+     * List of checkmate patterns against square pieces. Each element in the outer list is a single
+     * checkmate pattern. Inner lists contain bitmasks in the following order: opponent's square
+     * piece location, opponent's any-piece locations, current player's square piece location,
+     * current player's any-piece locations.
+     */
+    public static List<List<Integer>> squareCheckmatePatterns = new ArrayList<>();
+    static {
+        // capture square in top left corner
+        squareCheckmatePatterns
+                .add(Arrays.asList((1 << 2), 0, (1 << 3), (1 << 10) | (1 << 18) | (1 << 26)));
+        // alternate capture square in top left corner
+        squareCheckmatePatterns.add(Arrays.asList((1 << 2), (1 << 10), (1 << 3),
+                (1 << 9) | (1 << 11) | (1 << 18) | (1 << 26)));
+        // capture square in bottom right corner
+        squareCheckmatePatterns
+                .add(Arrays.asList((1 << 29), 0, (1 << 28), (1 << 21) | (1 << 13) | (1 << 5)));
+        // alternate capture square in bottom right corner
+        squareCheckmatePatterns.add(Arrays.asList((1 << 29), (1 << 21), (1 << 28),
+                (1 << 20) | (1 << 22) | (1 << 13) | (1 << 5)));
     }
 
     /**

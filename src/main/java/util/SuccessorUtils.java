@@ -297,7 +297,13 @@ public class SuccessorUtils {
                 } else if (winner == -1) {
                     if (!BitboardUtils.onEdge(board, turn)) {
                         // this state does not put you on an edge
-                        stateSet.noBorderStates.add(new State(board.getState(), move));
+                        if (BitboardUtils.isCheckmate(board, turn)) {
+                            // this state puts your opponent in checkmate
+                            stateSet.checkmateStates.add(new State(board.getState(), move));
+                        } else {
+                            // this state is a no-border state but not checkmate
+                            stateSet.noBorderStates.add(new State(board.getState(), move));
+                        }
                     } else {
                         // this state puts you on an edge
                         stateSet.otherStates.add(new State(board.getState(), move));

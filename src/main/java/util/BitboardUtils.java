@@ -1,5 +1,7 @@
 package main.java.util;
 
+import java.util.List;
+
 import main.java.board.Bitboard;
 import main.java.board.BitMasks;
 
@@ -33,6 +35,56 @@ public class BitboardUtils {
     public static boolean onEdge(Bitboard board, int turn) {
         int pieces = board.getPieces(turn);
         return !((pieces & BitMasks.edges) == 0);
+    }
+
+    /**
+     * Check if the given player has their opponent in checkmate. This is not an exhaustive check,
+     * simply a pattern matching algorithm against hard-coded checkmate positions.
+     * 
+     * For simplicity, it is assumed that onEdge(board, turn) returns false for the given input.
+     * This rules out many false positives, and doesn't cause too many false negatives
+     * 
+     * @param board The board to check
+     * @param turn  Turn indicator
+     * @return true if given player has their opponent in checkmate, else false
+     */
+    public static boolean isCheckmate(Bitboard board, int turn) {
+        int myCircles = board.getCircles(turn);
+        int mySquares = board.getSquares(turn);
+        int myPieces = (myCircles | mySquares);
+        int theirCircles = board.getCircles(1 - turn);
+        int theirSquares = board.getSquares(1 - turn);
+        int theirPieces = (theirCircles | theirSquares);
+        for (List<Integer> pattern : BitMasks.circleCheckmatePatterns) {
+            // their circle must be in proper position
+            if ((pattern.get(0) & theirCircles) != pattern.get(0))
+                continue;
+            // my square must be in proper position
+            if ((pattern.get(1) & mySquares) != pattern.get(1))
+                continue;
+            // my pieces must be in other positions
+            if ((pattern.get(2) & myPieces) != pattern.get(2))
+                continue;
+            // pattern matches!
+            return true;
+        }
+        for (List<Integer> pattern : BitMasks.squareCheckmatePatterns) {
+            // their any piece must be in proper position (square checkmates work against circles)
+            if ((pattern.get(0) & theirPieces) != pattern.get(0))
+                continue;
+            // their pieces must be in other positions
+            if ((pattern.get(1) & theirPieces) != pattern.get(1))
+                continue;
+            // my square must be in proper position
+            if ((pattern.get(2) & mySquares) != pattern.get(2))
+                continue;
+            // my pieces must be in other positions
+            if ((pattern.get(3) & myPieces) != pattern.get(3))
+                continue;
+            // pattern matches!
+            return true;
+        }
+        return false;
     }
 
     /**
