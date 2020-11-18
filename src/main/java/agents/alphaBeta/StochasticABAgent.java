@@ -13,10 +13,10 @@ import main.java.util.BitboardUtils;
 import main.java.util.SuccessorUtils;
 
 /**
- * Class to perform a modified Minimax search using Alpha Beta. This method introduces a pruning
- * threshold that prunes less aggressively at lower levels in hopes of getting better approximations
- * of the minimax value. The final choice is a stochastic one based off of the values of the root's
- * children.
+ * Agent using a modified Minimax algorithm with Alpha Beta Pruning. This method introduces a
+ * pruning threshold that prunes less aggressively at lower levels in hopes of getting better
+ * approximations of the minimax value. The final choice is a stochastic one based off of the values
+ * of the root's children.
  */
 public class StochasticABAgent extends Agent implements AgentInterface {
     /**

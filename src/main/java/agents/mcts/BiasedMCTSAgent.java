@@ -7,6 +7,11 @@ import main.java.util.BitboardUtils;
 import main.java.util.SetUtils;
 import main.java.util.SuccessorUtils;
 
+/**
+ * Agent using Monte-Carlo Tree Search with a default policy that will always perform winning or
+ * checkmate moves, and otherwise biases towards moves that do not leave pieces on an edge of the
+ * board.
+ */
 public class BiasedMCTSAgent extends VanillaMCTSAgent {
     /**
      * Initialize Biased Monte-Carlo Tree Search agent with given iteration limit

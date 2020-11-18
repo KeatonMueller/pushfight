@@ -13,7 +13,7 @@ import main.java.util.BitboardUtils;
 // import main.java.util.SuccessorUtils;
 
 /**
- * Agent to find next move using Monte-Carlo Tree Search.
+ * Agent using vanilla Monte-Carlo Tree Search.
  * 
  * Adapted from my own homework from CPSC 474.
  */

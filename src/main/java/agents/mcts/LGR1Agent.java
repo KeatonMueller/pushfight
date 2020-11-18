@@ -10,6 +10,10 @@ import main.java.board.Bitboard;
 import main.java.board.Move;
 import main.java.util.BitboardUtils;
 
+/**
+ * Agent using Monte-Carlo Tree Search along with the Last Good Reply enhancement to the default
+ * policy.
+ */
 public class LGR1Agent extends VanillaMCTSAgent {
     /**
      * List of each player's best replies. replies.get(0) is a map from [p2's move] to [p1's best

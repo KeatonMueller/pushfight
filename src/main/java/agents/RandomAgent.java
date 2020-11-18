@@ -10,7 +10,11 @@ import main.java.util.BitboardUtils;
 import main.java.util.GameUtils;
 import main.java.util.SuccessorUtils;
 
-public class RandomAgent extends Agent {
+/**
+ * Agent that performs random moves. Also provides static methods to allow making random moves
+ * without instantiating an instance of this class.
+ */
+public class RandomAgent extends Agent implements AgentInterface {
     Random rand;
 
     public RandomAgent() {

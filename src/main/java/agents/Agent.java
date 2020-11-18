@@ -2,6 +2,9 @@ package main.java.agents;
 
 import main.java.board.Bitboard;
 
+/**
+ * Abstract parent class for agents to extend
+ */
 public abstract class Agent {
     /**
      * Get the agent's next move given the board state

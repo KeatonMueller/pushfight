@@ -17,9 +17,8 @@ import main.java.util.BitboardUtils;
 import main.java.util.SuccessorUtils;
 
 /**
- * Agent to find next move using Monte-Carlo Tree Search.
- * 
- * Adapted from my own homework from CPSC 474.
+ * Agent using Monte-Carlo Tree Search along with the Move Averaged Sampling Technique enhancement
+ * to the default policy.
  */
 public class MASTAgent extends Agent implements AgentInterface {
     private final double TAU = 1.0; // tunable parameter for MAST exploration

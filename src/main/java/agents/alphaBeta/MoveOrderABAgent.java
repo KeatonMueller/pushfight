@@ -8,6 +8,10 @@ import main.java.board.State;
 import main.java.util.BitboardUtils;
 import main.java.util.SuccessorUtils;
 
+/**
+ * Agent using the Minimax algorithm with Alpha Beta Pruning. Considers moves from separate groups
+ * to add a rough move ordering that should increase pruning.
+ */
 public class MoveOrderABAgent extends Agent implements AgentInterface {
     /**
      * Private class to store return value of alpha beta function

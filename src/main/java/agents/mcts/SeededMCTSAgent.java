@@ -2,6 +2,10 @@ package main.java.agents.mcts;
 
 import main.java.board.Heuristic;
 
+/**
+ * Agent using Monte-Carlo Tree Search that runs a (normalized) heuristic on board states rather
+ * than doing random playouts.
+ */
 public class SeededMCTSAgent extends VanillaMCTSAgent {
     private Heuristic h = new Heuristic();
 

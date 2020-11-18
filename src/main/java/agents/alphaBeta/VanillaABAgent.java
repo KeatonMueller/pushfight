@@ -7,6 +7,9 @@ import main.java.board.Heuristic;
 import main.java.util.BitboardUtils;
 import main.java.util.SuccessorUtils;
 
+/**
+ * Agent using the Minimax algorithm with vanilla Alpha Beta Pruning.
+ */
 public class VanillaABAgent extends Agent implements AgentInterface {
     /**
      * Private class to store return value of alpha beta function
