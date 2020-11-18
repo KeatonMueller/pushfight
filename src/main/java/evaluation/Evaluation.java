@@ -40,72 +40,103 @@ public class Evaluation {
         System.out.println("Choose agent for Player " + (turn + 1) + ":");
         System.out.println("\t1. Random");
         System.out.println("\t2. Alpha Beta");
-        System.out.println("\t3. Stochastic Alpha Beta");
-        System.out.println("\t4. MCTS");
-        System.out.println("\t5. MCTS with MAST");
-        System.out.println("\t6. Heuristic-Seeded MCTS");
-        System.out.println("\t7. Biased MCTS");
+        System.out.println("\t3. MCTS");
         System.out.print("Choice: ");
         int agentType = Integer.parseInt(scan.nextLine().trim());
 
-        // if alpha beta, choose weights
+        // if alpha beta, choose variant and weights
+        int abType = 0;
         int evolutionType = 0;
         if (agentType == 2) {
-            System.out.println("Choose evolution strategy to evaluate:");
-            System.out.println("\t0. Default Weights");
-            System.out.println("\t1. Coevolution");
-            System.out.println("\t2. Coevolution with Split Populations");
-            System.out.println("\t3. Coevolution with Split and Reference Populations");
-            System.out.println("\t4. Cooperative Coevolution");
-            System.out.println("\t5. Cooperative Coevolution with Split Populations");
-            System.out.println("\t6. Cooperative Coevolution with Split and Reference Populations");
+            System.out.println("Choose Alpha Beta Variant:");
+            System.out.println("\t1. Vanilla");
+            System.out.println("\t2. Move Ordered");
+            System.out.println("\t3. Stochastic");
             System.out.print("Choice: ");
-            evolutionType = Integer.parseInt(scan.nextLine().trim());
+            abType = Integer.parseInt(scan.nextLine().trim());
+
+            if (abType == 1) {
+                System.out.println("Choose evolution strategy to evaluate:");
+                System.out.println("\t0. Default Weights");
+                System.out.println("\t1. Coevolution");
+                System.out.println("\t2. Coevolution with Split Populations");
+                System.out.println("\t3. Coevolution with Split and Reference Populations");
+                System.out.println("\t4. Cooperative Coevolution");
+                System.out.println("\t5. Cooperative Coevolution with Split Populations");
+                System.out.println(
+                        "\t6. Cooperative Coevolution with Split and Reference Populations");
+                System.out.print("Choice: ");
+                evolutionType = Integer.parseInt(scan.nextLine().trim());
+            }
         }
 
-        // if mcts, choose iterations per move
-        int mctsLow = 4, mctsHigh = 7;
+        // if mcts, choose variant and iterations per move
+        int mctsType = 0;
         int iterations = 5000;
-        if (mctsLow <= agentType && agentType <= mctsHigh) {
+        if (agentType == 3) {
+            System.out.println("Choose MCTS Variant:");
+            System.out.println("\t1. Vanilla");
+            System.out.println("\t2. MAST");
+            System.out.println("\t3. Heuristic-Seeded");
+            System.out.println("\t4. Biased");
+            System.out.println("\t5. Last Good Reply");
+            System.out.print("Choice: ");
+            mctsType = Integer.parseInt(scan.nextLine().trim());
             System.out.print("Choose number of iterations per move: ");
             iterations = Integer.parseInt(scan.nextLine().trim());
         }
 
         switch (agentType) {
+            // random
             case 1:
                 return new RandomAgent();
+            // alpha beta
             case 2:
-                switch (evolutionType) {
-                    case 0:
-                        return new AlphaBetaAgent();
+                switch (abType) {
+                    // vanilla
                     case 1:
-                        return new AlphaBetaAgent(Coevolution.weights);
+                        switch (evolutionType) {
+                            case 0:
+                                return new AlphaBetaAgent();
+                            case 1:
+                                return new AlphaBetaAgent(Coevolution.weights);
+                            case 2:
+                                return new AlphaBetaAgent(CoevolutionSplit.p1Weights,
+                                        CoevolutionSplit.p2Weights);
+                            case 3:
+                                return new AlphaBetaAgent(CoevolutionSplitRef.p1Weights,
+                                        CoevolutionSplitRef.p2Weights);
+                            case 4:
+                                return new AlphaBetaAgent(CoopCoevolution.weights);
+                            case 5:
+                                return new AlphaBetaAgent(CoopCoevolutionSplit.p1Weights,
+                                        CoopCoevolutionSplit.p2Weights);
+                            case 6:
+                                return new AlphaBetaAgent(CoopCoevolutionSplitRef.p1Weights,
+                                        CoopCoevolutionSplitRef.p2Weights);
+                        }
+                        // move-ordered
                     case 2:
-                        return new AlphaBetaAgent(CoevolutionSplit.p1Weights,
-                                CoevolutionSplit.p2Weights);
+                        return new AlphaBetaAgent(AlphaBetaAgent.Type.MOVE_ORDER);
+                    // stochastic
                     case 3:
-                        return new AlphaBetaAgent(CoevolutionSplitRef.p1Weights,
-                                CoevolutionSplitRef.p2Weights);
-                    case 4:
-                        return new AlphaBetaAgent(CoopCoevolution.weights);
-                    case 5:
-                        return new AlphaBetaAgent(CoopCoevolutionSplit.p1Weights,
-                                CoopCoevolutionSplit.p2Weights);
-                    case 6:
-                        return new AlphaBetaAgent(CoopCoevolutionSplitRef.p1Weights,
-                                CoopCoevolutionSplitRef.p2Weights);
+                        return new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
+
                 }
-                break;
+                // mcts
             case 3:
-                return new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
-            case 4:
-                return new MonteCarloAgent(MonteCarloAgent.Type.VANILLA, iterations);
-            case 5:
-                return new MonteCarloAgent(MonteCarloAgent.Type.MAST, iterations);
-            case 6:
-                return new MonteCarloAgent(MonteCarloAgent.Type.SEEDED, iterations);
-            case 7:
-                return new MonteCarloAgent(MonteCarloAgent.Type.BIASED, iterations);
+                switch (mctsType) {
+                    case 1:
+                        return new MonteCarloAgent(MonteCarloAgent.Type.VANILLA, iterations);
+                    case 2:
+                        return new MonteCarloAgent(MonteCarloAgent.Type.MAST, iterations);
+                    case 3:
+                        return new MonteCarloAgent(MonteCarloAgent.Type.SEEDED, iterations);
+                    case 4:
+                        return new MonteCarloAgent(MonteCarloAgent.Type.BIASED, iterations);
+                    case 5:
+                        return new MonteCarloAgent(MonteCarloAgent.Type.LGR1, iterations);
+                }
         }
         return null;
     }
