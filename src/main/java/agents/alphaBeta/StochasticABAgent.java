@@ -120,6 +120,10 @@ public class StochasticABAgent extends Agent implements AgentInterface {
             choice = 3;
         else
             choice = 4;
+
+        // ensure you're picking something that exists
+        choice = Math.min(choice, options.size() - 1);
+
         return options.get(choice).state;
 
 
