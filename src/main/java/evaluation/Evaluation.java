@@ -151,6 +151,8 @@ public class Evaluation {
     public static void evalAgents(Agent p1, Agent p2, int numGames) {
         int winner, p1Wins = 0, p2Wins = 0, ties = 0;
         for (int i = 0; i < numGames; i++) {
+            System.out.print("                                                   \r");
+            System.out.println("Running game " + i);
             winner = (new AgentGame(p1, p2)).getWinner();
             if (winner == 0)
                 p1Wins++;

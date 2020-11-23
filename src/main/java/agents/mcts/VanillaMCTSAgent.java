@@ -100,6 +100,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
         boardToNum.clear();
         Bitboard board = new Bitboard(node.state.board);
         int winner, count;
+        int iter = 0;
         while (true) {
             winner = BitboardUtils.checkWinner(board);
             if (winner != -1) {
@@ -114,6 +115,10 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
             if (count >= 5) {
                 return 0;
             }
+
+            System.out.print("                                                   \r");
+            System.out.print(toString() + " playout depth: " + iter + "\r");
+            iter++;
 
             RandomAgent.randomMove(board, turn, rand);
             turn = 1 - turn;

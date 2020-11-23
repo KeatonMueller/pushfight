@@ -52,6 +52,7 @@ public class LGR1Agent extends VanillaMCTSAgent {
         boardToNum.clear();
         Bitboard board = new Bitboard(node.state.board);
         int winner, count;
+        int iter = 0;
         List<Move> path = new ArrayList<>();
         Move lastMove = null;
         while (true) {
@@ -69,6 +70,10 @@ public class LGR1Agent extends VanillaMCTSAgent {
             if (count >= 5) {
                 return 0;
             }
+
+            System.out.print("                                                   \r");
+            System.out.print(toString() + " playout depth: " + iter + "\r");
+            iter++;
 
             if (lastMove == null || !replies.get(turn).containsKey(lastMove)) {
                 // if there's no recorded last reply, do a random move
