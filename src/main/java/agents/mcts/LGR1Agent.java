@@ -74,17 +74,18 @@ public class LGR1Agent extends VanillaMCTSAgent {
             }
 
             System.out.print("                                                   \r");
-            System.out.print(toString() + " playout depth: " + iter + "\r");
+            System.out.println(toString() + " playout depth: " + iter + "\r");
             iter++;
 
             if (lastMove == null || !replies.get(turn).containsKey(lastMove)) {
                 // if there's no recorded last reply, do a random move
+                System.out.println("trying random move");
                 lastMove = RandomAgent.getRandomMove(board, turn, rand);
-                System.out.println("random move");
+                System.out.println("did random move");
             } else {
                 // get the recorded last reply
                 lastMove = replies.get(turn).get(lastMove);
-                System.out.println("got reply");
+                System.out.println("found last move to attempt");
                 // attempt to perform it
                 if (!lastMove.attempt(board, turn)) {
                     // do a random move if the last good reply isn't valid for current board state
