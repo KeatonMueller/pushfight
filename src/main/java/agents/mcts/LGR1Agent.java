@@ -52,15 +52,12 @@ public class LGR1Agent extends VanillaMCTSAgent {
         boardToNum.clear();
         Bitboard board = new Bitboard(node.state.board);
         int winner, count;
-        int iter = 0;
         List<Move> path = new ArrayList<>();
         Move lastMove = null;
         while (true) {
             winner = BitboardUtils.checkWinner(board);
             if (winner != -1) {
-                System.out.println("processing path");
                 processPath(path, winner);
-                System.out.println("done");
                 if (winner == 0)
                     return 1;
                 return -1;
@@ -73,26 +70,16 @@ public class LGR1Agent extends VanillaMCTSAgent {
                 return 0;
             }
 
-            System.out.print("                                                   \r");
-            System.out.println(toString() + " playout depth: " + iter + "\r");
-            iter++;
-
             if (lastMove == null || !replies.get(turn).containsKey(lastMove)) {
                 // if there's no recorded last reply, do a random move
-                System.out.println("trying random move");
                 lastMove = RandomAgent.getRandomMove(board, turn, rand);
-                System.out.println("did random move");
             } else {
                 // get the recorded last reply
                 lastMove = replies.get(turn).get(lastMove);
-                System.out.println("found last move to attempt");
                 // attempt to perform it
                 if (!lastMove.attempt(board, turn)) {
                     // do a random move if the last good reply isn't valid for current board state
                     lastMove = RandomAgent.getRandomMove(board, turn, rand);
-                    System.out.println("failed attempt");
-                } else {
-                    System.out.println("success attempt");
                 }
             }
             path.add(lastMove);
