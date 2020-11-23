@@ -56,6 +56,7 @@ public class RandomAgent extends Agent implements AgentInterface {
             if (!randomPush(board, turn, rand, move)) {
                 board.restoreState(initState);
                 move.clear();
+                System.out.println("didnt find a valid move sequence");
                 continue;
             }
             return move;
