@@ -1,14 +1,11 @@
 package main.java.agents;
 
-import java.util.List;
 import java.util.Set;
 import java.util.Random;
 
 import main.java.board.Bitboard;
 import main.java.board.Move;
 import main.java.board.State;
-import main.java.util.BitboardUtils;
-import main.java.util.GameUtils;
 import main.java.util.SuccessorUtils;
 
 /**

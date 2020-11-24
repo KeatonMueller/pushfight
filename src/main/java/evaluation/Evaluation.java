@@ -52,6 +52,7 @@ public class Evaluation {
             System.out.println("\t1. Vanilla");
             System.out.println("\t2. Move Ordered");
             System.out.println("\t3. Stochastic");
+            System.out.println("\t4. Scout");
             System.out.print("Choice: ");
             abType = Integer.parseInt(scan.nextLine().trim());
 
@@ -121,6 +122,9 @@ public class Evaluation {
                     // stochastic
                     case 3:
                         return new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
+                    // scout
+                    case 4:
+                        return new AlphaBetaAgent(AlphaBetaAgent.Type.SCOUT);
 
                 }
                 // mcts
@@ -152,7 +156,7 @@ public class Evaluation {
         int winner, p1Wins = 0, p2Wins = 0, ties = 0;
         for (int i = 0; i < numGames; i++) {
             System.out.print("                                                   \r");
-            System.out.println("Running game " + i);
+            System.out.print("Running game " + i + "\r");
             winner = (new AgentGame(p1, p2)).getWinner();
             if (winner == 0)
                 p1Wins++;

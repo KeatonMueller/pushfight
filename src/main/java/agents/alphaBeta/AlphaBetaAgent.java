@@ -10,7 +10,7 @@ import main.java.board.Bitboard;
  */
 public class AlphaBetaAgent extends Agent {
     public enum Type {
-        VANILLA, STOCHASTIC, MOVE_ORDER
+        VANILLA, STOCHASTIC, MOVE_ORDER, SCOUT
     }
 
     private AgentInterface agent;
@@ -28,6 +28,9 @@ public class AlphaBetaAgent extends Agent {
                 break;
             case MOVE_ORDER:
                 this.agent = new MoveOrderABAgent();
+                break;
+            case SCOUT:
+                this.agent = new ScoutAgent();
                 break;
         }
     }
