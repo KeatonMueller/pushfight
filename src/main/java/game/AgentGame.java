@@ -11,6 +11,7 @@ public class AgentGame {
     private Bitboard board;
     private int turn;
     private Agent a1, a2;
+    public int numTurns;
 
     private Map<Bitboard, Integer> stateToNum;
 
@@ -23,6 +24,7 @@ public class AgentGame {
     public AgentGame(Agent agent1, Agent agent2) {
         board = new Bitboard();
         turn = 0;
+        numTurns = 0;
 
         a1 = agent1;
         a2 = agent2;
@@ -41,6 +43,7 @@ public class AgentGame {
         int winner, count;
         while (true) {
             makeMove(turn);
+            numTurns++;
             count = stateToNum.getOrDefault(board, 0);
             stateToNum.put(board, count + 1);
 

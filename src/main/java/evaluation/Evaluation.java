@@ -154,10 +154,14 @@ public class Evaluation {
      */
     public static void evalAgents(Agent p1, Agent p2, int numGames) {
         int winner, p1Wins = 0, p2Wins = 0, ties = 0;
+        int totalTurns = 0;
+        AgentGame ag;
         for (int i = 0; i < numGames; i++) {
             System.out.print("                                                   \r");
             System.out.print("Running game " + i + "\r");
-            winner = (new AgentGame(p1, p2)).getWinner();
+            ag = new AgentGame(p1, p2);
+            winner = ag.getWinner();
+            totalTurns += ag.numTurns;
             if (winner == 0)
                 p1Wins++;
             else if (winner == 1)
@@ -172,5 +176,6 @@ public class Evaluation {
         System.out.println("\tPlayer 2: " + p2 + " won " + p2Wins + "/" + numGames + " games ("
                 + NumberUtils.round((double) p2Wins / numGames * 100, 2) + "%)");
         System.out.println("\tTies: " + ties);
+        System.out.println("\tAverage length: " + NumberUtils.round(totalTurns / numGames, 2));
     }
 }
