@@ -19,8 +19,8 @@ import main.java.util.SuccessorUtils;
 public class BranchingAnalysis {
     private Bitboard board = new Bitboard();
     private int turn;
-    private Agent a1 = new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
-    private Agent a2 = new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
+    private Agent a1 = new AlphaBetaAgent(AlphaBetaAgent.ABType.STOCHASTIC);
+    private Agent a2 = new AlphaBetaAgent(AlphaBetaAgent.ABType.STOCHASTIC);
     private Map<Bitboard, Integer> stateToNum = new HashMap<>();
     private Map<Integer, List<Integer>> playerToBranches = new HashMap<>();
 
@@ -44,7 +44,7 @@ public class BranchingAnalysis {
 
         // perform analysis on recorded branching factors
         double p1Avg, p2Avg, totalAvg;
-        int p1Sum = 0, p2Sum = 0, totalSum;
+        long p1Sum = 0, p2Sum = 0, totalSum;
         for (int bf : playerToBranches.get(0)) {
             p1Sum += bf;
         }
