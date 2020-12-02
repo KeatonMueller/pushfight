@@ -8,8 +8,8 @@ import main.java.board.Bitboard;
  * One-stop-shop for constructing an agent using Monte-Carlo tree search.
  */
 public class MonteCarloAgent extends Agent {
-    public enum Type {
-        VANILLA, MAST, SEEDED, BIASED, LGR1
+    public enum MCTSType {
+        VANILLA, MAST, SEEDED, WEIGHTED_SEEDED, BIASED, LGR1
     }
 
     private AgentInterface agent;
@@ -19,7 +19,7 @@ public class MonteCarloAgent extends Agent {
      * 
      * @param type Type of mcts agent to instantiate
      */
-    public MonteCarloAgent(Type type) {
+    public MonteCarloAgent(MCTSType type) {
         switch (type) {
             case VANILLA:
                 this.agent = new VanillaMCTSAgent();
@@ -29,6 +29,9 @@ public class MonteCarloAgent extends Agent {
                 break;
             case SEEDED:
                 this.agent = new SeededMCTSAgent();
+                break;
+            case WEIGHTED_SEEDED:
+                this.agent = new WeightedSeededMCTSAgent();
                 break;
             case BIASED:
                 this.agent = new BiasedMCTSAgent();
@@ -45,7 +48,7 @@ public class MonteCarloAgent extends Agent {
      * @param type       Type of mcts agent to instantiate
      * @param iterations Number of iterations per move
      */
-    public MonteCarloAgent(Type type, long iterations) {
+    public MonteCarloAgent(MCTSType type, long iterations) {
         switch (type) {
             case VANILLA:
                 this.agent = new VanillaMCTSAgent(iterations);
@@ -55,6 +58,9 @@ public class MonteCarloAgent extends Agent {
                 break;
             case SEEDED:
                 this.agent = new SeededMCTSAgent(iterations);
+                break;
+            case WEIGHTED_SEEDED:
+                this.agent = new WeightedSeededMCTSAgent(iterations);
                 break;
             case BIASED:
                 this.agent = new BiasedMCTSAgent(iterations);

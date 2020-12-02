@@ -81,7 +81,7 @@ public class Arena {
      */
     public static void testP1(double[] values, int numGames) {
         Agent p1 = new AlphaBetaAgent(values, 2);
-        Agent p2 = new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
+        Agent p2 = new AlphaBetaAgent(AlphaBetaAgent.ABType.STOCHASTIC);
         int winCount = 0;
         for (int i = 0; i < numGames; i++) {
             if (playout(p1, p2) == 0)
@@ -98,7 +98,7 @@ public class Arena {
      * @param numGames Number of games to play
      */
     public static void testP2(double[] values, int numGames) {
-        Agent p1 = new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
+        Agent p1 = new AlphaBetaAgent(AlphaBetaAgent.ABType.STOCHASTIC);
         Agent p2 = new AlphaBetaAgent(values, 2);
         int winCount = 0;
         for (int i = 0; i < numGames; i++) {

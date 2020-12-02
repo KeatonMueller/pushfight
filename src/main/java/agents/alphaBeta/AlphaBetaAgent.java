@@ -9,7 +9,7 @@ import main.java.board.Bitboard;
  * different ways to construct each agent, and several different types of agents.
  */
 public class AlphaBetaAgent extends Agent {
-    public enum Type {
+    public enum ABType {
         VANILLA, STOCHASTIC, MOVE_ORDER, SCOUT
     }
 
@@ -18,7 +18,7 @@ public class AlphaBetaAgent extends Agent {
     /**
      * Initialize alpha beta agent of requested type
      */
-    public AlphaBetaAgent(Type type) {
+    public AlphaBetaAgent(ABType type) {
         switch (type) {
             case VANILLA:
                 this.agent = new VanillaABAgent();

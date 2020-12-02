@@ -27,7 +27,7 @@ public class VanillaABAgent extends Agent implements AgentInterface {
     private Heuristic[] heuristics = {new Heuristic(), new Heuristic()};
     private Heuristic h;
     private int DEPTH = 2;
-    private int explored;
+    public int explored = 0;
     private boolean silent = true;
 
     /**
@@ -92,7 +92,7 @@ public class VanillaABAgent extends Agent implements AgentInterface {
         if (!silent)
             System.out.print("Alpha Beta searching for a move for player " + (turn + 1) + "... ");
 
-        explored = 0;
+        // explored = 0;
         AlphaReturn r = alphaBeta(board, DEPTH, -Double.MAX_VALUE, Double.MAX_VALUE, turn);
 
         if (!silent)
@@ -154,6 +154,6 @@ public class VanillaABAgent extends Agent implements AgentInterface {
 
     @Override
     public String toString() {
-        return "Alpha Beta Agent";
+        return "Vanilla Alpha Beta Agent";
     }
 }

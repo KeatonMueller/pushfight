@@ -15,6 +15,9 @@ import main.java.genetics.strategy.CoopCoevolutionSplit;
 import main.java.genetics.strategy.CoopCoevolutionSplitRef;
 import main.java.util.NumberUtils;
 
+import static main.java.agents.alphaBeta.AlphaBetaAgent.ABType;
+import static main.java.agents.mcts.MonteCarloAgent.MCTSType;
+
 /**
  * Evaluation tool to compare any two different agents against one another
  */
@@ -81,6 +84,7 @@ public class Evaluation {
             System.out.println("\t3. Heuristic-Seeded");
             System.out.println("\t4. Biased");
             System.out.println("\t5. Last Good Reply");
+            System.out.println("\t6. Weighted Heuristic-Seeded");
             System.out.print("Choice: ");
             mctsType = Integer.parseInt(scan.nextLine().trim());
             System.out.print("Choose number of iterations per move: ");
@@ -116,30 +120,33 @@ public class Evaluation {
                                 return new AlphaBetaAgent(CoopCoevolutionSplitRef.p1Weights,
                                         CoopCoevolutionSplitRef.p2Weights);
                         }
-                        // move-ordered
+                        return null;
+                    // move-ordered
                     case 2:
-                        return new AlphaBetaAgent(AlphaBetaAgent.Type.MOVE_ORDER);
+                        return new AlphaBetaAgent(ABType.MOVE_ORDER);
                     // stochastic
                     case 3:
-                        return new AlphaBetaAgent(AlphaBetaAgent.Type.STOCHASTIC);
+                        return new AlphaBetaAgent(ABType.STOCHASTIC);
                     // scout
                     case 4:
-                        return new AlphaBetaAgent(AlphaBetaAgent.Type.SCOUT);
+                        return new AlphaBetaAgent(ABType.SCOUT);
 
                 }
                 // mcts
             case 3:
                 switch (mctsType) {
                     case 1:
-                        return new MonteCarloAgent(MonteCarloAgent.Type.VANILLA, iterations);
+                        return new MonteCarloAgent(MCTSType.VANILLA, iterations);
                     case 2:
-                        return new MonteCarloAgent(MonteCarloAgent.Type.MAST, iterations);
+                        return new MonteCarloAgent(MCTSType.MAST, iterations);
                     case 3:
-                        return new MonteCarloAgent(MonteCarloAgent.Type.SEEDED, iterations);
+                        return new MonteCarloAgent(MCTSType.SEEDED, iterations);
                     case 4:
-                        return new MonteCarloAgent(MonteCarloAgent.Type.BIASED, iterations);
+                        return new MonteCarloAgent(MCTSType.BIASED, iterations);
                     case 5:
-                        return new MonteCarloAgent(MonteCarloAgent.Type.LGR1, iterations);
+                        return new MonteCarloAgent(MCTSType.LGR1, iterations);
+                    case 6:
+                        return new MonteCarloAgent(MCTSType.WEIGHTED_SEEDED, iterations);
                 }
         }
         return null;
