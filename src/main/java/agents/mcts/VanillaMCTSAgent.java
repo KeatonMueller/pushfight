@@ -100,6 +100,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
         boardToNum.clear();
         Bitboard board = new Bitboard(node.state.board);
         int winner, count;
+        int turnCount = 0;
         while (true) {
             winner = BitboardUtils.checkWinner(board);
             if (winner != -1) {
@@ -111,7 +112,8 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
             // add tie logic in rare case of long loop
             count = boardToNum.getOrDefault(board, 0);
             boardToNum.put(board, count + 1);
-            if (count >= 5) {
+            turnCount += 1;
+            if (count >= 5 || turnCount >= 100) {
                 return 0;
             }
 

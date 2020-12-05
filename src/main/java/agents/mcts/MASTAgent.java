@@ -112,6 +112,7 @@ public class MASTAgent extends Agent implements AgentInterface {
     private int playout(Node node, List<Move> path) {
         Bitboard board = node.state.board;
         int winner, count;
+        int turnCount = 0;
         Set<State> nextStates;
         Map<Move, Double> qMap = new HashMap<>();
         double value, randChoice, totalValue = 0.0;
@@ -131,7 +132,8 @@ public class MASTAgent extends Agent implements AgentInterface {
             // add tie logic in rare case of long loop
             count = boardToNum.getOrDefault(board, 0);
             boardToNum.put(board, count + 1);
-            if (count >= 5) {
+            turnCount += 1;
+            if (count >= 5 || turnCount >= 100) {
                 return 0;
             }
 

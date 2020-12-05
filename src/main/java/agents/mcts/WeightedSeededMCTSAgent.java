@@ -36,6 +36,7 @@ public class WeightedSeededMCTSAgent extends VanillaMCTSAgent {
         boardToNum.clear();
         Bitboard board = new Bitboard(node.state.board);
         int winner, count;
+        int turnCount = 0;
         while (true) {
             winner = BitboardUtils.checkWinner(board);
             if (winner != -1) {
@@ -47,7 +48,9 @@ public class WeightedSeededMCTSAgent extends VanillaMCTSAgent {
             // add tie logic in rare case of long loop
             count = boardToNum.getOrDefault(board, 0);
             boardToNum.put(board, count + 1);
-            if (count >= 5) {
+            turnCount += 1;
+            if (count >= 5 || turnCount >= 100) {
+                // default to returning heuristic value if tie
                 return heuristic / heuristicWeight;
             }
 
