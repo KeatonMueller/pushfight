@@ -54,8 +54,8 @@ public class Evaluation {
             System.out.println("Choose Alpha Beta Variant:");
             System.out.println("\t1. Vanilla");
             System.out.println("\t2. Move Ordered");
-            System.out.println("\t3. Stochastic");
-            System.out.println("\t4. Scout");
+            System.out.println("\t3. Scout");
+            System.out.println("\t4. Stochastic");
             System.out.print("Choice: ");
             abType = Integer.parseInt(scan.nextLine().trim());
 
@@ -82,9 +82,9 @@ public class Evaluation {
             System.out.println("\t1. Vanilla");
             System.out.println("\t2. MAST");
             System.out.println("\t3. Heuristic-Seeded");
-            System.out.println("\t4. Biased");
-            System.out.println("\t5. Last Good Reply");
-            System.out.println("\t6. Weighted Heuristic-Seeded");
+            System.out.println("\t4. Weighted Heuristic-Seeded");
+            System.out.println("\t5. Biased");
+            System.out.println("\t6. Last Good Reply");
             System.out.print("Choice: ");
             mctsType = Integer.parseInt(scan.nextLine().trim());
             System.out.print("Choose number of iterations per move: ");
@@ -124,12 +124,12 @@ public class Evaluation {
                     // move-ordered
                     case 2:
                         return new AlphaBetaAgent(ABType.MOVE_ORDER);
-                    // stochastic
-                    case 3:
-                        return new AlphaBetaAgent(ABType.STOCHASTIC);
                     // scout
-                    case 4:
+                    case 3:
                         return new AlphaBetaAgent(ABType.SCOUT);
+                    // stochastic
+                    case 4:
+                        return new AlphaBetaAgent(ABType.STOCHASTIC);
 
                 }
                 // mcts
@@ -142,11 +142,11 @@ public class Evaluation {
                     case 3:
                         return new MonteCarloAgent(MCTSType.SEEDED, iterations);
                     case 4:
-                        return new MonteCarloAgent(MCTSType.BIASED, iterations);
-                    case 5:
-                        return new MonteCarloAgent(MCTSType.LGR1, iterations);
-                    case 6:
                         return new MonteCarloAgent(MCTSType.WEIGHTED_SEEDED, iterations);
+                    case 5:
+                        return new MonteCarloAgent(MCTSType.BIASED, iterations);
+                    case 6:
+                        return new MonteCarloAgent(MCTSType.LGR1, iterations);
                 }
         }
         return null;

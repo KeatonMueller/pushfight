@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import main.java.agents.Agent;
 import main.java.agents.alphaBeta.AlphaBetaAgent;
@@ -78,10 +79,17 @@ public class BranchingAnalysis {
         board.reset();
         BitboardUtils.skipSetup(board);
         stateToNum.clear();
-
+        Set<Bitboard> nextStates;
         while (true) {
             // record branching factor for this player
-            playerToBranches.get(turn).add(SuccessorUtils.getNextStates(board, turn).size());
+            nextStates = SuccessorUtils.getNextStates(board, turn);
+            playerToBranches.get(turn).add(nextStates.size());
+            // also check every next state and record it's branching factor
+            for (Bitboard nextState : nextStates) {
+                playerToBranches.get(1 - turn)
+                        .add(SuccessorUtils.getNextStates(nextState, 1 - turn).size());
+            }
+
             // make move
             makeMove(turn);
             count = stateToNum.getOrDefault(board, 0);
