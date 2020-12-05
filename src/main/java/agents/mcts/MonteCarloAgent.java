@@ -9,7 +9,7 @@ import main.java.board.Bitboard;
  */
 public class MonteCarloAgent extends Agent {
     public enum MCTSType {
-        VANILLA, MAST, SEEDED, WEIGHTED_SEEDED, BIASED, LGR1
+        VANILLA, MAST, SEEDED, WEIGHTED_SEEDED, BIASED, LGR1, FPU
     }
 
     private AgentInterface agent;
@@ -39,6 +39,9 @@ public class MonteCarloAgent extends Agent {
             case LGR1:
                 this.agent = new LGR1Agent();
                 break;
+            case FPU:
+                this.agent = new FPUAgent();
+                break;
         }
     }
 
@@ -67,6 +70,9 @@ public class MonteCarloAgent extends Agent {
                 break;
             case LGR1:
                 this.agent = new LGR1Agent(iterations);
+                break;
+            case FPU:
+                this.agent = new FPUAgent(iterations);
                 break;
         }
     }

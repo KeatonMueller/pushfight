@@ -14,4 +14,15 @@ public class Stats {
         this.numPlays = 0;
         this.totalReward = 0.0;
     }
+
+    /**
+     * Initialize Stats object with values
+     * 
+     * @param numPlays    Number of plays
+     * @param totalReward Total observed reward
+     */
+    public Stats(int numPlays, double totalReward) {
+        this.numPlays = numPlays;
+        this.totalReward = totalReward;
+    }
 }
