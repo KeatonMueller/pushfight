@@ -169,7 +169,7 @@ public class Evaluation {
         AgentGame ag;
         for (int i = 0; i < numGames; i++) {
             System.out.print("                                                   \r");
-            System.out.print("Running game " + i + "\r");
+            System.out.print("Running game " + i + "\n");
             ag = new AgentGame(p1, p2);
             winner = ag.getWinner();
             totalTurns += ag.numTurns;

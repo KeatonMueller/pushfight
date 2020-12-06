@@ -45,9 +45,13 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
         double result;
         int i = 0;
         while (i < this.iterations) {
+            System.out.print(turn + " " + toString() + " " + i + " traversing  \r");
             leaf = traverse(tree);
+            System.out.print(turn + " " + toString() + " " + i + " playing out \r");
             result = playout(leaf);
+            System.out.print(turn + " " + toString() + " " + i + " updating    \r");
             updateStats(leaf, result);
+            System.out.print(turn + " " + toString() + " " + i + " done        \r");
             i++;
         }
         return getBestState(tree.root);
@@ -102,6 +106,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
         int winner, count;
         int turnCount = 0;
         while (true) {
+            System.err.println(turnCount);
             winner = BitboardUtils.checkWinner(board);
             if (winner != -1) {
                 if (winner == 0)
