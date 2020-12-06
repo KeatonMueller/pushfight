@@ -1,25 +1,9 @@
 package main.java.agents.mcts;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
-import main.java.agents.Agent;
-import main.java.agents.AgentInterface;
-import main.java.agents.RandomAgent;
-import main.java.board.Bitboard;
-import main.java.board.State;
-import main.java.util.BitboardUtils;
-// import main.java.util.SuccessorUtils;
-
 /**
  * Agent using Monte-Carlo Tree Search with the First Player Urgency enhancement.
  */
-public class FPUAgent extends Agent implements AgentInterface {
-    protected Map<Bitboard, Integer> boardToNum = new HashMap<>(); // facilitate tie checking
-    private long iterations = 5000; // iterations allowed to explore game tree
-    protected Random rand = new Random();; // Random object used for random playouts
-    protected int turn; // turn indicator
+public class FPUAgent extends VanillaMCTSAgent {
     private final double FPU_CONSTANT = 0.8; // FPU constant
 
     /**
@@ -28,44 +12,24 @@ public class FPUAgent extends Agent implements AgentInterface {
      * @param iterations Max number of iterations allowed per move
      */
     public FPUAgent(long iterations) {
-        this.iterations = iterations;
+        super(iterations);
     }
 
     /**
      * Initialize Monte-Carlo Tree Search agent
      */
     public FPUAgent() {
+        super();
     }
 
-    public Bitboard getNextState(Bitboard board, int turn) {
-        this.turn = turn;
-        Tree tree = new Tree(board, this.turn);
-        Node leaf;
-        double result;
-        int i = 0;
-        while (i < this.iterations) {
-            System.out.print(i + "\r");
-            leaf = traverse(tree);
-            result = playout(leaf);
-            updateStats(leaf, result);
-            i++;
-        }
-        return getBestState(tree.root);
-    }
-
-    /**
-     * Traverse the game tree by following UCT algorithm
-     * 
-     * @param tree Tree to traverse
-     * @return Leaf Node at the bottom of the traversal
-     */
-    private Node traverse(Tree tree) {
+    @Override
+    protected Node traverse(Tree tree) {
         Node node = tree.root;
         Node nextNode;
 
         // follow UCT until you find a non-fully-expanded node
         while (node.isFullyExpanded && !node.isTerminal) {
-            nextNode = bestUCT(node);
+            nextNode = bestUCT(node, tree);
             nextNode.chosenParent = node;
             node = nextNode;
             turn = 1 - turn;
@@ -74,97 +38,32 @@ public class FPUAgent extends Agent implements AgentInterface {
             return node;
         }
 
-        // rather than choose randomly from unexplored children,
-        // initialize them all to FPU constant and run UCT
-        for (State state : node.unexplored) {
-            // get Node from tree
-            nextNode = tree.getNode(state, turn);
-            // add child to node's children with default value
-            node.children.add(nextNode);
-            node.childToStats.put(nextNode, new Stats(1, FPU_CONSTANT));
-            // add node to child's parents
-            nextNode.parents.add(node);
-        }
-        // we manually explored all children
-        node.isFullyExpanded = true;
-        // run UCT
-        nextNode = bestUCT(node);
+        // run UCT again (will pick unexplored node if FPU_CONSTANT is high enough)
+        nextNode = bestUCT(node, tree);
         nextNode.chosenParent = node;
         return nextNode;
-    }
-
-    /**
-     * Randomly playout from the given Node to a terminal state
-     * 
-     * @param node Node to playout from
-     * @return Result of playout (1 if p1 win, -1 if p2 win)
-     */
-    protected double playout(Node node) {
-        boardToNum.clear();
-        Bitboard board = new Bitboard(node.state.board);
-        int winner, count;
-        int turnCount = 0;
-        while (true) {
-            winner = BitboardUtils.checkWinner(board);
-            if (winner != -1) {
-                if (winner == 0)
-                    return 1;
-                return -1;
-            }
-
-            // add tie logic in rare case of long loop
-            count = boardToNum.getOrDefault(board, 0);
-            boardToNum.put(board, count + 1);
-            turnCount += 1;
-            if (count >= 5 || turnCount >= 100) {
-                return 0;
-            }
-
-            RandomAgent.randomMove(board, turn, rand);
-            turn = 1 - turn;
-        }
-    }
-
-    /**
-     * Traverse up the game tree updating node and edge statistics
-     * 
-     * @param node   Node to traverse from
-     * @param result Game result to propagate
-     */
-    private void updateStats(Node node, double result) {
-        // increment number of visits
-        node.totalVisits += 1;
-
-        Node parent;
-        Stats stats;
-        while (node.chosenParent != null) {
-            parent = node.chosenParent;
-            node.chosenParent = null;
-            parent.totalVisits += 1;
-
-            // update edge statistics
-            stats = parent.childToStats.get(node);
-            stats.numPlays += 1;
-            stats.totalReward += result;
-
-            node = parent;
-        }
     }
 
     /**
      * Get the next child from the given node based on UCT
      * 
      * @param node Node to perform UCT on
+     * @param tree Tree to get Nodes from
      * @return Next node to explore
      */
-    private Node bestUCT(Node node) {
+    private Node bestUCT(Node node, Tree tree) {
         Node bestNode = null;
         double bestUCB, ucb, avgReward;
         int totalPlays;
         double totalReward;
         Stats stats;
+        boolean newBest = true;
         if (turn == 0) {
             bestUCB = -Double.MAX_VALUE;
+            if (node.unexplored.size() > 0) {
+                bestUCB = FPU_CONSTANT + Math.pow(2 * Math.log(node.totalVisits), 0.5);
+                bestNode = tree.getNode(node.unexplored.get(0), turn);
+            }
             for (Node child : node.children) {
                 totalReward = 0;
                 totalPlays = 0;
@@ -178,12 +77,17 @@ public class FPUAgent extends Agent implements AgentInterface {
                 ucb = avgReward + Math.pow(2 * Math.log(node.totalVisits) / stats.numPlays, 0.5);
 
                 if (ucb > bestUCB) {
+                    newBest = false;
                     bestUCB = ucb;
                     bestNode = child;
                 }
             }
         } else {
             bestUCB = Double.MAX_VALUE;
+            if (node.unexplored.size() > 0) {
+                bestUCB = FPU_CONSTANT - Math.pow(2 * Math.log(node.totalVisits), 0.5);
+                bestNode = tree.getNode(node.unexplored.get(0), turn);
+            }
             for (Node child : node.children) {
                 totalReward = 0;
                 totalPlays = 0;
@@ -197,50 +101,25 @@ public class FPUAgent extends Agent implements AgentInterface {
                 ucb = avgReward - Math.pow(2 * Math.log(node.totalVisits) / stats.numPlays, 0.5);
 
                 if (ucb < bestUCB) {
+                    newBest = false;
                     bestUCB = ucb;
                     bestNode = child;
                 }
             }
         }
-        return bestNode;
-    }
-
-    /**
-     * Get the best next state from the given node based on observed reward
-     * 
-     * @param node Node to get best move from
-     * @return Bitboard of next state with the highest observed reward
-     */
-    private Bitboard getBestState(Node node) {
-        Node bestNode = null;
-        double bestReward, reward;
-        Stats stats;
-        if (turn == 0) {
-            bestReward = -Double.MAX_VALUE;
-            for (Node child : node.childToStats.keySet()) {
-                stats = node.childToStats.get(child);
-                reward = stats.totalReward / stats.numPlays;
-                if (reward > bestReward) {
-                    bestReward = reward;
-                    bestNode = child;
-                }
-            }
-        } else {
-            bestReward = Double.MAX_VALUE;
-            for (Node child : node.childToStats.keySet()) {
-                stats = node.childToStats.get(child);
-                reward = stats.totalReward / stats.numPlays;
-                if (reward < bestReward) {
-                    bestReward = reward;
-                    bestNode = child;
-                }
-            }
+        // if UCT chose an unexplored node
+        if (newBest) {
+            node.unexplored.remove(0);
+            node.isFullyExpanded = node.unexplored.size() == 0;
+            node.children.add(bestNode);
+            node.childToStats.put(bestNode, new Stats());
+            bestNode.parents.add(node);
         }
-        return bestNode.state.board;
+        return bestNode;
     }
 
     @Override
     public String toString() {
-        return "Vanilla MCTS Agent";
+        return "First Player Urgency MCTS Agent";
     }
 }

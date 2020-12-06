@@ -63,7 +63,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
      * @param tree Tree to traverse
      * @return Leaf Node at the bottom of the traversal
      */
-    private Node traverse(Tree tree) {
+    protected Node traverse(Tree tree) {
         Node node = tree.root;
         Node nextNode;
 
