@@ -4,7 +4,7 @@ package main.java.agents.mcts;
  * Agent using Monte-Carlo Tree Search with the First Player Urgency enhancement.
  */
 public class FPUAgent extends VanillaMCTSAgent {
-    private final double FPU_CONSTANT = 0.8; // FPU constant
+    private double FPU_CONSTANT = 0.8; // FPU constant
 
     /**
      * Initialize Monte-Carlo Tree Search agent with given iteration limit
@@ -13,6 +13,17 @@ public class FPUAgent extends VanillaMCTSAgent {
      */
     public FPUAgent(long iterations) {
         super(iterations);
+    }
+
+    /**
+     * Initialize Monte-Carlo Tree Search agent with given iteration limit and FPU constant
+     * 
+     * @param iterations   Max number of iterations allowed per move
+     * @param FPU_CONSTANT FPU constant
+     */
+    public FPUAgent(long iterations, double FPU_CONSTANT) {
+        super(iterations);
+        this.FPU_CONSTANT = FPU_CONSTANT;
     }
 
     /**
@@ -120,6 +131,6 @@ public class FPUAgent extends VanillaMCTSAgent {
 
     @Override
     public String toString() {
-        return "First Player Urgency MCTS Agent";
+        return FPU_CONSTANT + " First Player Urgency MCTS Agent";
     }
 }

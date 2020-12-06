@@ -77,6 +77,41 @@ public class MonteCarloAgent extends Agent {
         }
     }
 
+    /**
+     * Initialize mcts agent agent of given type with given iterations and extra parameter
+     * 
+     * @param type       Type of mcts agent to instantiate
+     * @param iterations Number of iterations per move
+     * @param extra      Extra parameter than some agents can use
+     */
+    public MonteCarloAgent(MCTSType type, long iterations, double extra) {
+        switch (type) {
+            // weighted and FPU can take an extra param
+            case WEIGHTED_SEEDED:
+                this.agent = new WeightedSeededMCTSAgent(iterations, extra);
+                break;
+            case FPU:
+                this.agent = new FPUAgent(iterations, extra);
+                break;
+            // the rest don't use one
+            case VANILLA:
+                this.agent = new VanillaMCTSAgent(iterations);
+                break;
+            case MAST:
+                this.agent = new MASTAgent(iterations);
+                break;
+            case SEEDED:
+                this.agent = new SeededMCTSAgent(iterations);
+                break;
+            case BIASED:
+                this.agent = new BiasedMCTSAgent(iterations);
+                break;
+            case LGR1:
+                this.agent = new LGR1Agent(iterations);
+                break;
+        }
+    }
+
     // === when type isn't specified, use the vanilla agent ===
 
     /**

@@ -6,7 +6,8 @@ import main.java.board.Heuristic;
 import main.java.util.BitboardUtils;
 
 /**
- * Agent using Monte-Carlo Tree Search that weights a (normalized) heuristic on board states in addition to using random playouts.
+ * Agent using Monte-Carlo Tree Search that weights a (normalized) heuristic on board states in
+ * addition to using random playouts.
  */
 public class WeightedSeededMCTSAgent extends VanillaMCTSAgent {
     private Heuristic h = new Heuristic();
@@ -20,6 +21,19 @@ public class WeightedSeededMCTSAgent extends VanillaMCTSAgent {
      */
     public WeightedSeededMCTSAgent(long iterations) {
         super(iterations);
+    }
+
+    /**
+     * Initialize Weighted Seeded Monte-Carlo Tree Search agent with given iteration limit and
+     * weight for heuristic value.
+     * 
+     * @param iterations      Max number of iterations allowed per move
+     * @param heuristicWeight Weight (0 - 1) for heuristic value
+     */
+    public WeightedSeededMCTSAgent(long iterations, double heuristicWeight) {
+        super(iterations);
+        this.heuristicWeight = heuristicWeight;
+        this.playoutWeight = 1.0 - this.heuristicWeight;
     }
 
     /**
@@ -61,6 +75,6 @@ public class WeightedSeededMCTSAgent extends VanillaMCTSAgent {
 
     @Override
     public String toString() {
-        return "Weighted Heuristic-Seeded MCTS Agent";
+        return heuristicWeight + " Weighted Heuristic-Seeded MCTS Agent";
     }
 }

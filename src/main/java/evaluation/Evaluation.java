@@ -144,13 +144,20 @@ public class Evaluation {
                     case 3:
                         return new MonteCarloAgent(MCTSType.SEEDED, iterations);
                     case 4:
-                        return new MonteCarloAgent(MCTSType.WEIGHTED_SEEDED, iterations);
+                        double heuristicWeight = 0.0;
+                        System.out.print("Choose heuristic weight: ");
+                        heuristicWeight = Double.parseDouble(scan.nextLine().trim());
+                        return new MonteCarloAgent(MCTSType.WEIGHTED_SEEDED, iterations,
+                                heuristicWeight);
                     case 5:
                         return new MonteCarloAgent(MCTSType.BIASED, iterations);
                     case 6:
                         return new MonteCarloAgent(MCTSType.LGR1, iterations);
                     case 7:
-                        return new MonteCarloAgent(MCTSType.FPU, iterations);
+                        double FPU_CONSTANT = 0.0;
+                        System.out.print("Choose FPU Constant: ");
+                        FPU_CONSTANT = Double.parseDouble(scan.nextLine().trim());
+                        return new MonteCarloAgent(MCTSType.FPU, iterations, FPU_CONSTANT);
                 }
         }
         return null;
