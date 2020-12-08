@@ -96,7 +96,7 @@ public class FPUAgent extends VanillaMCTSAgent {
         } else {
             bestUCB = Double.MAX_VALUE;
             if (node.unexplored.size() > 0) {
-                bestUCB = FPU_CONSTANT - Math.pow(2 * Math.log(node.totalVisits), 0.5);
+                bestUCB = -FPU_CONSTANT - Math.pow(2 * Math.log(node.totalVisits), 0.5);
                 bestNode = tree.getNode(node.unexplored.get(0), turn);
             }
             for (Node child : node.children) {
