@@ -1,8 +1,10 @@
 package main.java.agents.mcts;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import main.java.agents.Agent;
 import main.java.agents.AgentInterface;
@@ -66,11 +68,20 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
     protected Node traverse(Tree tree) {
         Node node = tree.root;
         Node nextNode;
+        Set<Bitboard> path = new HashSet<>();
+        path.add(node.state.board);
 
         // follow UCT until you find a non-fully-expanded node
         while (node.isFullyExpanded && !node.isTerminal) {
             nextNode = bestUCT(node);
             nextNode.chosenParent = node;
+            if(path.contains(nextNode.state.board)){
+                // terminate traversal if you loop
+                return nextNode;
+            }
+            else{
+                path.add(nextNode.state.board);
+            }
             node = nextNode;
             turn = 1 - turn;
         }
