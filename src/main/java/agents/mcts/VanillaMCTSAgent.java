@@ -106,7 +106,6 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
         int winner, count;
         int turnCount = 0;
         while (true) {
-            System.err.println(turnCount);
             winner = BitboardUtils.checkWinner(board);
             if (winner != -1) {
                 if (winner == 0)

@@ -51,7 +51,6 @@ public class WeightedSeededMCTSAgent extends VanillaMCTSAgent {
         int winner, count;
         int turnCount = 0;
         while (true) {
-            System.err.println(turnCount);
             winner = BitboardUtils.checkWinner(board);
             if (winner != -1) {
                 if (winner == 0)

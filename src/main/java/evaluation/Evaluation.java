@@ -175,8 +175,8 @@ public class Evaluation {
         int totalTurns = 0;
         AgentGame ag;
         for (int i = 0; i < numGames; i++) {
-            System.out.print("                                                   \r");
-            System.out.print("Running game " + i + "\n");
+            System.out.print("\t\t\t\t\t\t\t\t\t\t\t\t\t\r");
+            System.out.print("\t\t\t\t\t\t\t\t\t\tRunning game " + i + "\r");
             ag = new AgentGame(p1, p2);
             winner = ag.getWinner();
             totalTurns += ag.numTurns;
