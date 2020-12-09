@@ -80,7 +80,10 @@ public class MASTAgent extends Agent implements AgentInterface {
             nextNode = bestUCT(node);
             path.add(nextNode.state.move);
             nextNode.chosenParent = node;
-            assert(node.childToStats.containsKey(nextNode));
+            if (!node.childToStats.containsKey(nextNode)) {
+                System.err.println("MAST picked invalid child during UCT");
+                System.exit(1);
+            }
             node = nextNode;
             turn = 1 - turn;
         }
@@ -199,6 +202,10 @@ public class MASTAgent extends Agent implements AgentInterface {
         node.chosenParent = null;
 
         // update edge statistics
+        if (parent == null || !parent.childToStats.containsKey(node)) {
+            System.err.println("Yiikes " + parent == null);
+            System.exit(1);
+        }
         Stats stats = parent.childToStats.get(node);
         stats.numPlays += 1;
         stats.totalReward += result;
