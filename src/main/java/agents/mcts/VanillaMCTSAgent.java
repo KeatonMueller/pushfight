@@ -75,11 +75,10 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
         while (node.isFullyExpanded && !node.isTerminal) {
             nextNode = bestUCT(node);
             nextNode.chosenParent = node;
-            if(path.contains(nextNode.state.board)){
+            if (path.contains(nextNode.state.board)) {
                 // terminate traversal if you loop
                 return nextNode;
-            }
-            else{
+            } else {
                 path.add(nextNode.state.board);
             }
             node = nextNode;
@@ -143,7 +142,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
      * @param node   Node to traverse from
      * @param result Game result to propagate
      */
-    private void updateStats(Node node, double result) {
+    protected void updateStats(Node node, double result) {
         // increment number of visits
         node.totalVisits += 1;
 
@@ -169,7 +168,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
      * @param node Node to perform UCT on
      * @return Next node to explore
      */
-    private Node bestUCT(Node node) {
+    protected Node bestUCT(Node node) {
         Node bestNode = null;
         double bestUCB, ucb, avgReward;
         int totalPlays;
@@ -223,7 +222,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
      * @param node Node to get best move from
      * @return Bitboard of next state with the highest observed reward
      */
-    private Bitboard getBestState(Node node) {
+    protected Bitboard getBestState(Node node) {
         Node bestNode = null;
         double bestReward, reward;
         Stats stats;

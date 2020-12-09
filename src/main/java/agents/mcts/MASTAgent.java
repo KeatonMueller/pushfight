@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import main.java.agents.Agent;
-import main.java.agents.AgentInterface;
 import main.java.board.Bitboard;
 import main.java.board.Move;
 import main.java.board.State;
@@ -20,7 +18,7 @@ import main.java.util.SuccessorUtils;
  * Agent using Monte-Carlo Tree Search along with the Move Averaged Sampling Technique enhancement
  * to the default policy.
  */
-public class MASTAgent extends Agent implements AgentInterface {
+public class MASTAgent extends VanillaMCTSAgent {
     private final double TAU = 1.0; // tunable parameter for MAST exploration
     private long iterations = 5000; // iterations allowed to explore game tree
     private Random rand = new Random(); // Random object used for random playouts
@@ -80,10 +78,6 @@ public class MASTAgent extends Agent implements AgentInterface {
             nextNode = bestUCT(node);
             path.add(nextNode.state.move);
             nextNode.chosenParent = node;
-            if (!node.childToStats.containsKey(nextNode)) {
-                System.err.println("MAST picked invalid child during UCT");
-                System.exit(1);
-            }
             node = nextNode;
             turn = 1 - turn;
         }
@@ -185,130 +179,18 @@ public class MASTAgent extends Agent implements AgentInterface {
     }
 
     /**
-     * Traverse up the game tree updating node and edge statistics
+     * Update stats for the moves taken along the traversal and simulation
      * 
-     * @param node   Node to traverse from
-     * @param result Game result to propagate
+     * @param path   List<Move> of moves taken
+     * @param result Result of simulation
      */
-    private void updateStats(Node node, int result) {
-        // increment number of visits
-        node.totalVisits += 1;
-
-        // stop if reached root
-        if (node.parents.size() == 0)
-            return;
-
-        Node parent = node.chosenParent;
-        node.chosenParent = null;
-
-        // update edge statistics
-        if (parent == null || !parent.childToStats.containsKey(node)) {
-            System.err.println("Yiikes " + parent == null);
-            System.exit(1);
-        }
-        Stats stats = parent.childToStats.get(node);
-        stats.numPlays += 1;
-        stats.totalReward += result;
-
-        // recurse
-        updateStats(parent, result);
-    }
-
-    public void updateStats(List<Move> path, int result) {
+    private void updateStats(List<Move> path, int result) {
         Stats stats;
         for (Move move : path) {
             stats = moveMap.getOrDefault(move, new Stats());
             stats.numPlays += 1;
             stats.totalReward += result;
         }
-    }
-
-    /**
-     * Get the next child from the given node based on UCT
-     * 
-     * @param node Node to perform UCT on
-     * @return Next node to explore
-     */
-    private Node bestUCT(Node node) {
-        Node bestNode = null;
-        double bestUCB, ucb, avgReward;
-        int totalPlays;
-        double totalReward;
-        Stats stats;
-        if (turn == 0) {
-            bestUCB = -Double.MAX_VALUE;
-            for (Node child : node.children) {
-                totalReward = 0;
-                totalPlays = 0;
-                for (Node parent : child.parents) {
-                    stats = parent.childToStats.get(child);
-                    totalReward += stats.totalReward;
-                    totalPlays += stats.numPlays;
-                }
-                avgReward = totalReward / totalPlays;
-                stats = node.childToStats.get(child);
-                ucb = avgReward + Math.pow(2 * Math.log(node.totalVisits) / stats.numPlays, 0.5);
-
-                if (ucb > bestUCB) {
-                    bestUCB = ucb;
-                    bestNode = child;
-                }
-            }
-        } else {
-            bestUCB = Double.MAX_VALUE;
-            for (Node child : node.children) {
-                totalReward = 0;
-                totalPlays = 0;
-                for (Node parent : child.parents) {
-                    stats = parent.childToStats.get(child);
-                    totalReward += stats.totalReward;
-                    totalPlays += stats.numPlays;
-                }
-                avgReward = totalReward / totalPlays;
-                stats = node.childToStats.get(child);
-                ucb = avgReward - Math.pow(2 * Math.log(node.totalVisits) / stats.numPlays, 0.5);
-
-                if (ucb < bestUCB) {
-                    bestUCB = ucb;
-                    bestNode = child;
-                }
-            }
-        }
-        return bestNode;
-    }
-
-    /**
-     * Get the best next state from the given node based on observed reward
-     * 
-     * @param node Node to get best move from
-     * @return Bitboard of next state with the highest observed reward
-     */
-    private Bitboard getBestState(Node node) {
-        Node bestNode = null;
-        double bestReward, reward;
-        Stats stats;
-        if (turn == 0) {
-            bestReward = -Double.MAX_VALUE;
-            for (Node child : node.childToStats.keySet()) {
-                stats = node.childToStats.get(child);
-                reward = stats.totalReward / stats.numPlays;
-                if (reward > bestReward) {
-                    bestReward = reward;
-                    bestNode = child;
-                }
-            }
-        } else {
-            bestReward = Double.MAX_VALUE;
-            for (Node child : node.childToStats.keySet()) {
-                stats = node.childToStats.get(child);
-                reward = stats.totalReward / stats.numPlays;
-                if (reward < bestReward) {
-                    bestReward = reward;
-                    bestNode = child;
-                }
-            }
-        }
-        return bestNode.state.board;
     }
 
     @Override
