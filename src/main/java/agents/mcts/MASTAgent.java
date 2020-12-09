@@ -50,10 +50,14 @@ public class MASTAgent extends Agent implements AgentInterface {
         List<Move> path = new ArrayList<>();
         int i = 0;
         while (i < this.iterations) {
+            System.out.print(turn + " " + toString() + " " + i + " traversing  \r");
             leaf = traverse(tree, path);
+            System.out.print(turn + " " + toString() + " " + i + " playing out \r");
             result = playout(leaf, path);
+            System.out.print(turn + " " + toString() + " " + i + " updating    \r");
             updateStats(leaf, result);
             updateStats(path, result);
+            System.out.print(turn + " " + toString() + " " + i + " done        \r");
             i++;
         }
         return getBestState(tree.root);
@@ -76,6 +80,7 @@ public class MASTAgent extends Agent implements AgentInterface {
             nextNode = bestUCT(node);
             path.add(nextNode.state.move);
             nextNode.chosenParent = node;
+            assert(node.childToStats.containsKey(nextNode));
             node = nextNode;
             turn = 1 - turn;
         }
