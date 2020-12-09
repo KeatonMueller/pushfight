@@ -1,7 +1,7 @@
 package main.java.agents.mcts;
 
 /**
- * Agent using Monte-Carlo Tree Search with the First Player Urgency enhancement.
+ * Agent using Monte-Carlo Tree Search with the First Play Urgency enhancement.
  */
 public class FPUAgent extends VanillaMCTSAgent {
     private double FPU_CONSTANT = 0.8; // FPU constant
@@ -131,6 +131,6 @@ public class FPUAgent extends VanillaMCTSAgent {
 
     @Override
     public String toString() {
-        return FPU_CONSTANT + " First Player Urgency MCTS Agent";
+        return FPU_CONSTANT + " First Play Urgency MCTS Agent";
     }
 }

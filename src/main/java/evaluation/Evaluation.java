@@ -85,7 +85,7 @@ public class Evaluation {
             System.out.println("\t4. Weighted Heuristic-Seeded");
             System.out.println("\t5. Biased");
             System.out.println("\t6. Last Good Reply");
-            System.out.println("\t7. First Player Urgency");
+            System.out.println("\t7. First Play Urgency");
             System.out.print("Choice: ");
             mctsType = Integer.parseInt(scan.nextLine().trim());
             System.out.print("Choose number of iterations per move: ");
