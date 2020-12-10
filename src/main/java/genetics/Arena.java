@@ -70,7 +70,7 @@ public class Arena {
      * @return 0 if player 1 won, else 1
      */
     public static int playout(Agent a1, Agent a2) {
-        return new AgentGame(a1, a2).getWinner();
+        return new AgentGame(a1, a2, false).getWinner();
     }
 
     /**

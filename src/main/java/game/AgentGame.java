@@ -11,6 +11,7 @@ public class AgentGame {
     private Bitboard board;
     private int turn;
     private Agent a1, a2;
+    private boolean show;
     public int numTurns;
 
     private Map<Bitboard, Integer> stateToNum;
@@ -20,11 +21,13 @@ public class AgentGame {
      * 
      * @param agent1 Agent to be player 1
      * @param agent2 Agent to be player 2
+     * @param show   Whether or not to print board after each turn
      */
-    public AgentGame(Agent agent1, Agent agent2) {
+    public AgentGame(Agent agent1, Agent agent2, boolean show) {
         board = new Bitboard();
         turn = 0;
         numTurns = 0;
+        this.show = show;
 
         a1 = agent1;
         a2 = agent2;
@@ -33,6 +36,8 @@ public class AgentGame {
         a2.newGame(1);
 
         BitboardUtils.skipSetup(board);
+        if (show)
+            board.show();
         stateToNum = new HashMap<>();
     }
 
@@ -43,6 +48,8 @@ public class AgentGame {
         int winner, count;
         while (true) {
             makeMove(turn);
+            if (show)
+                board.show();
             numTurns++;
             count = stateToNum.getOrDefault(board, 0);
             stateToNum.put(board, count + 1);
