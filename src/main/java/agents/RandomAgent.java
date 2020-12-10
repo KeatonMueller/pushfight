@@ -36,11 +36,10 @@ public class RandomAgent extends Agent implements AgentInterface {
      * provided board is updated to have the move performed on it.
      * 
      * @param board Board to find next State from
-     * @param turn  Turn indicator
      * @param rand  Instance of the Random class
      * @return Move object of the randomly chosen next move
      */
-    public static Move getRandomMove(Bitboard board, int turn, Random rand) {
+    public static Move getRandomMove(Bitboard board, Random rand) {
         Set<State> nextStates = SuccessorUtils.getSuccessors(board);
         if (nextStates.size() == 0) {
             System.err.println("No successors for board");
@@ -63,10 +62,9 @@ public class RandomAgent extends Agent implements AgentInterface {
      * Perform a random move on the given board without instantiating a RandomAgent instance.
      * 
      * @param board Board to perform random move on
-     * @param turn  Turn indicator
      * @param rand  Instance of the Random class
      */
-    public static void randomMove(Bitboard board, int turn, Random rand) {
+    public static void randomMove(Bitboard board, Random rand) {
         Set<Bitboard> nextStates = SuccessorUtils.getNextStates(board);
         if (nextStates.size() == 0) {
             System.err.println("No successors for board");

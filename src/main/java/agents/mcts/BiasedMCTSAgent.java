@@ -52,7 +52,7 @@ public class BiasedMCTSAgent extends VanillaMCTSAgent {
                 return 0;
             }
 
-            stateSet = SuccessorUtils.getStateSet(board, turn);
+            stateSet = SuccessorUtils.getStateSet(board);
             if (stateSet.winningStates.size() > 0) {
                 board.restoreState(stateSet.iterator().next().board);
             } else if (stateSet.checkmateStates.size() > 0) {
@@ -68,8 +68,6 @@ public class BiasedMCTSAgent extends VanillaMCTSAgent {
             } else {
                 board.restoreState(((State) SetUtils.randomChoice(stateSet.otherStates)).board);
             }
-
-            turn = 1 - turn;
         }
     }
 

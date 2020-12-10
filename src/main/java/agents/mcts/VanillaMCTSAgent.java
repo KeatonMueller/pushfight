@@ -23,7 +23,6 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
     protected Map<Bitboard, Integer> boardToNum = new HashMap<>(); // facilitate tie checking
     private long iterations = 5000; // iterations allowed to explore game tree
     protected Random rand = new Random();; // Random object used for random playouts
-    protected int turn; // turn indicator
 
     /**
      * Initialize Monte-Carlo Tree Search agent with given iteration limit
@@ -41,8 +40,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
     }
 
     public Bitboard getNextState(Bitboard board, int turn) {
-        this.turn = turn;
-        Tree tree = new Tree(board, this.turn);
+        Tree tree = new Tree(board);
         Node leaf;
         double result;
         int i = 0;
@@ -67,7 +65,6 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
      */
     protected Node traverse(Tree tree) {
         Node node = tree.root;
-        turn = tree.rootTurn;
         Node nextNode;
         Set<Bitboard> path = new HashSet<>();
         path.add(node.state.board);
@@ -83,7 +80,6 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
                 path.add(nextNode.state.board);
             }
             node = nextNode;
-            turn = 1 - turn;
         }
         if (node.isTerminal) {
             return node;
@@ -102,7 +98,6 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
         nextNode.parents.add(node);
         nextNode.chosenParent = node;
 
-        turn = 1 - turn;
         return nextNode;
     }
 
@@ -133,8 +128,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
                 return 0;
             }
 
-            RandomAgent.randomMove(board, turn, rand);
-            turn = 1 - turn;
+            RandomAgent.randomMove(board, rand);
         }
     }
 
@@ -176,7 +170,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
         int totalPlays;
         double totalReward;
         Stats stats;
-        if (turn == 0) {
+        if (node.state.board.getTurn() == 0) {
             bestUCB = -Double.MAX_VALUE;
             for (Node child : node.children) {
                 totalReward = 0;
@@ -228,7 +222,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
         Node bestNode = null;
         double bestReward, reward;
         Stats stats;
-        if (turn == 0) {
+        if (node.state.board.getTurn() == 0) {
             bestReward = -Double.MAX_VALUE;
             for (Node child : node.childToStats.keySet()) {
                 stats = node.childToStats.get(child);

@@ -43,7 +43,6 @@ public class FPUAgent extends VanillaMCTSAgent {
             nextNode = bestUCT(node, tree);
             nextNode.chosenParent = node;
             node = nextNode;
-            turn = 1 - turn;
         }
         if (node.isTerminal) {
             return node;
@@ -69,7 +68,7 @@ public class FPUAgent extends VanillaMCTSAgent {
         double totalReward;
         Stats stats;
         boolean newBest = true;
-        if (turn == 0) {
+        if (node.state.board.getTurn() == 0) {
             bestUCB = -Double.MAX_VALUE;
             if (node.unexplored.size() > 0) {
                 bestUCB = FPU_CONSTANT + Math.pow(2 * Math.log(node.totalVisits), 0.5);

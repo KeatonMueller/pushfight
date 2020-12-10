@@ -12,19 +12,16 @@ import main.java.board.State;
 public class Tree {
     public Node root; // root of tree
     public Map<Bitboard, Node> map; // map from board positions to corresponding Nodes
-    public int rootTurn; // turn at the root of the tree
 
     /**
      * Initialize game tree with given board position at the root
      * 
      * @param rootPos Root board position
-     * @param turn    Turn indicator
      */
-    public Tree(Bitboard rootPos, int turn) {
+    public Tree(Bitboard rootPos) {
         root = new Node(new State(rootPos));
         map = new HashMap<>();
         map.put(rootPos, root);
-        rootTurn = turn;
     }
 
     /**

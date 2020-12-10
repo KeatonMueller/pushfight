@@ -67,8 +67,7 @@ public class WeightedSeededMCTSAgent extends VanillaMCTSAgent {
                 return heuristic / heuristicWeight;
             }
 
-            RandomAgent.randomMove(board, turn, rand);
-            turn = 1 - turn;
+            RandomAgent.randomMove(board, rand);
         }
     }
 

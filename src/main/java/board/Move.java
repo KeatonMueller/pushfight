@@ -17,12 +17,10 @@ public class Move {
 
     public Move() {
         actions = new ArrayList<>();
-        turn = -1;
     }
 
     public Move(Move m) {
         actions = new ArrayList<>(m.actions);
-        turn = -1;
     }
 
     /**
@@ -88,6 +86,6 @@ public class Move {
             return false;
 
         Move other = (Move) obj;
-        return this.turn == other.turn && this.actions.equals(other.actions);
+        return this.actions.equals(other.actions);
     }
 }

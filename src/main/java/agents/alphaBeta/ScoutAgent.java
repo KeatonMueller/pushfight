@@ -128,7 +128,7 @@ public class ScoutAgent extends Agent implements AgentInterface {
         boolean first = true;
         if (turn == 0) {
             best.value = -Double.MAX_VALUE;
-            for (State state : SuccessorUtils.getStateSet(board, turn)) {
+            for (State state : SuccessorUtils.getStateSet(board)) {
                 child = state.board;
                 if (first) {
                     first = false;
@@ -154,7 +154,7 @@ public class ScoutAgent extends Agent implements AgentInterface {
             return best;
         } else {
             best.value = Double.MAX_VALUE;
-            for (State state : SuccessorUtils.getStateSet(board, turn)) {
+            for (State state : SuccessorUtils.getStateSet(board)) {
                 child = state.board;
                 if (first) {
                     first = false;
@@ -202,7 +202,7 @@ public class ScoutAgent extends Agent implements AgentInterface {
         Bitboard child;
         if (turn == 0) {
             best.value = -Double.MAX_VALUE;
-            for (State state : SuccessorUtils.getStateSet(board, turn)) {
+            for (State state : SuccessorUtils.getStateSet(board)) {
                 child = state.board;
                 candidateValue = alphaBeta(child, depth - 1, alpha, beta, 1 - turn).value;
 
@@ -218,7 +218,7 @@ public class ScoutAgent extends Agent implements AgentInterface {
             return best;
         } else {
             best.value = Double.MAX_VALUE;
-            for (State state : SuccessorUtils.getStateSet(board, turn)) {
+            for (State state : SuccessorUtils.getStateSet(board)) {
                 child = state.board;
                 candidateValue = alphaBeta(child, depth - 1, alpha, beta, 1 - turn).value;
 

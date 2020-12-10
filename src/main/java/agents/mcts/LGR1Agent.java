@@ -55,10 +55,12 @@ public class LGR1Agent extends VanillaMCTSAgent {
         int turnCount = 0;
         List<Move> path = new ArrayList<>();
         Move lastMove = null;
+        int turn;
         while (true) {
+            turn = board.getTurn();
             winner = BitboardUtils.checkWinner(board);
             if (winner != -1) {
-                processPath(path, winner);
+                processPath(path, winner, turn);
                 if (winner == 0)
                     return 1;
                 return -1;
@@ -74,22 +76,21 @@ public class LGR1Agent extends VanillaMCTSAgent {
 
             if (lastMove == null || !replies.get(turn).containsKey(lastMove)) {
                 // if there's no recorded last reply, do a random move
-                lastMove = RandomAgent.getRandomMove(board, turn, rand);
+                lastMove = RandomAgent.getRandomMove(board, rand);
             } else {
                 // get the recorded last reply
                 lastMove = replies.get(turn).get(lastMove);
                 // attempt to perform it
                 if (!lastMove.attempt(board, turn)) {
                     // do a random move if the last good reply isn't valid for current board state
-                    lastMove = RandomAgent.getRandomMove(board, turn, rand);
+                    lastMove = RandomAgent.getRandomMove(board, rand);
                 }
             }
             path.add(lastMove);
-            turn = 1 - turn;
         }
     }
 
-    private void processPath(List<Move> path, int winner) {
+    private void processPath(List<Move> path, int winner, int turn) {
         if (path.size() == 0)
             return;
 
