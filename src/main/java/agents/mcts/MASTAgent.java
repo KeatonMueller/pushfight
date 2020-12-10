@@ -143,16 +143,15 @@ public class MASTAgent extends VanillaMCTSAgent {
             // calculate total value, as well as value for each move
             qMap.clear();
             found = false;
+            int sign = turn == 0 ? 1 : -1;
             for (State state : nextStates) {
                 if (moveMap.containsKey(state.move)) {
                     stats = moveMap.get(state.move);
-                    value = Math.exp(stats.totalReward / stats.numPlays / TAU);
+                    value = Math.exp(sign * stats.totalReward / stats.numPlays / TAU);
                     totalValue += value;
                     qMap.put(state.move, value);
                 } else {
-                    // totalValue += 100.0;
-                    // mastMap.put(state.move, 100.0);
-                    // always choose unexplored random move
+                    // always choose an unexplored move
                     board = state.board;
                     turn = 1 - turn;
                     found = true;
