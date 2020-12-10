@@ -10,19 +10,17 @@ public abstract class Agent {
      * Get the agent's next move given the board state
      * 
      * @param board The board to get the next move for
-     * @param turn  Turn indicator
      * @return A BitboardState of the new board state after the agent has made its move
      */
-    protected abstract Bitboard getNextState(Bitboard board, int turn);
+    protected abstract Bitboard getNextState(Bitboard board);
 
     /**
      * Get, decode, and perform move from Agent
      * 
      * @param board The board for the agent to make the move on
-     * @param turn  Turn indicator
      */
-    public void agentMove(Bitboard board, int turn) {
-        Bitboard state = getNextState(board, turn);
+    public void agentMove(Bitboard board) {
+        Bitboard state = getNextState(board);
         board.restoreState(state);
     }
 

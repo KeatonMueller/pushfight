@@ -205,9 +205,9 @@ class Canvas extends JPanel {
             return;
         // otherwise get the move from the appropriate agent
         if (turn == 0) {
-            p1.agentMove(board, turn);
+            p1.agentMove(board);
         } else {
-            p2.agentMove(board, turn);
+            p2.agentMove(board);
         }
         // change turn, repaint, and get next turn
         turn = 1 - turn;

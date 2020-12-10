@@ -104,12 +104,12 @@ public class TextGame {
             if (p1 == null)
                 userMove(turn);
             else
-                p1.agentMove(board, turn);
+                p1.agentMove(board);
         } else {
             if (p2 == null)
                 userMove(turn);
             else
-                p2.agentMove(board, turn);
+                p2.agentMove(board);
         }
     }
 

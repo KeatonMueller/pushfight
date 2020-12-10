@@ -20,7 +20,7 @@ import main.java.board.Bitboard;
 
 public class OEPAgent extends Agent {
     // do-nothing implementation just so that it compiles
-    public Bitboard getNextState(Bitboard board, int turn) {
+    public Bitboard getNextState(Bitboard board) {
         return board;
     }
 

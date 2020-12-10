@@ -75,7 +75,8 @@ public class StochasticABAgent extends Agent implements AgentInterface {
         h = new Heuristic();
     }
 
-    public Bitboard getNextState(Bitboard board, int turn) {
+    public Bitboard getNextState(Bitboard board) {
+        int turn = board.getTurn();
         options.clear();
         alphaBeta(board, DEPTH, -Double.MAX_VALUE, Double.MAX_VALUE, turn);
         if (options.size() == 0) {

@@ -6,9 +6,9 @@ import main.java.board.Bitboard;
  * Interface that all agents must implement
  */
 public interface AgentInterface {
-    public Bitboard getNextState(Bitboard board, int turn);
+    public Bitboard getNextState(Bitboard board);
 
-    public void agentMove(Bitboard board, int turn);
+    public void agentMove(Bitboard board);
 
     public void newGame(int turn);
 }

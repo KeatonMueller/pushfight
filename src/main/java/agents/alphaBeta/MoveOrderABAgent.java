@@ -90,7 +90,8 @@ public class MoveOrderABAgent extends Agent implements AgentInterface {
         h = heuristics[turn];
     }
 
-    public Bitboard getNextState(Bitboard board, int turn) {
+    public Bitboard getNextState(Bitboard board) {
+        int turn = board.getTurn();
         if (!silent)
             System.out.print("Alpha Beta searching for a move for player " + (turn + 1) + "... ");
 

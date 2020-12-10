@@ -39,11 +39,12 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
     public VanillaMCTSAgent() {
     }
 
-    public Bitboard getNextState(Bitboard board, int turn) {
+    public Bitboard getNextState(Bitboard board) {
         Tree tree = new Tree(board);
         Node leaf;
         double result;
         int i = 0;
+        int turn = board.getTurn();
         while (i < this.iterations) {
             System.out.print(turn + " " + toString() + " " + i + " traversing  \r");
             leaf = traverse(tree);

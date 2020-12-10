@@ -19,7 +19,7 @@ public class RandomAgent extends Agent implements AgentInterface {
         rand = new Random();
     }
 
-    public Bitboard getNextState(Bitboard board, int turn) {
+    public Bitboard getNextState(Bitboard board) {
         Set<Bitboard> nextStates = SuccessorUtils.getNextStates(board);
         int chosenIdx = rand.nextInt(nextStates.size());
         int idx = 0;

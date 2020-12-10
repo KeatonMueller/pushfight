@@ -132,12 +132,12 @@ public class MonteCarloAgent extends Agent {
 
     // === route function calls to agent object ===
 
-    public Bitboard getNextState(Bitboard board, int turn) {
-        return this.agent.getNextState(board, turn);
+    public Bitboard getNextState(Bitboard board) {
+        return this.agent.getNextState(board);
     }
 
-    public void agentMove(Bitboard board, int turn) {
-        this.agent.agentMove(board, turn);
+    public void agentMove(Bitboard board) {
+        this.agent.agentMove(board);
     }
 
     public void newGame(int turn) {

@@ -113,9 +113,9 @@ public class BranchingAnalysis {
      */
     private void makeMove(int turn) {
         if (turn == 0) {
-            a1.agentMove(board, turn);
+            a1.agentMove(board);
         } else {
-            a2.agentMove(board, turn);
+            a2.agentMove(board);
         }
     }
 }
