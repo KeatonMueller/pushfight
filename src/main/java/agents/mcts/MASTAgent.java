@@ -23,7 +23,7 @@ public class MASTAgent extends VanillaMCTSAgent {
     private long iterations = 5000; // iterations allowed to explore game tree
     private Random rand = new Random(); // Random object used for random playouts
     private int turn; // turn indicator
-    private Map<Move, Stats> moveMap = new HashMap<>();;
+    private Map<Integer, Map<Move, Stats>> moveMap = new HashMap<>();;
 
     /**
      * Initialize Monte-Carlo Tree Search agent using MAST with given iteration limit
@@ -41,6 +41,9 @@ public class MASTAgent extends VanillaMCTSAgent {
     }
 
     public Bitboard getNextState(Bitboard board, int turn) {
+        moveMap.clear();
+        moveMap.put(0, new HashMap<>());
+        moveMap.put(1, new HashMap<>());
         this.turn = turn;
         Tree tree = new Tree(board, this.turn);
         Node leaf;
@@ -71,11 +74,13 @@ public class MASTAgent extends VanillaMCTSAgent {
     private Node traverse(Tree tree, List<Move> path) {
         path.clear();
         Node node = tree.root;
+        turn = tree.rootTurn;
         Node nextNode;
 
         // follow UCT until you find a non-fully-expanded node
         while (node.isFullyExpanded && !node.isTerminal) {
             nextNode = bestUCT(node);
+            nextNode.state.move.turn = turn;
             path.add(nextNode.state.move);
             nextNode.chosenParent = node;
             node = nextNode;
@@ -91,6 +96,7 @@ public class MASTAgent extends VanillaMCTSAgent {
         node.isFullyExpanded = node.unexplored.size() == 0;
 
         // add node's move to the path
+        state.move.turn = turn;
         path.add(state.move);
 
         // add child to node's children and initialize new edge Stats
@@ -101,6 +107,7 @@ public class MASTAgent extends VanillaMCTSAgent {
         nextNode.parents.add(node);
         nextNode.chosenParent = node;
 
+        turn = 1 - turn;
         return nextNode;
     }
 
@@ -145,17 +152,18 @@ public class MASTAgent extends VanillaMCTSAgent {
             found = false;
             int sign = turn == 0 ? 1 : -1;
             for (State state : nextStates) {
-                if (moveMap.containsKey(state.move)) {
-                    stats = moveMap.get(state.move);
+                if (moveMap.get(turn).containsKey(state.move)) {
+                    stats = moveMap.get(turn).get(state.move);
                     value = Math.exp(sign * stats.totalReward / stats.numPlays / TAU);
                     totalValue += value;
                     qMap.put(state.move, value);
                 } else {
                     // always choose an unexplored move
                     board = state.board;
-                    turn = 1 - turn;
                     found = true;
+                    state.move.turn = turn;
                     path.add(state.move);
+                    turn = 1 - turn;
                     break;
                 }
             }
@@ -172,6 +180,7 @@ public class MASTAgent extends VanillaMCTSAgent {
                 value += qMap.get(choice.move);
             }
             board = choice.board;
+            choice.move.turn = turn;
             path.add(choice.move);
             turn = 1 - turn;
         }
@@ -186,7 +195,7 @@ public class MASTAgent extends VanillaMCTSAgent {
     private void updateStats(List<Move> path, int result) {
         Stats stats;
         for (Move move : path) {
-            stats = moveMap.getOrDefault(move, new Stats());
+            stats = moveMap.get(move.turn).getOrDefault(move, new Stats());
             stats.numPlays += 1;
             stats.totalReward += result;
         }

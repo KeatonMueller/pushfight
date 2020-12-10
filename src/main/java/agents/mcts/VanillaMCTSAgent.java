@@ -67,6 +67,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
      */
     protected Node traverse(Tree tree) {
         Node node = tree.root;
+        turn = tree.rootTurn;
         Node nextNode;
         Set<Bitboard> path = new HashSet<>();
         path.add(node.state.board);
@@ -101,6 +102,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
         nextNode.parents.add(node);
         nextNode.chosenParent = node;
 
+        turn = 1 - turn;
         return nextNode;
     }
 
