@@ -20,7 +20,7 @@ public class RandomAgent extends Agent implements AgentInterface {
     }
 
     public Bitboard getNextState(Bitboard board, int turn) {
-        Set<Bitboard> nextStates = SuccessorUtils.getNextStates(board, turn);
+        Set<Bitboard> nextStates = SuccessorUtils.getNextStates(board);
         int chosenIdx = rand.nextInt(nextStates.size());
         int idx = 0;
         for (Bitboard state : nextStates) {
@@ -41,7 +41,7 @@ public class RandomAgent extends Agent implements AgentInterface {
      * @return Move object of the randomly chosen next move
      */
     public static Move getRandomMove(Bitboard board, int turn, Random rand) {
-        Set<State> nextStates = SuccessorUtils.getSuccessors(board, turn);
+        Set<State> nextStates = SuccessorUtils.getSuccessors(board);
         if (nextStates.size() == 0) {
             System.err.println("No successors for board");
             board.show();
@@ -67,7 +67,7 @@ public class RandomAgent extends Agent implements AgentInterface {
      * @param rand  Instance of the Random class
      */
     public static void randomMove(Bitboard board, int turn, Random rand) {
-        Set<Bitboard> nextStates = SuccessorUtils.getNextStates(board, turn);
+        Set<Bitboard> nextStates = SuccessorUtils.getNextStates(board);
         if (nextStates.size() == 0) {
             System.err.println("No successors for board");
             board.show();

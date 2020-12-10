@@ -26,10 +26,9 @@ public class SuccessorUtils {
      * Find all possible next states from a given board position for a given player
      * 
      * @param board Board to analyze
-     * @param turn  Turn indicator
      * @return Set<Bitboard> of bitboards corresponding to possible next states
      */
-    public static Set<Bitboard> getNextStates(Bitboard board, int turn) {
+    public static Set<Bitboard> getNextStates(Bitboard board) {
         // computed list of next states
         Set<Bitboard> states = new HashSet<>();
         // record set of board states seen at each level to avoid recomputation
@@ -37,7 +36,7 @@ public class SuccessorUtils {
         for (int i = 0; i < GameUtils.NUM_SLIDES + 1; i++) {
             seen.add(new HashSet<>());
         }
-        getNextStatesHelper(board, turn, GameUtils.NUM_SLIDES, states, seen);
+        getNextStatesHelper(board, board.getTurn(), GameUtils.NUM_SLIDES, states, seen);
         return states;
     }
 
@@ -97,11 +96,10 @@ public class SuccessorUtils {
      * the move taken to reach that state
      * 
      * @param board Board to analyze
-     * @param turn  Turn indicator
      * @return Set<State> of State objects corresponding to possible next states and the moves taken
      *         to reach them
      */
-    public static Set<State> getSuccessors(Bitboard board, int turn) {
+    public static Set<State> getSuccessors(Bitboard board) {
         // computed list of next states
         Set<State> successors = new HashSet<>();
         // record set of board states seen at each level to avoid recomputation
@@ -109,7 +107,8 @@ public class SuccessorUtils {
         for (int i = 0; i < GameUtils.NUM_SLIDES + 1; i++) {
             seen.add(new HashSet<>());
         }
-        getSuccessorsHelper(board, turn, GameUtils.NUM_SLIDES, new Move(), successors, seen);
+        getSuccessorsHelper(board, board.getTurn(), GameUtils.NUM_SLIDES, new Move(), successors,
+                seen);
         return successors;
     }
 

@@ -167,7 +167,7 @@ public class StochasticABAgent extends Agent implements AgentInterface {
 
         if (turn == 0) {
             best.value = -Double.MAX_VALUE;
-            for (Bitboard child : SuccessorUtils.getNextStates(board, turn)) {
+            for (Bitboard child : SuccessorUtils.getNextStates(board)) {
                 candidateValue = alphaBeta(child, depth - 1, alpha, beta, 1 - turn).value;
 
                 if (candidateValue > best.value) {
@@ -188,7 +188,7 @@ public class StochasticABAgent extends Agent implements AgentInterface {
             return best;
         } else {
             best.value = Double.MAX_VALUE;
-            for (Bitboard child : SuccessorUtils.getNextStates(board, turn)) {
+            for (Bitboard child : SuccessorUtils.getNextStates(board)) {
                 candidateValue = alphaBeta(child, depth - 1, alpha, beta, 1 - turn).value;
 
                 if (candidateValue < best.value) {

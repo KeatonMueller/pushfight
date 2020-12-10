@@ -111,6 +111,19 @@ public class Bitboard {
     }
 
     /**
+     * Return turn indicator of the player whose turn it is
+     * 
+     * @return Turn indicator of next player
+     */
+    public int getTurn() {
+        // if the anchor is not on p1's pieces, it's p1's turn
+        if ((bitboards[4] & getPieces(0)) == 0)
+            return 0;
+        // else it's p2's turn
+        return 1;
+    }
+
+    /**
      * Check whether a player owns the piece at a given position
      * 
      * @param posMask Bit mask for position to check

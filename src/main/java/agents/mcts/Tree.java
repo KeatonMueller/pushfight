@@ -21,7 +21,7 @@ public class Tree {
      * @param turn    Turn indicator
      */
     public Tree(Bitboard rootPos, int turn) {
-        root = new Node(new State(rootPos), turn);
+        root = new Node(new State(rootPos));
         map = new HashMap<>();
         map.put(rootPos, root);
         rootTurn = turn;
@@ -31,14 +31,13 @@ public class Tree {
      * Get the Node corresponding to the given board state, or create a new one if none.
      * 
      * @param state The state to get the node for
-     * @param turn  Turn indicator
      * @return The corresponding Node
      */
-    public Node getNode(State state, int turn) {
+    public Node getNode(State state) {
         if (map.containsKey(state.board)) {
             return map.get(state.board);
         }
-        Node node = new Node(state, turn);
+        Node node = new Node(state);
         map.put(state.board, node);
         return node;
     }

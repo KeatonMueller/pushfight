@@ -91,7 +91,7 @@ public class VanillaMCTSAgent extends Agent implements AgentInterface {
 
         // choose first unexplored child
         State state = node.unexplored.remove(0);
-        nextNode = tree.getNode(state, turn);
+        nextNode = tree.getNode(state);
         node.isFullyExpanded = node.unexplored.size() == 0;
 
         // add child to node's children and initialize new edge Stats

@@ -82,12 +82,11 @@ public class BranchingAnalysis {
         Set<Bitboard> nextStates;
         while (true) {
             // record branching factor for this player
-            nextStates = SuccessorUtils.getNextStates(board, turn);
+            nextStates = SuccessorUtils.getNextStates(board);
             playerToBranches.get(turn).add(nextStates.size());
             // also check every next state and record it's branching factor
             for (Bitboard nextState : nextStates) {
-                playerToBranches.get(1 - turn)
-                        .add(SuccessorUtils.getNextStates(nextState, 1 - turn).size());
+                playerToBranches.get(1 - turn).add(SuccessorUtils.getNextStates(nextState).size());
             }
 
             // make move

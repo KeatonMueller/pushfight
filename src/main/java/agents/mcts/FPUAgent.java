@@ -73,7 +73,7 @@ public class FPUAgent extends VanillaMCTSAgent {
             bestUCB = -Double.MAX_VALUE;
             if (node.unexplored.size() > 0) {
                 bestUCB = FPU_CONSTANT + Math.pow(2 * Math.log(node.totalVisits), 0.5);
-                bestNode = tree.getNode(node.unexplored.get(0), turn);
+                bestNode = tree.getNode(node.unexplored.get(0));
             }
             for (Node child : node.children) {
                 totalReward = 0;
@@ -97,7 +97,7 @@ public class FPUAgent extends VanillaMCTSAgent {
             bestUCB = Double.MAX_VALUE;
             if (node.unexplored.size() > 0) {
                 bestUCB = -FPU_CONSTANT - Math.pow(2 * Math.log(node.totalVisits), 0.5);
-                bestNode = tree.getNode(node.unexplored.get(0), turn);
+                bestNode = tree.getNode(node.unexplored.get(0));
             }
             for (Node child : node.children) {
                 totalReward = 0;

@@ -92,7 +92,7 @@ public class MASTAgent extends VanillaMCTSAgent {
 
         // choose first unexplored child
         State state = node.unexplored.remove(0);
-        nextNode = tree.getNode(state, turn);
+        nextNode = tree.getNode(state);
         node.isFullyExpanded = node.unexplored.size() == 0;
 
         // add node's move to the path
@@ -146,7 +146,7 @@ public class MASTAgent extends VanillaMCTSAgent {
                 return 0;
             }
 
-            nextStates = SuccessorUtils.getSuccessors(board, turn);
+            nextStates = SuccessorUtils.getSuccessors(board);
             // calculate total value, as well as value for each move
             qMap.clear();
             found = false;

@@ -28,12 +28,11 @@ public class Node {
      * Initialize new Node for given board state
      * 
      * @param state State associated with this node
-     * @param turn  Turn indicator
      */
-    public Node(State state, int turn) {
+    public Node(State state) {
         this.state = state;
         this.isTerminal = BitboardUtils.checkWinner(state.board) != -1;
-        this.unexplored = new ArrayList<>(SuccessorUtils.getSuccessors(state.board, turn));
+        this.unexplored = new ArrayList<>(SuccessorUtils.getSuccessors(state.board));
         this.isFullyExpanded = this.unexplored.size() == 0;
         this.children = new ArrayList<>();
         this.parents = new ArrayList<>();
